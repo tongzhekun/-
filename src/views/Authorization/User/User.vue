@@ -72,6 +72,10 @@ const crudSchemas = reactive<CrudSchema[]>([
     }
   },
   {
+    field: 'userId',
+    label: t('userDemo.userId')
+  },
+  {
     field: 'username',
     label: t('userDemo.username')
   },

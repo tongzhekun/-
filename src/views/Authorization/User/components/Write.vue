@@ -20,6 +20,7 @@ const props = defineProps({
 
 const rules = reactive({
   username: [required()],
+  userId: [required()],
   account: [required()],
   'department.id': [required()]
 })

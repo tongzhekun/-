@@ -1,13 +1,27 @@
 import request from '@/axios'
+import axios from 'axios'
 import type { UserType } from './types'
 
 interface RoleParams {
   roleName: string
 }
+export const PATH_URL = import.meta.env.VITE_API_BASE_PATH
 
-export const loginApi = (data: UserType): Promise<IResponse<UserType>> => {
-  return request.post({ url: '/mock/user/login', data })
+export const loginApi = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/checkLogin', data)
 }
+export const registerApi = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/register', data)
+}
+// export const loginApi = (data: any): Promise<IResponse<any>> => {
+//   return axios
+//     .post('http://localhost/wzgl/public/index.php/index/checkLogin', data)
+//     .then((response) => response.data) // 返回响应数据
+//     .catch((error) => {
+//       console.error('请求失败:', error)
+//       throw error // 抛出错误以便调用方处理
+//     })
+// }
 
 export const loginOutApi = (): Promise<IResponse> => {
   return request.get({ url: '/mock/user/loginOut' })
