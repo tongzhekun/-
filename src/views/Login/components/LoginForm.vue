@@ -16,7 +16,7 @@ import { useValidator } from '@/hooks/web/useValidator'
 // import { Icon } from '@/components/Icon'
 import { useUserStore } from '@/store/modules/user'
 import { BaseButton } from '@/components/Button'
-import { changeGlobalNodesTarget } from 'element-plus/es/utils'
+// import { changeGlobalNodesTarget } from 'element-plus/es/utils'
 
 const { required } = useValidator()
 
