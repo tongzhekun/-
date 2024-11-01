@@ -13,6 +13,10 @@ export const loginApi = (data: any): Promise<IResponse<any>> => {
 export const registerApi = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/register', data)
 }
+export const upload = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/upload', data)
+}
+
 // export const loginApi = (data: any): Promise<IResponse<any>> => {
 //   return axios
 //     .post('http://localhost/wzgl/public/index.php/index/checkLogin', data)

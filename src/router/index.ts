@@ -87,14 +87,12 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     meta: {},
     children: [
       {
-        path: 'dashboardPciture',
+        path: 'index',
         component: () => import('@/views/dashboardPciture/dashboardPciture.vue'),
-        name: 'DashboardPciture',
+        name: 'dashboardPcitureDemo',
         meta: {
           title: t('router.allPciture'),
-          icon: 'vi-ri:function-fill',
-          alwaysShow: true,
-          noCache: true
+          icon: 'vi-cib:telegram-plane'
         }
       }
     ]
@@ -229,17 +227,15 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     path: '/gearPlacement',
     component: Layout,
     name: 'GearPlacement',
-    meta: {
-      alwaysShow: false
-    },
+    meta: {},
     children: [
       {
-        path: 'gearPlacement',
+        path: 'index',
         component: () => import('@/views/gearPlacement/gearPlacement.vue'),
-        name: 'GearPlacement',
+        name: 'GearPlacementDemo',
         meta: {
           title: t('router.gearPlacement'),
-          icon: 'vi-ri:function-fill',
+          icon: 'vi-cib:telegram-plane',
           alwaysShow: true,
           noCache: true
         }
