@@ -1,6 +1,8 @@
 <script setup lang="tsx">
 import { reactive, ref, watch, onMounted, unref } from 'vue'
+// 引入表单和表单验证
 import { Form, FormSchema } from '@/components/Form'
+import { ElMessage } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElCheckbox, ElLink } from 'element-plus'
 import { useForm } from '@/hooks/web/useForm'
@@ -14,6 +16,7 @@ import { useValidator } from '@/hooks/web/useValidator'
 // import { Icon } from '@/components/Icon'
 import { useUserStore } from '@/store/modules/user'
 import { BaseButton } from '@/components/Button'
+// import { changeGlobalNodesTarget } from 'element-plus/es/utils'
 
 const { required } = useValidator()
 
@@ -29,12 +32,15 @@ const { currentRoute, addRoute, push } = useRouter()
 
 const { t } = useI18n()
 
+// 验证规则
 const rules = {
-  username: [required()],
+  userId: [required()],
+  // username: [required()],
   password: [required()]
 }
-
+// 页面要素
 const schema = reactive<FormSchema[]>([
+  // 登录
   {
     field: 'title',
     colProps: {
@@ -48,18 +54,20 @@ const schema = reactive<FormSchema[]>([
       }
     }
   },
+  // 用户名
   {
-    field: 'username',
-    label: t('login.username'),
+    field: 'userId',
+    label: t('login.userId'),
     // value: 'admin',
     component: 'Input',
     colProps: {
       span: 24
     },
     componentProps: {
-      placeholder: 'admin or test'
+      placeholder: t('login.userId')
     }
   },
+  // 密码
   {
     field: 'password',
     label: t('login.password'),
@@ -87,7 +95,7 @@ const schema = reactive<FormSchema[]>([
             <>
               <div class="flex justify-between items-center w-[100%]">
                 <ElCheckbox v-model={remember.value} label={t('login.remember')} size="small" />
-                <ElLink type="primary" underline={false}>
+                <ElLink type="primary" underline={false} onClick={forgetSecret}>
                   {t('login.forgetPassword')}
                 </ElLink>
               </div>
@@ -185,14 +193,14 @@ const schema = reactive<FormSchema[]>([
 ])
 
 // const iconSize = 30
-
+// 默认true
 const remember = ref(userStore.getRememberMe)
 
 const initLoginInfo = () => {
   const loginInfo = userStore.getLoginInfo
   if (loginInfo) {
-    const { username, password } = loginInfo
-    setValues({ username, password })
+    const { userId, password } = loginInfo
+    setValues({ userId, password })
   }
 }
 onMounted(() => {
@@ -201,9 +209,8 @@ onMounted(() => {
 
 const { formRegister, formMethods } = useForm()
 const { getFormData, getElFormExpose, setValues } = formMethods
-
+//登录是按钮前面的加载
 const loading = ref(false)
-
 // const iconColor = '#999'
 
 // const hoverColor = 'var(--el-color-primary)'
@@ -222,31 +229,36 @@ watch(
 
 // 登录
 const signIn = async () => {
+  //getElFormExpose方法是验证表单是否填写完整
   const formRef = await getElFormExpose()
   await formRef?.validate(async (isValid) => {
     if (isValid) {
       loading.value = true
+      //getFormData得到表单里面的元素
       const formData = await getFormData<UserType>()
-
       try {
+        // 请求接口register
         const res = await loginApi(formData)
-
-        if (res) {
+        console.log(res, res.data.code, res.data.code === 200, '4444444444')
+        if (res.data.code === 200) {
+          console.log('6666666666')
           // 是否记住我
           if (unref(remember)) {
             userStore.setLoginInfo({
+              userId: formData.userId,
               username: formData.username,
-              password: formData.password
+              password: ''
             })
           } else {
             userStore.setLoginInfo(undefined)
           }
           userStore.setRememberMe(unref(remember))
-          userStore.setUserInfo(res.data)
+          userStore.setUserInfo(res.data.data)
           // 是否使用动态路由
           if (appStore.getDynamicRouter) {
             getRole()
           } else {
+            console.log('`````')
             await permissionStore.generateRoutes('static').catch(() => {})
             permissionStore.getAddRouters.forEach((route) => {
               addRoute(route as RouteRecordRaw) // 动态添加可访问路由表
@@ -254,7 +266,12 @@ const signIn = async () => {
             permissionStore.setIsAddRouters(true)
             push({ path: redirect.value || permissionStore.addRouters[0].path })
           }
+        } else {
+          ElMessage.error(res.data.data.message || '登录失败')
         }
+      } catch (error) {
+        ElMessage.error('请求失败')
+        // 这里可以更新 UI，显示错误信息
       } finally {
         loading.value = false
       }
@@ -266,12 +283,12 @@ const signIn = async () => {
 const getRole = async () => {
   const formData = await getFormData<UserType>()
   const params = {
-    roleName: formData.username
+    roleName: formData.userId
   }
-  const res =
-    appStore.getDynamicRouter && appStore.getServerDynamicRouter
-      ? await getAdminRoleApi(params)
-      : await getTestRoleApi(params)
+  const res = await getAdminRoleApi(params)
+  appStore.getDynamicRouter && appStore.getServerDynamicRouter
+    ? await getAdminRoleApi(params)
+    : await getTestRoleApi(params)
   if (res) {
     const routers = res.data || []
     userStore.setRoleRouters(routers)
@@ -290,6 +307,10 @@ const getRole = async () => {
 // 去注册页面
 const toRegister = () => {
   emit('to-register')
+}
+// 忘记密码
+const forgetSecret = () => {
+  ElMessage.warning('请联系管理员修改密码')
 }
 </script>
 

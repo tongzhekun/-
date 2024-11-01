@@ -13,6 +13,7 @@ const { required } = useValidator()
 const { t } = useI18n()
 
 const data = reactive({
+  userId: '12345678',
   username: 'chenkl',
   nickName: '梦似花落。',
   age: 26,
@@ -24,6 +25,10 @@ const data = reactive({
 })
 
 const schema = reactive<DescriptionsSchema[]>([
+  {
+    field: 'userId',
+    label: t('descriptionsDemo.userId')
+  },
   {
     field: 'username',
     label: t('descriptionsDemo.username')
@@ -48,6 +53,22 @@ const schema = reactive<DescriptionsSchema[]>([
 ])
 
 const schema2 = reactive<DescriptionsSchema[]>([
+  {
+    field: 'userId',
+    label: t('descriptionsDemo.userId'),
+    slots: {
+      label: (row) => {
+        return <span class="is-required--item">{row.label}</span>
+      },
+      default: () => {
+        return (
+          <ElFormItem prop="userId">
+            <ElInput v-model={form.userId} />
+          </ElFormItem>
+        )
+      }
+    }
+  },
   {
     field: 'username',
     label: t('descriptionsDemo.username'),
@@ -132,6 +153,7 @@ const schema2 = reactive<DescriptionsSchema[]>([
 ])
 
 const form = reactive({
+  userId: '',
   username: '',
   nickName: '',
   phone: '',
@@ -140,6 +162,7 @@ const form = reactive({
 })
 
 const rules = reactive({
+  userId: [required()],
   username: [required()],
   nickName: [required()],
   phone: [required()],

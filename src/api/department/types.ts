@@ -13,12 +13,14 @@ export interface DepartmentUserParams {
   pageIndex: number
   id: string
   username?: string
+  userId?: string
   account?: string
 }
 
 export interface DepartmentUserItem {
   id: string
   username: string
+  userId: string
   account: string
   email: string
   createTime: string

@@ -1,35 +1,38 @@
 <script setup lang="tsx">
+import { ElMessage } from 'element-plus'
 import { Form, FormSchema } from '@/components/Form'
-import { reactive, ref, unref } from 'vue'
+import { registerApi } from '@/api/login'
+import { reactive, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useForm } from '@/hooks/web/useForm'
-import { ElInput, FormRules } from 'element-plus'
+import { FormRules } from 'element-plus'
 import { useValidator } from '@/hooks/web/useValidator'
 import { BaseButton } from '@/components/Button'
 import { IAgree } from '@/components/IAgree'
+import { RegisterUserType } from '@/api/login/types'
 
 const emit = defineEmits(['to-login'])
 
 const { formRegister, formMethods } = useForm()
-const { getElFormExpose } = formMethods
+const { getFormData, getElFormExpose } = formMethods
 
 const { t } = useI18n()
 
 const { required, check } = useValidator()
 
-const getCodeTime = ref(60)
-const getCodeLoading = ref(false)
-const getCode = () => {
-  getCodeLoading.value = true
-  const timer = setInterval(() => {
-    getCodeTime.value--
-    if (getCodeTime.value <= 0) {
-      clearInterval(timer)
-      getCodeTime.value = 60
-      getCodeLoading.value = false
-    }
-  }, 1000)
-}
+// const getCodeTime = ref(60)
+// const getCodeLoading = ref(false)
+// const getCode = () => {
+//   getCodeLoading.value = true
+//   const timer = setInterval(() => {
+//     getCodeTime.value--
+//     if (getCodeTime.value <= 0) {
+//       clearInterval(timer)
+//       getCodeTime.value = 60
+//       getCodeLoading.value = false
+//     }
+//   }, 1000)
+// }
 
 const schema = reactive<FormSchema[]>([
   {
@@ -43,6 +46,18 @@ const schema = reactive<FormSchema[]>([
           return <h2 class="text-2xl font-bold text-center w-[100%]">{t('login.register')}</h2>
         }
       }
+    }
+  },
+  {
+    field: 'userId',
+    label: t('login.userId'),
+    value: '',
+    component: 'Input',
+    colProps: {
+      span: 24
+    },
+    componentProps: {
+      placeholder: t('login.userIdPlaceholder')
     }
   },
   {
@@ -89,33 +104,33 @@ const schema = reactive<FormSchema[]>([
       placeholder: t('login.passwordPlaceholder')
     }
   },
-  {
-    field: 'code',
-    label: t('login.code'),
-    colProps: {
-      span: 24
-    },
-    formItemProps: {
-      slots: {
-        default: (formData) => {
-          return (
-            <div class="w-[100%] flex">
-              <ElInput v-model={formData.code} placeholder={t('login.codePlaceholder')} />
-              <BaseButton
-                type="primary"
-                disabled={unref(getCodeLoading)}
-                class="ml-10px"
-                onClick={getCode}
-              >
-                {t('login.getCode')}
-                {unref(getCodeLoading) ? `(${unref(getCodeTime)})` : ''}
-              </BaseButton>
-            </div>
-          )
-        }
-      }
-    }
-  },
+  // {
+  //   field: 'code',
+  //   label: t('login.code'),
+  //   colProps: {
+  //     span: 24
+  //   },
+  //   formItemProps: {
+  //     slots: {
+  //       default: (formData) => {
+  //         return (
+  //           <div class="w-[100%] flex">
+  //             <ElInput v-model={formData.code} placeholder={t('login.codePlaceholder')} />
+  //             <BaseButton
+  //               type="primary"
+  //               disabled={unref(getCodeLoading)}
+  //               class="ml-10px"
+  //               onClick={getCode}
+  //             >
+  //               {t('login.getCode')}
+  //               {unref(getCodeLoading) ? `(${unref(getCodeTime)})` : ''}
+  //             </BaseButton>
+  //           </div>
+  //         )
+  //       }
+  //     }
+  //   }
+  // },
 
   {
     field: 'iAgree',
@@ -177,6 +192,7 @@ const schema = reactive<FormSchema[]>([
 ])
 
 const rules: FormRules = {
+  userId: [required()],
   username: [required()],
   password: [required()],
   check_password: [required()],
@@ -192,13 +208,31 @@ const loading = ref(false)
 
 const loginRegister = async () => {
   const formRef = await getElFormExpose()
+  const formData = await getFormData<RegisterUserType>()
   formRef?.validate(async (valid) => {
     if (valid) {
-      try {
-        loading.value = true
-        toLogin()
-      } finally {
-        loading.value = false
+      if (formData.password == formData.check_password) {
+        try {
+          loading.value = true
+          try {
+            const res = await registerApi(formData)
+            if (res.data.code === 200) {
+              ElMessage.success('注册成功')
+              toLogin()
+            } else {
+              ElMessage.error('注册失败')
+            }
+          } catch (error) {
+            ElMessage.error('注册失败')
+            // 这里可以更新 UI，显示错误信息
+          } finally {
+            loading.value = false
+          }
+        } finally {
+          loading.value = false
+        }
+      } else {
+        ElMessage.warning('密码和确认密码不一致，请重新输入')
       }
     }
   })

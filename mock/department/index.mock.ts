@@ -119,6 +119,8 @@ export default [
       for (let i = 0; i < pageSize; i++) {
         mockList.push(
           Mock.mock({
+            // 用户账号
+            userId: '@cnameId',
             // 用户名
             username: '@cname',
             // 账号

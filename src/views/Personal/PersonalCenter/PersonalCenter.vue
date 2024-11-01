@@ -13,6 +13,7 @@ const fetchDetailUserApi = async () => {
   // 这里可以调用接口获取用户信息
   const data = {
     id: 1,
+    userId: '12345678',
     username: 'admin',
     realName: 'admin',
     phoneNumber: '18888888888',
@@ -64,7 +65,12 @@ const saveAvatar = async () => {
       </div>
       <ElDivider />
       <div class="flex justify-between items-center">
-        <div>账号：</div>
+        <div>用户账号：</div>
+        <div>{{ userInfo?.userId }}</div>
+      </div>
+      <ElDivider />
+      <div class="flex justify-between items-center">
+        <div>用户名：</div>
         <div>{{ userInfo?.username }}</div>
       </div>
       <ElDivider />
