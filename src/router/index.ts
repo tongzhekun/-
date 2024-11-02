@@ -11,7 +11,8 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard/analysis',
+    // redirect: '/dashboard/analysis',
+    redirect: '/gearPlacement/gearPlacement',
     name: 'Root',
     meta: {
       hidden: true
@@ -227,6 +228,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     path: '/gearPlacement',
     component: Layout,
     name: 'GearPlacement',
+    redirect: '/gearPlacement/gearPlacement',
     meta: {},
     children: [
       {
@@ -245,7 +247,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
   {
     path: '/dashboard',
     component: Layout,
-    redirect: '/dashboard/analysis',
+    // redirect: '/dashboard/analysis',
     name: 'Dashboard',
     meta: {
       title: t('router.dashboard'),
