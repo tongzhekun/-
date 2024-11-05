@@ -27,7 +27,7 @@
       </el-row>
       <el-row>
         <el-col :span="24" style="margin-top: 20px; text-align: center">
-          <el-table :data="allocationResultsPer" style="width: 100%; height: 310px">
+          <el-table :data="allocationResults" style="width: 100%; height: 310px">
             <el-table-column prop="name" fixed label="名称" />
             <el-table-column prop="stockOld" label="可供量" />
             <el-table-column prop="remaining" label="测算值" />
@@ -128,6 +128,52 @@ const { getFormData, getElFormExpose, setValues } = formMethods
 export default {
   data() {
     return {
+      tobaccoArray: [
+        {
+          range: [0, 30],
+          ratio: 0
+        },
+        {
+          range: [31, 50],
+          ratio: 0
+        },
+        {
+          range: [51, 100],
+          ratio: 0.15
+        },
+        {
+          range: [101, 150],
+          ratio: 0.15
+        },
+        {
+          range: [151, 200],
+          ratio: 0.1
+        },
+        {
+          range: [201, 250],
+          ratio: 0.1
+        },
+        {
+          range: [251, 300],
+          ratio: 0.1
+        },
+        {
+          range: [301, 350],
+          ratio: 0.1
+        },
+        {
+          range: [351, 400],
+          ratio: 0.1
+        },
+        {
+          range: [401, 450],
+          ratio: 0.1
+        },
+        {
+          range: [451, 500],
+          ratio: 0.1
+        }
+      ],
       downTobaccoArray: [],
       downCustArray: [],
       PATH_URL: import.meta.env.VITE_API_BASE_PATH,
@@ -149,8 +195,7 @@ export default {
       skus: [],
       skusArray: [],
       // ratio: 5,
-      allocationResults: [],
-      allocationResultsPer: []
+      allocationResults: []
     }
   },
   created() {
@@ -237,7 +282,10 @@ export default {
           return {
             sku,
             name,
-            stockOld: parseInt(stock, 10) || 0,
+            stock30: 5,
+            stockRatio: 0.1,
+            stock1: 1,
+            stockOld: stock,
             stock: (parseInt(stock, 10) || 0) * 250
           }
         })
@@ -245,131 +293,113 @@ export default {
           const [sku, name, stock] = line.split(',')
           return {
             sku,
+            stock30: 5,
+            stockRatio: 0.1,
+            stock1: 1,
             name,
-            stock: parseInt(stock, 10) || 0
+            stock: (parseInt(stock, 10) || 0) * 250
           }
         })
       }
       reader.readAsText(file, 'UTF-8')
     },
     calculateDistribution() {
-      // 计算总客户数
-      console.log(this.customers, this.skus, 'this.skusthis.skus')
+      // 初始化数组含30个0
+      const allocations = Array(this.customerLevels).fill(0)
+      //得到总客户数
       const totalCustomers = this.customers.reduce((sum, num) => sum + num, 0)
       this.allocationResults = this.skus
         .map((sku) => {
           // 烟的条数
           let remainingStock = sku.stock
-          // 初始化数组含30个0
-          const allocations = Array(this.customerLevels).fill(0)
-          //如果烟的条数大于客户总数
-          if (sku.stock > totalCustomers) {
-            for (let level = this.customerLevels - 1; level >= 0 && remainingStock > 0; level--) {
-              //从高到低每一档的客户数
-              const levelCustomers = this.customers[level]
-              //如果客户数大于0
-              if (levelCustomers > 0) {
-                //分配当前级别的客户数作为烟的条数
-                allocations[level] = levelCustomers
-                remainingStock -= allocations[level]
-              }
-            }
-            for (let i = 1; i <= 999; i++) {
-              for (let level = this.customerLevels - 1; level >= 0 && remainingStock > 0; level--) {
-                const levelCustomers = this.customers[level]
-                if (level === this.customerLevels - 1 && sku.stock >= totalCustomers * 1.5) {
-                  const lv30Number =
-                    allocations[this.customerLevels - 1] / this.customers[this.customerLevels - 1]
-                  const lv1Number = allocations[0] / this.customers[0]
-                  const needAddFive =
-                    this.customers[this.customerLevels - 1] *
-                    (lv1Number * this.formData.ratio - lv30Number)
-                  if (
-                    lv30Number / lv1Number < this.formData.ratio &&
-                    remainingStock >= needAddFive
-                  ) {
-                    remainingStock -= needAddFive
-                    allocations[this.customerLevels - 1] += needAddFive
+          const remainingStockBox = sku.stock / 250
+          const entry = this.tobaccoArray.find(
+            (item) => remainingStockBox >= item.range[0] && remainingStockBox <= item.range[1]
+          )
+          console.log(remainingStockBox, entry, 'entry')
+          const Reduceratio = 1 - entry.ratio
+          for (let level = this.customerLevels - 1; level >= 0 && remainingStock > 0; level--) {
+            //从高到低每一档的客户数
+            const levelCustomers = this.customers[level]
+            if (level == 29) {
+              allocations[level] = sku.stock30
+              remainingStock -= allocations[level] * levelCustomers
+            } else {
+              if (sku.stock1 > 0) {
+                //得到当前档位之后的数组
+                const customersWithout = this.customers.filter((_, index) => index < level + 1)
+                // 计算剩下档位的客户数依次乘以固定值后相加
+                const totalSum = customersWithout.reduce(
+                  (sum, customer) => sum + customer * sku.stock1,
+                  0
+                )
+                //当前档位总数乘和大于成剩余的档位数，重复循坏，除非等于最小档数，退出循环
+                if (totalSum >= remainingStock) {
+                  remainingStock -= allocations[level] * levelCustomers
+                  for (let i = level; i >= 0; i--) {
+                    allocations[i] = sku.stock1 // 赋值为固定值
                   }
-                } else if (level === this.customerLevels - 1 && sku.stock < totalCustomers * 1.5) {
-                  if (remainingStock > 0) {
-                    allocations[level] += levelCustomers
-                    remainingStock -= levelCustomers
-                  }
-                } else if (levelCustomers > 0 && remainingStock >= levelCustomers) {
-                  if (sku.stock >= totalCustomers * 1.5) {
-                    if (
-                      level > 0 ||
-                      remainingStock >=
-                        this.customers[0] +
-                          this.customers[this.customerLevels - 1] * this.formData.ratio
-                    ) {
-                      allocations[level] += levelCustomers
-                      remainingStock -= levelCustomers
+                  break // 退出循环
+                } else {
+                  for (let j = 1; j <= 999; j++) {
+                    allocations[level] = Math.round(
+                      (allocations[29] * Reduceratio ** (29 - level)) ** j
+                    )
+                    const remainNext = remainingStock - allocations[level] * this.customers[level]
+                    const customersWithoutNext = this.customers.filter((_, index) => index < level)
+                    // 计算剩下的客户数依次乘以固定值后相加
+                    const totalSumNext = customersWithoutNext.reduce(
+                      (sum, customer) => sum + customer * sku.stock1,
+                      0
+                    )
+                    //分配完后剩余档数和最小条数乘和大于烟的剩余，重复循坏，除非等于最小档数，退出循环
+                    if (totalSumNext >= remainNext) {
+                      if (allocations[level] <= sku.stock1) {
+                        remainingStock -= allocations[level] * levelCustomers
+                        for (let i = level; i >= 0; i--) {
+                          this.allocations[i] = sku.stock1 // 赋值为固定值
+                        }
+                        break
+                      }
+                    } else {
+                      if (allocations[level] < sku.stock1) {
+                        allocations[level] = sku.stock1
+                      }
+                      remainingStock -= allocations[level] * levelCustomers
+                      break
                     }
-                  } else {
-                    allocations[level] += levelCustomers
-                    remainingStock -= levelCustomers
                   }
                 }
-              }
-            }
-          } else {
-            for (let level = this.customerLevels - 1; level >= 0 && remainingStock > 0; level--) {
-              const levelCustomers = this.customers[level]
-              // if (levelCustomers > 0 && remainingStock >= levelCustomers) {
-              if (remainingStock > 0) {
-                allocations[level] = levelCustomers
-                remainingStock -= allocations[level]
-              }
-              // }
-            }
-            for (let level = this.customerLevels - 1; level >= 0 && remainingStock > 0; level--) {
-              const levelCustomers = this.customers[level]
-              if (levelCustomers > 0 && remainingStock >= levelCustomers) {
-                if (
-                  level === this.customerLevels - 1 ||
-                  allocations[level + 1] / this.customers[level + 1] >
-                    allocations[level] / this.customers[level]
-                ) {
-                  allocations[level] = levelCustomers
-                  remainingStock -= allocations[level]
+              } else {
+                if (remainingStock > 0) {
+                  allocations[level] = sku.stock30
+                  remainingStock -= allocations[level] * levelCustomers
+                } else {
+                  for (let i = level; i >= 0; i--) {
+                    this.allocations[i] = sku.stock1 // 赋值为固定值
+                  }
                 }
               }
             }
           }
-          allocations.push(remainingStock)
+          const totalSumFinal = allocations.reduce((sum, value, index) => {
+            console.log(value, this.customers, 'value * this.customers[index]F')
+            return sum + value * this.customers[index] // 相乘并累加
+          }, 0)
           return {
             sku: sku.sku,
             stockOld: sku.stockOld,
             stock: sku.stock,
             name: sku.name,
             allocations,
-            remaining: (sku.stock - remainingStock) / 250
+            remaining: totalSumFinal / 250
           }
         })
         .filter((result) => result.sku !== '')
-      this.allocationResultsPer = this.allocationResults.map((result) => {
-        const perCustomerAllocations = result.allocations.slice(0, -1).map((allocation, index) => {
-          const customerCount = this.customers[index]
-          return customerCount > 0 ? allocation / customerCount : 0
-        })
-
-        return {
-          sku: result.sku,
-          name: result.name,
-          stockOld: result.stockOld,
-          stock: result.stock,
-          allocations: perCustomerAllocations,
-          remaining: result.remaining
-        }
-      })
       this.allocationResults.forEach((item) => {
         item.allocations = item.allocations.slice().reverse()
       })
-      this.allocationResultsPer.forEach((item) => {
-        item.allocations = item.allocations.slice().reverse()
-      })
+      console.log(this.allocationResults, 'this.allocationResultsPer')
     },
     //下载模版(把临时表里面的最新数据)
     async downloadTemplateTobacco() {
@@ -433,7 +463,7 @@ export default {
         '编码,名称,可供量,预测值,' +
         Array.from({ length: this.customerLevels }, (_, i) => `${30 - i}档`).join(',') + // 从 30 开始递减到 1
         '\n' // 继续添加表头，最后添加换行符
-      this.allocationResultsPer.forEach((result) => {
+      this.allocationResults.forEach((result) => {
         csv += `${result.sku},${result.name},${result.stockOld},${result.remaining},${result.allocations.join(',')}\n`
       })
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
