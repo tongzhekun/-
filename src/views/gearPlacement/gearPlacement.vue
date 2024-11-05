@@ -40,7 +40,7 @@
         </el-col>
       </el-row>
       <el-dialog
-        v-model="dialogVisible"
+        v-model="dialogVisibleTobacco"
         title="附件操作"
         width="550px"
         class="centered-dialog custom-width-dialog"
@@ -53,7 +53,7 @@
             <el-col :span="5">
               <a
                 href="#"
-                @click.prevent="downloadTemplate"
+                @click.prevent="downloadTemplateTobacco"
                 style="color: #409eff; text-decoration: underline"
                 >烟参数表</a
               >
@@ -64,19 +64,24 @@
               <span>上传文件(CSV格式):</span>
             </el-col>
             <el-col :span="5">
-              <input type="file" @change="handleFileUpload" accept=".csv" />
+              <input
+                type="file"
+                ref="fileInputTobacco"
+                @change="handleFileUploadTobacco"
+                accept=".csv"
+              />
             </el-col>
           </el-row>
         </div>
         <el-row>
           <el-col :span="24" style="margin-top: 20px; text-align: center">
-            <el-button @click="dialogVisible = false" type="primary">提交</el-button>
-            <el-button @click="dialogVisible = false">取消</el-button>
+            <el-button @click="uploadTobaccoClick" type="primary">提交</el-button>
+            <el-button @click="dialogVisibleTobacco = false">取消</el-button>
           </el-col>
         </el-row>
       </el-dialog>
       <el-dialog
-        v-model="dialogVisible1"
+        v-model="dialogVisibleCust"
         title="附件操作"
         width="550px"
         class="centered-dialog custom-width-dialog"
@@ -89,7 +94,7 @@
             <el-col :span="5">
               <a
                 href="#"
-                @click.prevent="downloadTemplate1"
+                @click.prevent="downloadTemplateCust"
                 style="color: #409eff; text-decoration: underline"
                 >客户参数表</a
               >
@@ -100,14 +105,14 @@
               <span>上传文件(CSV格式):</span>
             </el-col>
             <el-col :span="5">
-              <input type="file" @change="handleFileUpload1" accept=".csv" />
+              <input type="file" ref="fileInputCust" @change="handleFileUploadCust" accept=".csv" />
             </el-col>
           </el-row>
         </div>
         <el-row>
           <el-col :span="24" style="margin-top: 20px; text-align: center">
-            <el-button @click="dialogVisible1 = false" type="primary">提交</el-button>
-            <el-button @click="dialogVisible1 = false">取消</el-button>
+            <el-button @click="uploadCustClick" type="primary">提交</el-button>
+            <el-button @click="dialogVisibleCust = false">取消</el-button>
           </el-col>
         </el-row>
       </el-dialog>
@@ -116,15 +121,18 @@
 </template>
 
 <script>
+import { uploadTobacco, dowloadTobacco, uploadCust, dowloadCust } from '@/api/login'
 import { useForm } from '@/hooks/web/useForm'
 const { formRegister, formMethods } = useForm()
 const { getFormData, getElFormExpose, setValues } = formMethods
 export default {
   data() {
     return {
+      downTobaccoArray: [],
+      downCustArray: [],
       PATH_URL: import.meta.env.VITE_API_BASE_PATH,
-      dialogVisible: false,
-      dialogVisible1: false,
+      dialogVisibleTobacco: false,
+      dialogVisibleCust: false,
       formData: {
         ratio: 5,
         selectedDate: ''
@@ -139,23 +147,73 @@ export default {
       // customers: Array(30).fill(100),
       customers: [],
       skus: [],
+      skusArray: [],
       // ratio: 5,
       allocationResults: [],
       allocationResultsPer: []
     }
   },
   created() {
-    console.log(this.levels, this.levels.slice().reverse(), 'this.levels')
     this.reversedLevels = this.levels.slice().reverse()
   },
   methods: {
+    //上传附件把把烟的参数表存入临时表内
+    async uploadTobaccoClick() {
+      for (let i = this.skusArray.length - 1; i >= 0; i--) {
+        if (this.skusArray[i].sku === '') {
+          this.skusArray.splice(i, 1) // 删除该对象
+        }
+      }
+      try {
+        const payload = {
+          skus: this.skusArray
+        }
+        const response = await uploadTobacco(payload) // 调用 upload 函数并传入 payload
+        if (response.data.code == 200) {
+          this.$message.success(response.data.data.message)
+          this.dialogVisibleTobacco = false // 关闭弹窗
+        } else {
+          this.$message.error(response.data.data.message)
+        }
+      } catch (error) {
+        this.$message.error('上传失败')
+      }
+    },
+    //上传附件把把客户的数量表存入临时表内
+    async uploadCustClick() {
+      try {
+        const payload = {
+          customers: this.customers
+        }
+        const response = await uploadCust(payload) // 调用 upload 函数并传入 payload
+        if (response.data.code == 200) {
+          this.$message.success(response.data.data.message)
+          this.dialogVisibleCust = false // 关闭弹窗
+        } else {
+          this.$message.error(response.data.data.message)
+        }
+      } catch (error) {
+        this.$message.error(response.data.data.message)
+      }
+    },
+    //点击卷烟参数上传
     tobacooDialog() {
-      this.dialogVisible = true
+      this.$nextTick(() => {
+        if (this.$refs.fileInputTobacco !== undefined) {
+          this.$refs.fileInputTobacco.value = null
+        }
+      })
+      this.dialogVisibleTobacco = true
     },
     customDialog() {
-      this.dialogVisible1 = true
+      this.$nextTick(() => {
+        if (this.$refs.fileInputCust !== undefined) {
+          this.$refs.fileInputCust.value = null
+        }
+      })
+      this.dialogVisibleCust = true
     },
-    handleFileUpload1(event) {
+    handleFileUploadCust(event) {
       const file = event.target.files[0]
       const reader = new FileReader()
       reader.onload = (e) => {
@@ -169,7 +227,7 @@ export default {
       }
       reader.readAsText(file, 'UTF-8')
     },
-    handleFileUpload(event) {
+    handleFileUploadTobacco(event) {
       const file = event.target.files[0]
       const reader = new FileReader()
       reader.onload = (e) => {
@@ -183,14 +241,20 @@ export default {
             stock: (parseInt(stock, 10) || 0) * 250
           }
         })
-        console.log(this.skus, 'this.skus')
+        this.skusArray = lines.map((line) => {
+          const [sku, name, stock] = line.split(',')
+          return {
+            sku,
+            name,
+            stock: parseInt(stock, 10) || 0
+          }
+        })
       }
       reader.readAsText(file, 'UTF-8')
     },
     calculateDistribution() {
-      // this.customers是客户数
-      console.log(this.customers, 'this.customersthis.customersthis.customers')
       // 计算总客户数
+      console.log(this.customers, this.skus, 'this.skusthis.skus')
       const totalCustomers = this.customers.reduce((sum, num) => sum + num, 0)
       this.allocationResults = this.skus
         .map((sku) => {
@@ -306,27 +370,63 @@ export default {
       this.allocationResultsPer.forEach((item) => {
         item.allocations = item.allocations.slice().reverse()
       })
-      console.log(this.allocationResultsPer, 'allocationResultsPerallocationResultsPer')
     },
-    downloadTemplate() {
-      const csv = 'SKU,name,Stock'
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-      const link = document.createElement('a')
-      link.href = URL.createObjectURL(blob)
-      link.setAttribute('download', '烟参数表.csv')
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+    //下载模版(把临时表里面的最新数据)
+    async downloadTemplateTobacco() {
+      try {
+        const payload = {}
+        const response = await dowloadTobacco(payload) // 调用 upload 函数并传入 payload
+        if (response.data.code == 200) {
+          let csv = 'SKU,name,Stock' + '\n'
+          this.downTobaccoArray = response.data.data.list
+          if (this.downTobaccoArray.length > 0) {
+            this.downTobaccoArray.forEach((result, index) => {
+              csv += `${result.sku},${result.name},${result.stock.toString()}\n`
+            })
+          }
+          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+          const link = document.createElement('a')
+          link.href = URL.createObjectURL(blob)
+          link.setAttribute('download', '烟参数表.csv')
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+          this.$message.success(response.data.data.message)
+          this.dialogVisibleTobacco = false // 关闭弹窗
+        } else {
+          this.$message.error(response.data.data.message)
+        }
+      } catch (error) {
+        this.$message.error('下载失败')
+      }
     },
-    downloadTemplate1() {
-      const csv = 'gear,num'
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-      const link = document.createElement('a')
-      link.href = URL.createObjectURL(blob)
-      link.setAttribute('download', '客户参数表.csv')
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+    async downloadTemplateCust() {
+      try {
+        const payload = {}
+        const response = await dowloadCust(payload) // 调用 upload 函数并传入 payload
+        if (response.data.code == 200) {
+          let csv = 'gear,num' + '\n'
+          this.downCustArray = response.data.data.list
+          if (this.downCustArray.length > 0) {
+            this.downCustArray.forEach((result, index) => {
+              csv += `${result.gear},${result.num.toString()}\n`
+            })
+          }
+          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+          const link = document.createElement('a')
+          link.href = URL.createObjectURL(blob)
+          link.setAttribute('download', '客户参数表.csv')
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+          this.$message.success(response.data.data.message)
+          this.dialogVisibleCust = false // 关闭弹窗
+        } else {
+          this.$message.error(response.data.data.message)
+        }
+      } catch (error) {
+        this.$message.error('下载失败')
+      }
     },
     exportToCSV() {
       let csv =

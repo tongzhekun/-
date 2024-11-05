@@ -46,15 +46,16 @@ const tagsViewIcon = computed(() => appStore.getTagsViewIcon)
 const isDark = computed(() => appStore.getIsDark)
 
 // 初始化tag
-const initTags = () => {
-  affixTagArr.value = filterAffixTags(unref(routers))
-  for (const tag of unref(affixTagArr)) {
-    // Must have tag name
-    if (tag.name) {
-      tagsViewStore.addVisitedView(cloneDeep(tag))
-    }
-  }
-}
+// const initTags = () => {
+//   affixTagArr.value = filterAffixTags(unref(routers))
+//   for (const tag of unref(affixTagArr)) {
+//     // Must have tag name
+//     if (tag.name) {
+//       console.log(tag.name, 'tag.nametag.nametag.name')
+//       tagsViewStore.addVisitedView(cloneDeep(tag))
+//     }
+//   }
+// }
 
 // 新增tag
 const addTags = () => {
@@ -256,7 +257,7 @@ const canShowIcon = (item: RouteLocationNormalizedLoaded) => {
 }
 
 onMounted(() => {
-  initTags()
+  // initTags()
   addTags()
 })
 

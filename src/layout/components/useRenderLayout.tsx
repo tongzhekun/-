@@ -106,7 +106,7 @@ export const useRenderLayout = () => {
                   }
                 ]}
               ></ToolHeader>
-
+              {/* 上方显示标签栏 */}
               {tagsView.value ? (
                 <TagsView class="layout-border__bottom layout-border__top"></TagsView>
               ) : undefined}
