@@ -6,14 +6,14 @@ import { usePermissionStore } from '@/store/modules/permission'
 import { useTagsViewStore } from '@/store/modules/tagsView'
 import { useAppStore } from '@/store/modules/app'
 import { useI18n } from '@/hooks/web/useI18n'
-import { filterAffixTags } from './helper'
+// import { filterAffixTags } from './helper'
 import { ContextMenu, ContextMenuExpose } from '@/components/ContextMenu'
 import { useDesign } from '@/hooks/web/useDesign'
 import { useTemplateRefsList } from '@vueuse/core'
 import { ElScrollbar } from 'element-plus'
 import { useScrollTo } from '@/hooks/event/useScrollTo'
 import { useTagsView } from '@/hooks/web/useTagsView'
-import { cloneDeep } from 'lodash-es'
+// import { cloneDeep } from 'lodash-es'
 
 const { getPrefixCls } = useDesign()
 
@@ -27,13 +27,13 @@ const { closeAll, closeLeft, closeRight, closeOther, closeCurrent, refreshPage }
 
 const permissionStore = usePermissionStore()
 
-const routers = computed(() => permissionStore.getRouters)
+// const routers = computed(() => permissionStore.getRouters)
 
 const tagsViewStore = useTagsViewStore()
 
 const visitedViews = computed(() => tagsViewStore.getVisitedViews)
 
-const affixTagArr = ref<RouteLocationNormalizedLoaded[]>([])
+// const affixTagArr = ref<RouteLocationNormalizedLoaded[]>([])
 
 const selectedTag = computed(() => tagsViewStore.getSelectedTag)
 
