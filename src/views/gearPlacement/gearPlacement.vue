@@ -282,9 +282,9 @@ export default {
           return {
             sku,
             name,
-            stock30: 5,
+            stock30: 13,
             stockRatio: 0.1,
-            stock1: 1,
+            stock1: 2,
             stockOld: stock,
             stock: (parseInt(stock, 10) || 0) * 250
           }
@@ -293,9 +293,9 @@ export default {
           const [sku, name, stock] = line.split(',')
           return {
             sku,
-            stock30: 5,
+            stock30: 13,
             stockRatio: 0.1,
-            stock1: 1,
+            stock1: 2,
             name,
             stock: (parseInt(stock, 10) || 0) * 250
           }
@@ -316,7 +316,6 @@ export default {
           const entry = this.tobaccoArray.find(
             (item) => remainingStockBox >= item.range[0] && remainingStockBox <= item.range[1]
           )
-          console.log(remainingStockBox, entry, 'entry')
           const Reduceratio = 1 - entry.ratio
           for (let level = this.customerLevels - 1; level >= 0 && remainingStock > 0; level--) {
             //从高到低每一档的客户数
@@ -343,7 +342,7 @@ export default {
                 } else {
                   for (let j = 1; j <= 999; j++) {
                     allocations[level] = Math.round(
-                      (allocations[29] * Reduceratio ** (29 - level)) ** j
+                      allocations[29] * (Reduceratio ** (29 - level)) ** j
                     )
                     const remainNext = remainingStock - allocations[level] * this.customers[level]
                     const customersWithoutNext = this.customers.filter((_, index) => index < level)
@@ -383,7 +382,6 @@ export default {
             }
           }
           const totalSumFinal = allocations.reduce((sum, value, index) => {
-            console.log(value, this.customers, 'value * this.customers[index]F')
             return sum + value * this.customers[index] // 相乘并累加
           }, 0)
           return {
@@ -399,7 +397,6 @@ export default {
       this.allocationResults.forEach((item) => {
         item.allocations = item.allocations.slice().reverse()
       })
-      console.log(this.allocationResults, 'this.allocationResultsPer')
     },
     //下载模版(把临时表里面的最新数据)
     async downloadTemplateTobacco() {

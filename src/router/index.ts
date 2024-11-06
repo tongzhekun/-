@@ -11,8 +11,8 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard/analysis',
-    // redirect: '/gearPlacement/gearPlacement',
+    // redirect: '/dashboard/analysis',
+    redirect: '/gearPlacement/index',
     name: 'Root',
     meta: {
       hidden: true
@@ -81,22 +81,31 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
 ]
 
 export const asyncRouterMap: AppRouteRecordRaw[] = [
+  // {
+  //   path: '/dashboardPciture',
+  //   component: Layout,
+  //   name: 'DashboardPciture',
+  //   meta: {},
+  //   children: [
+  //     {
+  //       path: 'dashboardPciture',
+  //       component: () => import('@/views/dashboardPciture/dashboardPciture.vue'),
+  //       name: 'dashboardPcitureDemo',
+  //       meta: {
+  //         title: t('router.allPciture'),
+  //         icon: 'vi-cib:telegram-plane'
+  //       }
+  //     }
+  //   ]
+  // },
   {
-    path: '/dashboardPciture',
-    component: Layout,
-    name: 'DashboardPciture',
-    meta: {},
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/dashboardPciture/dashboardPciture.vue'),
-        name: 'dashboardPcitureDemo',
-        meta: {
-          title: t('router.allPciture'),
-          icon: 'vi-cib:telegram-plane'
-        }
-      }
-    ]
+    path: '/dashboardPicture',
+    name: 'DashboardPicture',
+    meta: {
+      title: t('router.allPciture'),
+      icon: 'vi-cib:telegram-plane',
+      url: 'http://192.168.115.20/jsc/jsc.php' // 指定外部网址
+    }
   },
   {
     path: '/storageManage',
@@ -228,7 +237,6 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     path: '/gearPlacement',
     component: Layout,
     name: 'GearPlacement',
-    redirect: '/gearPlacement/gearPlacement',
     meta: {},
     children: [
       {
@@ -900,7 +908,7 @@ const router = createRouter({
   routes: constantRouterMap as RouteRecordRaw[],
   scrollBehavior: () => ({ left: 0, top: 0 })
 })
-
+console.log(constantRouterMap, router, 'routerrouterrouterrouter333')
 export const resetRouter = (): void => {
   router.getRoutes().forEach((route) => {
     const { name } = route
@@ -909,8 +917,15 @@ export const resetRouter = (): void => {
     }
   })
 }
-
+router.beforeEach((to, _, next) => {
+  if (to.meta.url) {
+    window.open(to.meta.url as string, '_blank') // 跳转到指定网址
+  } else {
+    next() // 继续正常导航
+  }
+})
 export const setupRouter = (app: App<Element>) => {
+  console.log(router, 'routerrouterrouterrouter222')
   app.use(router)
 }
 
