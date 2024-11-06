@@ -11,8 +11,8 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard/analysis',
-    // redirect: '/gearPlacement/gearPlacement',
+    // redirect: '/dashboard/analysis',
+    redirect: '/gearPlacement/index',
     name: 'Root',
     meta: {
       hidden: true
@@ -88,7 +88,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     meta: {},
     children: [
       {
-        path: 'index',
+        path: 'dashboardPciture',
         component: () => import('@/views/dashboardPciture/dashboardPciture.vue'),
         name: 'dashboardPcitureDemo',
         meta: {
@@ -228,7 +228,6 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     path: '/gearPlacement',
     component: Layout,
     name: 'GearPlacement',
-    redirect: '/gearPlacement/gearPlacement',
     meta: {},
     children: [
       {
@@ -900,7 +899,7 @@ const router = createRouter({
   routes: constantRouterMap as RouteRecordRaw[],
   scrollBehavior: () => ({ left: 0, top: 0 })
 })
-
+console.log(constantRouterMap, router, 'routerrouterrouterrouter333')
 export const resetRouter = (): void => {
   router.getRoutes().forEach((route) => {
     const { name } = route
@@ -911,6 +910,7 @@ export const resetRouter = (): void => {
 }
 
 export const setupRouter = (app: App<Element>) => {
+  console.log(router, 'routerrouterrouterrouter222')
   app.use(router)
 }
 

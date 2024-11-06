@@ -289,6 +289,7 @@ const getRole = async () => {
   appStore.getDynamicRouter && appStore.getServerDynamicRouter
     ? await getAdminRoleApi(params)
     : await getTestRoleApi(params)
+  console.log(redirect, 'routerMaprouterMap1')
   if (res) {
     const routers = res.data || []
     userStore.setRoleRouters(routers)
@@ -296,9 +297,11 @@ const getRole = async () => {
       ? await permissionStore.generateRoutes('server', routers).catch(() => {})
       : await permissionStore.generateRoutes('frontEnd', routers).catch(() => {})
 
+    console.log(redirect, 'routerMaprouterMap2')
     permissionStore.getAddRouters.forEach((route) => {
       addRoute(route as RouteRecordRaw) // 动态添加可访问路由表
     })
+    console.log(redirect, 'routerMaprouterMap3')
     permissionStore.setIsAddRouters(true)
     push({ path: redirect.value || permissionStore.addRouters[0].path })
   }
