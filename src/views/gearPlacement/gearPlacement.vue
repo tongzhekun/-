@@ -344,7 +344,6 @@ export default {
                     allocations[level] = Math.round(
                       allocations[29] * (Reduceratio ** (29 - level)) ** j
                     )
-                    console.log(level, allocations[level], '0000000')
                     const remainNext = remainingStock - allocations[level] * this.customers[level]
                     const customersWithoutNext = this.customers.filter((_, index) => index < level)
                     // 计算剩下的客户数依次乘以固定值后相加
@@ -352,25 +351,20 @@ export default {
                       (sum, customer) => sum + customer * sku.stock1,
                       0
                     )
-                    console.log(remainNext, totalSumNext, '55555555555555')
                     //分配完后剩余档数和最小条数乘和大于烟的剩余，重复循坏，除非等于最小档数，退出循环
                     if (totalSumNext >= remainNext) {
-                      console.log(remainNext, totalSumNext, '66')
                       if (allocations[level] <= sku.stock1) {
                         remainingStock -= allocations[level] * levelCustomers
                         for (let i = level; i >= 0; i--) {
                           this.allocations[i] = sku.stock1 // 赋值为固定值
                         }
-                        console.log(level, allocations[level], '22222')
                         break
                       }
                     } else {
-                      console.log(remainNext, totalSumNext, '77')
                       if (allocations[level] < sku.stock1) {
                         allocations[level] = sku.stock1
                       }
                       remainingStock -= allocations[level] * levelCustomers
-                      console.log(level, allocations[level], '11111')
                       break
                     }
                   }
