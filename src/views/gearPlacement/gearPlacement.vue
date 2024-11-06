@@ -282,9 +282,9 @@ export default {
           return {
             sku,
             name,
-            stock30: 5,
+            stock30: 13,
             stockRatio: 0.1,
-            stock1: 1,
+            stock1: 2,
             stockOld: stock,
             stock: (parseInt(stock, 10) || 0) * 250
           }
@@ -293,9 +293,9 @@ export default {
           const [sku, name, stock] = line.split(',')
           return {
             sku,
-            stock30: 5,
+            stock30: 13,
             stockRatio: 0.1,
-            stock1: 1,
+            stock1: 2,
             name,
             stock: (parseInt(stock, 10) || 0) * 250
           }
@@ -316,7 +316,6 @@ export default {
           const entry = this.tobaccoArray.find(
             (item) => remainingStockBox >= item.range[0] && remainingStockBox <= item.range[1]
           )
-          console.log(remainingStockBox, entry, 'entry')
           const Reduceratio = 1 - entry.ratio
           for (let level = this.customerLevels - 1; level >= 0 && remainingStock > 0; level--) {
             //从高到低每一档的客户数
@@ -343,8 +342,9 @@ export default {
                 } else {
                   for (let j = 1; j <= 999; j++) {
                     allocations[level] = Math.round(
-                      (allocations[29] * Reduceratio ** (29 - level)) ** j
+                      allocations[29] * (Reduceratio ** (29 - level)) ** j
                     )
+                    console.log(level, allocations[level], '0000000')
                     const remainNext = remainingStock - allocations[level] * this.customers[level]
                     const customersWithoutNext = this.customers.filter((_, index) => index < level)
                     // 计算剩下的客户数依次乘以固定值后相加
@@ -352,20 +352,25 @@ export default {
                       (sum, customer) => sum + customer * sku.stock1,
                       0
                     )
+                    console.log(remainNext, totalSumNext, '55555555555555')
                     //分配完后剩余档数和最小条数乘和大于烟的剩余，重复循坏，除非等于最小档数，退出循环
                     if (totalSumNext >= remainNext) {
+                      console.log(remainNext, totalSumNext, '66')
                       if (allocations[level] <= sku.stock1) {
                         remainingStock -= allocations[level] * levelCustomers
                         for (let i = level; i >= 0; i--) {
                           this.allocations[i] = sku.stock1 // 赋值为固定值
                         }
+                        console.log(level, allocations[level], '22222')
                         break
                       }
                     } else {
+                      console.log(remainNext, totalSumNext, '77')
                       if (allocations[level] < sku.stock1) {
                         allocations[level] = sku.stock1
                       }
                       remainingStock -= allocations[level] * levelCustomers
+                      console.log(level, allocations[level], '11111')
                       break
                     }
                   }
@@ -383,7 +388,6 @@ export default {
             }
           }
           const totalSumFinal = allocations.reduce((sum, value, index) => {
-            console.log(value, this.customers, 'value * this.customers[index]F')
             return sum + value * this.customers[index] // 相乘并累加
           }, 0)
           return {
@@ -399,7 +403,7 @@ export default {
       this.allocationResults.forEach((item) => {
         item.allocations = item.allocations.slice().reverse()
       })
-      console.log(this.allocationResults, 'this.allocationResultsPer')
+      console.log(this.allocationResults, '9999')
     },
     //下载模版(把临时表里面的最新数据)
     async downloadTemplateTobacco() {
