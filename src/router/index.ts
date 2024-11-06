@@ -81,22 +81,31 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
 ]
 
 export const asyncRouterMap: AppRouteRecordRaw[] = [
+  // {
+  //   path: '/dashboardPciture',
+  //   component: Layout,
+  //   name: 'DashboardPciture',
+  //   meta: {},
+  //   children: [
+  //     {
+  //       path: 'dashboardPciture',
+  //       component: () => import('@/views/dashboardPciture/dashboardPciture.vue'),
+  //       name: 'dashboardPcitureDemo',
+  //       meta: {
+  //         title: t('router.allPciture'),
+  //         icon: 'vi-cib:telegram-plane'
+  //       }
+  //     }
+  //   ]
+  // },
   {
-    path: '/dashboardPciture',
-    component: Layout,
-    name: 'DashboardPciture',
-    meta: {},
-    children: [
-      {
-        path: 'dashboardPciture',
-        component: () => import('@/views/dashboardPciture/dashboardPciture.vue'),
-        name: 'dashboardPcitureDemo',
-        meta: {
-          title: t('router.allPciture'),
-          icon: 'vi-cib:telegram-plane'
-        }
-      }
-    ]
+    path: '/dashboardPicture',
+    name: 'DashboardPicture',
+    meta: {
+      title: t('router.allPciture'),
+      icon: 'vi-cib:telegram-plane',
+      url: 'http://192.168.115.20/jsc/jsc.php' // 指定外部网址
+    }
   },
   {
     path: '/storageManage',
@@ -908,7 +917,13 @@ export const resetRouter = (): void => {
     }
   })
 }
-
+router.beforeEach((to, _, next) => {
+  if (to.meta.url) {
+    window.open(to.meta.url as string, '_blank') // 跳转到指定网址
+  } else {
+    next() // 继续正常导航
+  }
+})
 export const setupRouter = (app: App<Element>) => {
   console.log(router, 'routerrouterrouterrouter222')
   app.use(router)
