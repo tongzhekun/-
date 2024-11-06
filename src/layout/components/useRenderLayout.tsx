@@ -3,7 +3,7 @@ import { useAppStore } from '@/store/modules/app'
 import { Menu } from '@/components/Menu'
 import { TabMenu } from '@/components/TabMenu'
 import { TagsView } from '@/components/TagsView'
-import { Logo } from '@/components/Logo'
+import { LogoDashboard } from '@/components/LogoDashboard'
 import AppView from './AppView.vue'
 import ToolHeader from './ToolHeader.vue'
 import { ElScrollbar } from 'element-plus'
@@ -46,7 +46,7 @@ export const useRenderLayout = () => {
           ]}
         >
           {logo.value ? (
-            <Logo
+            <LogoDashboard
               class={[
                 'bg-[var(--left-menu-bg-color)] relative',
                 {
@@ -56,8 +56,9 @@ export const useRenderLayout = () => {
                 }
               ]}
               style="transition: all var(--transition-time-02);"
-            ></Logo>
+            ></LogoDashboard>
           ) : undefined}
+          {/* 菜单栏目 */}
           <Menu class={[{ '!h-[calc(100%-var(--logo-height))]': logo.value }]}></Menu>
         </div>
         <div
@@ -105,7 +106,7 @@ export const useRenderLayout = () => {
                   }
                 ]}
               ></ToolHeader>
-
+              {/* 上方显示标签栏 */}
               {tagsView.value ? (
                 <TagsView class="layout-border__bottom layout-border__top"></TagsView>
               ) : undefined}
@@ -122,7 +123,7 @@ export const useRenderLayout = () => {
     return (
       <>
         <div class="flex items-center bg-[var(--top-header-bg-color)] relative layout-border__bottom dark:bg-[var(--el-bg-color)]">
-          {logo.value ? <Logo class="custom-hover"></Logo> : undefined}
+          {logo.value ? <LogoDashboard class="custom-hover"></LogoDashboard> : undefined}
 
           <ToolHeader class="flex-1"></ToolHeader>
         </div>
@@ -186,7 +187,7 @@ export const useRenderLayout = () => {
             }
           ]}
         >
-          {logo.value ? <Logo class="custom-hover"></Logo> : undefined}
+          {logo.value ? <LogoDashboard class="custom-hover"></LogoDashboard> : undefined}
           <Menu class="flex-1 px-10px h-[var(--top-tool-height)]"></Menu>
           <ToolHeader></ToolHeader>
         </div>
@@ -234,7 +235,7 @@ export const useRenderLayout = () => {
     return (
       <>
         <div class="flex items-center bg-[var(--top-header-bg-color)] relative layout-border__bottom">
-          {logo.value ? <Logo class="custom-hover !pr-15px"></Logo> : undefined}
+          {logo.value ? <LogoDashboard class="custom-hover !pr-15px"></LogoDashboard> : undefined}
 
           <ToolHeader class="flex-1"></ToolHeader>
         </div>

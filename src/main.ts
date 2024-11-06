@@ -36,10 +36,14 @@ import App from './App.vue'
 
 import './permission'
 
+import ElementPlus from 'element-plus'
+
+import 'element-plus/dist/index.css'
+
 // 创建实例
 const setupAll = async () => {
   const app = createApp(App)
-
+  app.use(ElementPlus)
   await setupI18n(app)
 
   setupStore(app)

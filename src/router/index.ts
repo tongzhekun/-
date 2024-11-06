@@ -12,6 +12,7 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
     path: '/',
     component: Layout,
     redirect: '/dashboard/analysis',
+    // redirect: '/gearPlacement/gearPlacement',
     name: 'Root',
     meta: {
       hidden: true
@@ -81,9 +82,172 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
 
 export const asyncRouterMap: AppRouteRecordRaw[] = [
   {
+    path: '/dashboardPciture',
+    component: Layout,
+    name: 'DashboardPciture',
+    meta: {},
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/dashboardPciture/dashboardPciture.vue'),
+        name: 'dashboardPcitureDemo',
+        meta: {
+          title: t('router.allPciture'),
+          icon: 'vi-cib:telegram-plane'
+        }
+      }
+    ]
+  },
+  {
+    path: '/storageManage',
+    component: Layout,
+    redirect: '/storageManage/storageNow',
+    name: 'StorageManage',
+    meta: {
+      title: t('router.storageManage'),
+      icon: 'vi-ant-design:dashboard-filled',
+      alwaysShow: true
+    },
+    children: [
+      {
+        path: 'storageNow',
+        component: () => import('@/views/storageManage/storageNow.vue'),
+        name: 'StorageNow',
+        meta: {
+          title: t('router.storageNow'),
+          noCache: true
+        }
+      },
+      {
+        path: 'storageHistory',
+        component: () => import('@/views/storageManage/storageHistory.vue'),
+        name: 'StorageHistory',
+        meta: {
+          title: t('router.storageHistory'),
+          noCache: true,
+          affix: true
+        }
+      },
+      {
+        path: 'storageDistribution',
+        component: () => import('@/views/storageManage/storageDistribution.vue'),
+        name: 'StorageDistribution',
+        meta: {
+          title: t('router.storageDistribution'),
+          noCache: true,
+          affix: true
+        }
+      }
+    ]
+  },
+  {
+    path: '/materialIssuance',
+    component: Layout,
+    redirect: '/materialIssuance/demandForecast',
+    name: 'MaterialIssuance',
+    meta: {
+      title: t('router.materialIssuance'),
+      icon: 'vi-cib:telegram-plane',
+      alwaysShow: true
+    },
+    children: [
+      {
+        path: 'demandForecast',
+        component: () => import('@/views/materialIssuance/demandForecast.vue'),
+        name: 'DemandForecast',
+        meta: {
+          title: t('router.demandForecast'),
+          noCache: true
+        }
+      },
+      {
+        path: 'review',
+        component: () => import('@/views/materialIssuance/review.vue'),
+        name: 'Review',
+        meta: {
+          title: t('router.review'),
+          noCache: true,
+          affix: true
+        }
+      },
+      {
+        path: 'issuanceProgress',
+        component: () => import('@/views/materialIssuance/issuanceProgress.vue'),
+        name: 'IssuanceProgress',
+        meta: {
+          title: t('router.issuanceProgress'),
+          noCache: true,
+          affix: true
+        }
+      },
+      {
+        path: 'historicalIssuance',
+        component: () => import('@/views/materialIssuance/historicalIssuance.vue'),
+        name: 'HistoricalIssuance',
+        meta: {
+          title: t('router.historicalIssuance'),
+          noCache: true,
+          affix: true
+        }
+      }
+    ]
+  },
+  {
+    path: '/materialSupervision',
+    component: Layout,
+    redirect: '/materialSupervision/gpsInformation',
+    name: 'MaterialSupervision',
+    meta: {
+      title: t('router.materialSupervision'),
+      icon: 'vi-bx:bxs-component',
+      alwaysShow: true
+    },
+    children: [
+      {
+        path: 'gpsInformation',
+        component: () => import('@/views/materialSupervision/gpsInformation.vue'),
+        name: 'GpsInformation',
+        meta: {
+          title: t('router.gpsInformation'),
+          noCache: true
+        }
+      },
+      {
+        path: 'verification',
+        component: () => import('@/views/materialSupervision/verification.vue'),
+        name: 'Verification',
+        meta: {
+          title: t('router.verification'),
+          noCache: true,
+          affix: true
+        }
+      }
+    ]
+  },
+  {
+    path: '/gearPlacement',
+    component: Layout,
+    name: 'GearPlacement',
+    redirect: '/gearPlacement/gearPlacement',
+    meta: {},
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/gearPlacement/gearPlacement.vue'),
+        name: 'GearPlacementDemo',
+        meta: {
+          title: t('router.gearPlacement'),
+          icon: 'vi-cib:telegram-plane',
+          alwaysShow: true,
+          noCache: true
+        }
+      }
+    ]
+  },
+  {
     path: '/dashboard',
     component: Layout,
-    redirect: '/dashboard/analysis',
+    // redirect: '/dashboard/analysis',
     name: 'Dashboard',
     meta: {
       title: t('router.dashboard'),
