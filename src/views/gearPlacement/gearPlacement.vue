@@ -397,7 +397,6 @@ export default {
       this.allocationResults.forEach((item) => {
         item.allocations = item.allocations.slice().reverse()
       })
-      console.log(this.allocationResults, '9999')
     },
     //下载模版(把临时表里面的最新数据)
     async downloadTemplateTobacco() {
