@@ -172,9 +172,119 @@ export default {
         {
           range: [451, 500],
           ratio: 0.1
+        },
+        {
+          range: [401, 450],
+          ratio: 0.1
+        },
+        {
+          range: [451, 500],
+          ratio: 0.1
+        },
+
+        {
+          range: [501, 550],
+          ratio: 0.05
+        },
+        {
+          range: [551, 600],
+          ratio: 0.05
+        },
+        {
+          range: [601, 650],
+          ratio: 0.05
+        },
+        {
+          range: [651, 700],
+          ratio: 0.05
+        },
+        {
+          range: [701, 750],
+          ratio: 0.05
+        },
+        {
+          range: [751, 800],
+          ratio: 0.05
+        },
+        {
+          range: [801, 850],
+          ratio: 0.1
+        },
+        {
+          range: [851, 900],
+          ratio: 0.05
+        },
+        {
+          range: [901, 950],
+          ratio: 0.05
+        },
+        {
+          range: [951, 1000],
+          ratio: 0.05
+        },
+        {
+          range: [1001, 1200],
+          ratio: 0.04
+        },
+        {
+          range: [1201, 1400],
+          ratio: 0.05
+        },
+        {
+          range: [1401, 1600],
+          ratio: 0.04
+        },
+        {
+          range: [1601, 1800],
+          ratio: 0.05
+        },
+        {
+          range: [1801, 2000],
+          ratio: 0.04
+        },
+        {
+          range: [2001, 2200],
+          ratio: 0.04
+        },
+        {
+          range: [1801, 2000],
+          ratio: 0.04
+        },
+        {
+          range: [2001, 2200],
+          ratio: 0.04
+        },
+        {
+          range: [2201, 2400],
+          ratio: 0.04
+        },
+        {
+          range: [2401, 2600],
+          ratio: 0.04
+        },
+        {
+          range: [2601, 2800],
+          ratio: 0.04
+        },
+        {
+          range: [2801, 3000],
+          ratio: 0.04
+        },
+        {
+          range: [3001, 3200],
+          ratio: 0.04
+        },
+        {
+          range: [3201, 3400],
+          ratio: 0.04
+        },
+        {
+          range: [3401, 3600],
+          ratio: 0.04
         }
       ],
       downTobaccoArray: [],
+      baccoArray: [],
       downCustArray: [],
       PATH_URL: import.meta.env.VITE_API_BASE_PATH,
       dialogVisibleTobacco: false,
