@@ -18,35 +18,6 @@
           <el-button type="info" round @click="decayRuleDialog">衰减速率规则上传</el-button>
           <!-- <el-button type="success" round>确认</el-button> -->
           <el-button type="success" round @click="calculateDistribution">计算分配</el-button>
-          <el-button type="warning" round @click="exportToCSV">导出为CSV</el-button>
-          <!-- <el-button type="danger" round @click="exportToCSV">手工更新</el-button> -->
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="24" style="margin-top: 30px; text-align: center">
-          <span style="font-size: 20px; color: #000">档位投放明细</span>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="24" style="margin-top: 20px; margin-bottom: 10px; text-align: center">
-          <el-table :data="allocationResults" style="width: 100%; height: 330px">
-            <el-table-column prop="name" fixed label="名称" />
-            <el-table-column prop="stockOld" label="销售量" />
-            <el-table-column prop="remaining" label="可供量" />
-            <el-table-column v-for="level in reversedLevels" :key="level" :label="level + '档'">
-              <template v-slot="scope">
-                <el-input
-                  v-if="scope.row.edit"
-                  v-model="scope.row.allocations[reversedLevels.indexOf(level)]"
-                  size="small"
-                  @blur="handleInputBlur(scope.row)"
-                >
-                </el-input>
-
-                <span v-else> {{ scope.row.allocations[reversedLevels.indexOf(level)] }}</span>
-              </template>
-            </el-table-column>
-          </el-table>
         </el-col>
       </el-row>
       <el-dialog
@@ -188,7 +159,6 @@ export default {
   data() {
     return {
       downTobaccoArray: [],
-      baccoArray: [],
       downCustArray: [],
       downDecayRuleArray: [],
       PATH_URL: import.meta.env.VITE_API_BASE_PATH,
@@ -333,9 +303,9 @@ export default {
           return {
             sku,
             name,
-            stock30: 13,
+            stock30: 5,
             stockRatio: 0.1,
-            stock1: 2,
+            stock1: 1,
             stockOld: stock,
             stock: (parseInt(stock, 10) || 0) * 250
           }
@@ -344,9 +314,9 @@ export default {
           const [sku, name, stock] = line.split(',')
           return {
             sku,
-            stock30: 13,
+            stock30: 5,
             stockRatio: 0.1,
-            stock1: 2,
+            stock1: 1,
             name,
             stock: (parseInt(stock, 10) || 0) * 250
           }
@@ -462,7 +432,7 @@ export default {
                 } else {
                   for (let j = 1; j <= 999; j++) {
                     allocations[level] = Math.round(
-                      allocations[29] * (Reduceratio ** (29 - level)) ** j
+                      (allocations[29] * Reduceratio ** (29 - level)) ** j
                     )
                     const remainNext = remainingStock - allocations[level] * this.customers[level]
                     const customersWithoutNext = this.customers.filter((_, index) => index < level)
@@ -502,6 +472,7 @@ export default {
             }
           }
           const totalSumFinal = allocations.reduce((sum, value, index) => {
+            console.log(value, this.customers, 'value * this.customers[index]F')
             return sum + value * this.customers[index] // 相乘并累加
           }, 0)
           return {
@@ -517,6 +488,7 @@ export default {
       this.allocationResults.forEach((item) => {
         item.allocations = item.allocations.slice().reverse()
       })
+      console.log(this.allocationResults, 'this.allocationResultsPer')
     },
     //下载模版(把临时表里面的最新数据)
     async downloadTemplateTobacco() {
