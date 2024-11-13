@@ -18,35 +18,6 @@
           <el-button type="info" round @click="decayRuleDialog">衰减速率规则上传</el-button>
           <!-- <el-button type="success" round>确认</el-button> -->
           <el-button type="success" round @click="calculateDistribution">计算分配</el-button>
-          <el-button type="warning" round @click="exportToCSV">导出为CSV</el-button>
-          <!-- <el-button type="danger" round @click="exportToCSV">手工更新</el-button> -->
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="24" style="margin-top: 30px; text-align: center">
-          <span style="font-size: 20px; color: #000">档位投放明细</span>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="24" style="margin-top: 20px; margin-bottom: 10px; text-align: center">
-          <el-table :data="allocationResults" style="width: 100%; height: 330px">
-            <el-table-column prop="name" fixed label="名称" />
-            <el-table-column prop="stockOld" label="销售量" />
-            <el-table-column prop="remaining" label="可供量" />
-            <el-table-column v-for="level in reversedLevels" :key="level" :label="level + '档'">
-              <template v-slot="scope">
-                <el-input
-                  v-if="scope.row.edit"
-                  v-model="scope.row.allocations[reversedLevels.indexOf(level)]"
-                  size="small"
-                  @blur="handleInputBlur(scope.row)"
-                >
-                </el-input>
-
-                <span v-else> {{ scope.row.allocations[reversedLevels.indexOf(level)] }}</span>
-              </template>
-            </el-table-column>
-          </el-table>
         </el-col>
       </el-row>
       <el-dialog

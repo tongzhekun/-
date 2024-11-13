@@ -25,6 +25,18 @@ export const uploadCust = (data: any): Promise<IResponse<any>> => {
 export const dowloadCust = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/dowloadCust', data)
 }
+//上传定价速率
+export const uploadDecayRule = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/uploadDecayRule', data)
+}
+//下载定价速率
+export const downloadDecayRule = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/downloadDecayRule', data)
+}
+//查询定价速率
+export const queryDecayRules = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/queryDecayRules', data)
+}
 
 // export const loginApi = (data: any): Promise<IResponse<any>> => {
 //   return axios
