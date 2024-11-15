@@ -25,7 +25,25 @@ export const uploadCust = (data: any): Promise<IResponse<any>> => {
 export const dowloadCust = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/dowloadCust', data)
 }
+export const tree = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/tree', data)
+}
 
+export const searchCk = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchCk', data)
+}
+
+export const treeSc = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/treeSc', data)
+}
+
+export const alloateKc = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/alloateKc', data)
+}
+
+export const importKc = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/importKc', data)
+}
 // export const loginApi = (data: any): Promise<IResponse<any>> => {
 //   return axios
 //     .post('http://localhost/wzgl/public/index.php/index/checkLogin', data)
