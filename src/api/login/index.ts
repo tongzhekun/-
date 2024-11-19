@@ -40,10 +40,22 @@ export const treeSc = (data: any): Promise<IResponse<any>> => {
 export const alloateKc = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/alloateKc', data)
 }
-
 export const importKc = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/importKc', data)
 }
+export const wzType = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/wzType', data)
+}
+export const givehistoryKc = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/givehistoryKc', data)
+}
+export const searchHistoryCk = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchHistoryCk', data)
+}
+export const searchAllocateCk = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchAllocateCk', data)
+}
+
 // export const loginApi = (data: any): Promise<IResponse<any>> => {
 //   return axios
 //     .post('http://localhost/wzgl/public/index.php/index/checkLogin', data)

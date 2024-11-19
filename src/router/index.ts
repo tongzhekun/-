@@ -104,7 +104,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     meta: {
       title: t('router.allPciture'),
       icon: 'vi-cib:telegram-plane',
-      url: 'http://192.168.115.8/jsc/jsc.php' // 指定外部网址
+      url: 'http://192.168.115.10/jsc/jsc.php' // 指定外部网址
     }
   },
   {
