@@ -125,6 +125,7 @@ export default {
     const userStore = useUserStore()
     const loginInfo = userStore.getLoginInfo
     this.userId = loginInfo.userId
+    this.searchClick()
   },
   methods: {
     async searchClick() {
