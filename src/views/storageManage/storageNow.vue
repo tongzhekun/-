@@ -501,6 +501,8 @@ export default {
       })
     },
     async downloadTemplateAllocate() {
+      const responseWzType = await wzType({})
+      this.wzOptions = responseWzType.data.data
       const data = []
       data.push(['物料编码', '物料名称', '分配市场部编码', '分配市场部名称', '分配数量'])
       const wb = XLSX.utils.book_new()
@@ -539,6 +541,8 @@ export default {
     },
     //下载移送库存模版表
     async downloadTemplateHistory() {
+      const responseWzType = await wzType({})
+      this.wzOptions = responseWzType.data.data
       const data = []
       data.push(['物料编码', '物料名称'])
       const wb = XLSX.utils.book_new()
