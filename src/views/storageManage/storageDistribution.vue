@@ -36,9 +36,27 @@
           <el-button type="info" @click="exportClick">导出分配记录</el-button>
         </el-col>
       </el-row>
-      <el-row style="margin-top: 15px">
+      <el-row style="margin-top: -15px">
         <el-col :span="24">
-          <el-table :data="form.loanData" border style="width: 97%; height: 325px">
+          <el-pagination
+            background
+            size="small"
+            layout="prev, pager, next"
+            :total="total"
+            v-model:current-page="currentPage"
+            :page-size="pageSize"
+            @current-change="fetchData"
+          />
+          <el-table
+            :data="form.loanData"
+            v-loading="loading"
+            element-loading-text="加载中"
+            :element-loading-spinner="svg"
+            element-loading-svg-view-box="-10, -10, 50, 50"
+            element-loading-background="rgba(122, 122, 122, 0.8)"
+            border
+            style=" width: 97%; height: 325px;margin-top: 5px"
+          >
             <el-table-column
               prop="material_code"
               header-align="center"
@@ -103,12 +121,16 @@
 </template>
 
 <script>
-import { treeSc, searchAllocateCk } from '@/api/login'
+import { treeSc, searchAllocateCk, exportAllocateCk } from '@/api/login'
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 export default {
   data() {
     return {
+      loading: false,
+      total: 0, // 总记录数
+      currentPage: 1, // 当前页码
+      pageSize: 10, // 每页记录数
       userId: '',
       instCodeScOptions: [],
       form: {
@@ -128,7 +150,7 @@ export default {
     this.searchClick()
   },
   methods: {
-    async searchClick() {
+    fetchData() {
       let validatestat = false
       this.$refs['formRef'].validate((valid) => {
         if (valid) {
@@ -139,20 +161,29 @@ export default {
       })
       setTimeout(async () => {
         if (validatestat) {
+          this.loading = true
           const payload = {
+            page: this.currentPage,
+            pageSize: this.pageSize,
             instCode: this.form.instCode,
             materialName: this.form.materialName
           }
           const response = await searchAllocateCk(payload) // 调用 upload 函数并传入 payload
           if (response.data.code == 200) {
             this.form.loanData = response.data.data
+            this.total = response.data.total
           } else {
             this.$message.error(response.data.data.message)
           }
+          this.loading = false
         }
       }, 300)
     },
-    exportClick() {
+    async searchClick() {
+      this.currentPage = 1
+      this.fetchData()
+    },
+    async exportClick() {
       const data = []
       data.push([
         '物料编码',
@@ -164,18 +195,28 @@ export default {
         '分配人',
         '分配时间'
       ])
-      this.form.loanData.forEach((result) => {
-        data.push([
-          result.material_code,
-          result.material_name,
-          result.inst_name,
-          result.inventory_quantity,
-          result.quantity,
-          result.allocate_quantity,
-          result.allocate_person,
-          result.allocate_time
-        ])
-      })
+      const payload = {
+        instCode: this.form.instCode,
+        materialName: this.form.materialName
+      }
+      const response = await exportAllocateCk(payload) // 调用 upload 函数并传入 payload
+      if (response.data.code == 200) {
+        const loanData1 = response.data.data
+        loanData1.forEach((result) => {
+          data.push([
+            result.material_code,
+            result.material_name,
+            result.inst_name,
+            result.inventory_quantity,
+            result.quantity,
+            result.allocate_quantity,
+            result.allocate_person,
+            result.allocate_time
+          ])
+        })
+      } else {
+        this.$message.error(response.data.data.message)
+      }
       const wb = XLSX.utils.book_new()
       const ws = XLSX.utils.aoa_to_sheet(data) // Convert array of arrays to sheet
       ws['!cols'] = this.calculateColumnWidths(data)
@@ -185,7 +226,7 @@ export default {
       })
       const link = document.createElement('a')
       link.href = URL.createObjectURL(excelBlob) // Create blob URL
-      link.setAttribute('download', '历史库存表.xlsx') // Set file name
+      link.setAttribute('download', '分配记录表.xlsx') // Set file name
       document.body.appendChild(link)
       link.click() // Trigger download
       document.body.removeChild(link) // Clean up the link

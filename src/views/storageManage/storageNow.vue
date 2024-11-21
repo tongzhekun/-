@@ -33,9 +33,27 @@
           <el-button type="warning" @click="historyClick">移送历史库存</el-button>
         </el-col>
       </el-row>
-      <el-row style="margin-top: 15px">
+      <el-row style="margin-top: -15px">
         <el-col :span="24">
-          <el-table :data="form.loanData" border style="width: 97%; height: 325px">
+          <el-pagination
+            background
+            size="small"
+            layout="prev, pager, next"
+            :total="total"
+            v-model:current-page="currentPage"
+            :page-size="pageSize"
+            @current-change="fetchData"
+          />
+          <el-table
+            :data="form.loanData"
+            border
+            v-loading="loading"
+            element-loading-text="加载中"
+            :element-loading-spinner="svg"
+            element-loading-svg-view-box="-10, -10, 50, 50"
+            element-loading-background="rgba(122, 122, 122, 0.8)"
+            style=" width: 97%; height: 325px;margin-top: 5px"
+          >
             <el-table-column
               prop="material_name"
               header-align="center"
@@ -71,6 +89,24 @@
               label="物料数量"
               width="100px"
             />
+            <el-table-column
+              prop="project"
+              align="center"
+              header-align="center"
+              label="操作"
+              v-if="role === '1'"
+              width="100px"
+            >
+              <template #default="scope">
+                <el-button
+                  round
+                  type="danger"
+                  size="small"
+                  @click.prevent="deleteKcClick(scope.row)"
+                  >删除
+                </el-button>
+              </template>
+            </el-table-column>
           </el-table>
         </el-col>
       </el-row>
@@ -197,13 +233,21 @@ import {
   importKc,
   wzType,
   alloateKc,
-  givehistoryKc
+  givehistoryKc,
+  exportCk,
+  deleteCk,
+  userRole
 } from '@/api/login'
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 export default {
   data() {
     return {
+      role: '0', //1是本部库存管理员
+      loading: false,
+      total: 0, // 总记录数
+      currentPage: 1, // 当前页码
+      pageSize: 10, // 每页记录数
       wzOptions: [],
       userId: '',
       uploadArrayKc: [],
@@ -233,11 +277,26 @@ export default {
     const userStore = useUserStore()
     const loginInfo = userStore.getLoginInfo
     this.userId = loginInfo.userId
+    if (useUserStore().getRole.indexOf('yc001') > -1) {
+      this.role = '1'
+    }
     const responseWzType = await wzType({})
     this.wzOptions = responseWzType.data.data
-    console.log(loginInfo, 'loginInfologinInfologinInfo')
   },
   methods: {
+    async deleteKcClick(row) {
+      const payload = {
+        materialCode: row.material_code,
+        instCode: '100001'
+      }
+      const response = await deleteCk(payload) // 调用 upload 函数并传入 payload
+      if (response.data.code == 200) {
+        this.$message.success(response.data.message)
+        this.fetchData()
+      } else {
+        this.$message.error(response.data.message)
+      }
+    },
     allocateClick() {
       this.$nextTick(() => {
         if (this.$refs.fileInput1 !== undefined) {
@@ -325,32 +384,39 @@ export default {
         this.$message.error('上传失败')
       }
     },
-    async searchClick() {
+    fetchData() {
       let validatestat = false
       this.$refs['formRef'].validate((valid) => {
         if (valid) {
-          console.log(validatestat, 'ooooooooooooo1111')
           validatestat = true
         } else {
           return false
         }
       })
-      console.log(validatestat, 'ooooooooooooo')
       setTimeout(async () => {
         if (validatestat) {
-          console.log('pppppppppppppp')
+          this.loading = true
           const payload = {
+            page: this.currentPage,
+            pageSize: this.pageSize,
             instCode: this.form.instCode,
             materialName: this.form.materialName
           }
           const response = await searchCk(payload) // 调用 upload 函数并传入 payload
           if (response.data.code == 200) {
             this.form.loanData = response.data.data
+            this.total = response.data.total
           } else {
             this.$message.error(response.data.data.message)
           }
+          this.loading = false
         }
       }, 300)
+      this.$forceUpdate()
+    },
+    async searchClick() {
+      this.currentPage = 1
+      this.fetchData()
     },
     importClick() {
       this.$nextTick(() => {
@@ -606,7 +672,7 @@ export default {
       link.click() // Trigger download
       document.body.removeChild(link) // Clean up the link
     },
-    exportClick() {
+    async exportClick() {
       const data = []
       data.push([
         '物料编码',
@@ -628,28 +694,38 @@ export default {
         '物料发放时间',
         '物料发放结束时间'
       ])
-      this.form.loanData.forEach((result) => {
-        data.push([
-          result.material_code,
-          result.material_type,
-          result.material_name,
-          result.material_unit,
-          result.material_specification,
-          result.procurement_time,
-          result.consumable,
-          result.inventory_quantity,
-          result.available_quantity,
-          result.material_price,
-          result.cost_type,
-          result.procurement_method,
-          result.project_name,
-          result.supplier_name,
-          result.warranty_period,
-          result.delay_time,
-          result.release_time,
-          result.end_time
-        ])
-      })
+      const payload = {
+        instCode: this.form.instCode,
+        materialName: this.form.materialName
+      }
+      const response = await exportCk(payload) // 调用 upload 函数并传入 payload
+      if (response.data.code == 200) {
+        const loanData1 = response.data.data
+        loanData1.forEach((result) => {
+          data.push([
+            result.material_code,
+            result.material_type,
+            result.material_name,
+            result.material_unit,
+            result.material_specification,
+            result.procurement_time,
+            result.consumable,
+            result.inventory_quantity,
+            result.available_quantity,
+            result.material_price,
+            result.cost_type,
+            result.procurement_method,
+            result.project_name,
+            result.supplier_name,
+            result.warranty_period,
+            result.delay_time,
+            result.release_time,
+            result.end_time
+          ])
+        })
+      } else {
+        this.$message.error(response.data.data.message)
+      }
       const wb = XLSX.utils.book_new()
       const ws = XLSX.utils.aoa_to_sheet(data) // Convert array of arrays to sheet
       ws['!cols'] = this.calculateColumnWidths(data)

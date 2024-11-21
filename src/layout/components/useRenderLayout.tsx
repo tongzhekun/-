@@ -8,6 +8,7 @@ import AppView from './AppView.vue'
 import ToolHeader from './ToolHeader.vue'
 import { ElScrollbar } from 'element-plus'
 import { useDesign } from '@/hooks/web/useDesign'
+import { MessageDiaolg } from '@/components/MessageDiaolg'
 
 const { getPrefixCls } = useDesign()
 
@@ -60,6 +61,7 @@ export const useRenderLayout = () => {
           ) : undefined}
           {/* 菜单栏目 */}
           <Menu class={[{ '!h-[calc(100%-var(--logo-height))]': logo.value }]}></Menu>
+          <MessageDiaolg></MessageDiaolg>
         </div>
         <div
           class={[

@@ -16,6 +16,7 @@ import { useValidator } from '@/hooks/web/useValidator'
 // import { Icon } from '@/components/Icon'
 import { useUserStore } from '@/store/modules/user'
 import { BaseButton } from '@/components/Button'
+import { userRole } from '@/api/login'
 // import { changeGlobalNodesTarget } from 'element-plus/es/utils'
 
 const { required } = useValidator()
@@ -252,6 +253,26 @@ const signIn = async () => {
           } else {
             userStore.setLoginInfo(undefined)
           }
+          const response = await userRole({ userId: formData.userId }) // 调用 upload 函数并传入 payload
+          if (response.data.code == 200) {
+            const roleKey = response.data.data
+            const roleKeyArray = response.data.data
+            if (roleKey.length > 0) {
+              roleKey.forEach((item) => {
+                roleKeyArray.push(item.role_id)
+              })
+              if (roleKeyArray.length > 1) {
+                const roleId = roleKeyArray.join(',')
+                userStore.setRole(roleId)
+              } else {
+                const roleId = roleKeyArray[0]
+                userStore.setRole(roleId)
+              }
+            } else {
+              const roleId = ''
+              userStore.setRole(roleId)
+            }
+          }
           userStore.setRememberMe(unref(remember))
           userStore.setUserInfo(res.data.data)
           // 是否使用动态路由
@@ -289,7 +310,6 @@ const getRole = async () => {
   appStore.getDynamicRouter && appStore.getServerDynamicRouter
     ? await getAdminRoleApi(params)
     : await getTestRoleApi(params)
-  console.log(redirect, 'routerMaprouterMap1')
   if (res) {
     const routers = res.data || []
     userStore.setRoleRouters(routers)
@@ -297,11 +317,9 @@ const getRole = async () => {
       ? await permissionStore.generateRoutes('server', routers).catch(() => {})
       : await permissionStore.generateRoutes('frontEnd', routers).catch(() => {})
 
-    console.log(redirect, 'routerMaprouterMap2')
     permissionStore.getAddRouters.forEach((route) => {
       addRoute(route as RouteRecordRaw) // 动态添加可访问路由表
     })
-    console.log(redirect, 'routerMaprouterMap3')
     permissionStore.setIsAddRouters(true)
     push({ path: redirect.value || permissionStore.addRouters[0].path })
   }
