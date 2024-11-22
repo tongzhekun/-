@@ -241,7 +241,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     children: [
       {
         path: 'index',
-        component: () => import('@/views/gearPlacement/gearPlacement.vue'),
+        component: () => import('@/views/gearPlacement/gearPlacements.vue'),
         name: 'GearPlacementDemo',
         meta: {
           title: t('router.gearPlacement'),
