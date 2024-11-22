@@ -7,9 +7,15 @@ interface RoleParams {
 }
 export const PATH_URL = import.meta.env.VITE_API_BASE_PATH
 
+//用户登录校验
 export const loginApi = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/checkLogin', data)
 }
+//用户修改密码
+export const editPassWord = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/editPassWord', data)
+}
+//用户注册
 export const registerApi = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/register', data)
 }
@@ -89,47 +95,86 @@ export const queryPeriod = (data: any): Promise<IResponse<any>> => {
 export const queryPeriodBySerialId = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/queryPeriodBySerialId', data)
 }
+//机构树
 export const tree = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/tree', data)
 }
+//查询单个用户的用户信息和角色信息
 export const userRole = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/userRole', data)
 }
+
+//查询全部用户信息
+export const searchUser = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchUser', data)
+}
+//查询所有角色
+export const searchRole = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchRole', data)
+}
+
+//提交用户信息
+export const submitUserMessage = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/submitUserMessage', data)
+}
+//重置用户密码
+export const resetPassWord = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/resetPassWord', data)
+}
+//删除用户账号
+export const deleteUser = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/deleteUser', data)
+}
+
+//单个用户信息查询
+export const userMessage = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/userMessage', data)
+}
+//查询库存信息
 export const searchCk = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchCk', data)
 }
+//导出库存信息
 export const exportCk = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/exportCk', data)
 }
-
+//删除库存信息
 export const deleteCk = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/deleteCk', data)
 }
+//各个市场部的下拉框
 export const treeSc = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/treeSc', data)
 }
-
+//分配库存
 export const alloateKc = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/alloateKc', data)
 }
+//导入库存
 export const importKc = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/importKc', data)
 }
+//物资种类查询
 export const wzType = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/wzType', data)
 }
+//将物资移入历史库存中
 export const givehistoryKc = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/givehistoryKc', data)
 }
+//查询历史库存
 export const searchHistoryCk = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchHistoryCk', data)
 }
+//导出历史库存
 export const exportHistoryCk = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/exportHistoryCk', data)
 }
+//查询分配记录
 export const searchAllocateCk = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchAllocateCk', data)
 }
+//导出分配记录
 export const exportAllocateCk = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/exportAllocateCk', data)
 }

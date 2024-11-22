@@ -5,27 +5,57 @@ import { ElDivider, ElImage, ElTag, ElTabPane, ElTabs, ElButton, ElMessage } fro
 import defaultAvatar from '@/assets/imgs/avatar.jpg'
 import UploadAvatar from './components/UploadAvatar.vue'
 import { Dialog } from '@/components/Dialog'
-import EditInfo from './components/EditInfo.vue'
+import { useUserStore } from '@/store/modules/user'
 import EditPassword from './components/EditPassword.vue'
+import { userMessage } from '@/api/login'
 
 const userInfo = ref()
 const fetchDetailUserApi = async () => {
-  // 这里可以调用接口获取用户信息
-  const data = {
-    id: 1,
-    userId: '12345678',
-    username: 'admin',
-    realName: 'admin',
-    phoneNumber: '18888888888',
-    email: '502431556@qq.com',
-    avatarUrl: '',
-    roleList: ['超级管理员']
+  const userStore = useUserStore()
+  const loginInfo = userStore.getLoginInfo
+  if (!loginInfo) {
+    console.error('登录信息未获取到，请先确保用户已登录')
+    return
   }
-  userInfo.value = data
+  const pay = {
+    userId: loginInfo.userId
+  }
+  const response = await userMessage(pay) // 调用 upload 函数并传入 payload
+  const result = {
+    userId: '',
+    username: '',
+    phoneNumber: '',
+    age: '',
+    roleList: []
+  }
+  if (response.data.data.length > 0) {
+    result.userId = response.data.data[0].employee_code
+    result.username = response.data.data[0].employee_name
+    result.phoneNumber = response.data.data[0].telephone
+    result.age = response.data.data[0].age
+    result.userId = response.data.data[0].employee_code
+    result.username = response.data.data[0].employee_name
+    result.phoneNumber = response.data.data[0].telephone
+    result.age = response.data.data[0].age
+    result.roleList = response.data.data.map((item) => item.role_name)
+  }
+  console.log(result, 'resultresultresultresultresult')
+  // 这里可以调用接口获取用户信息
+  // const data = {
+  //   id: 1,
+  //   userId: '12345678',
+  //   username: 'admin',
+  //   realName: 'admin',
+  //   phoneNumber: '18888888888',
+  //   email: '502431556@qq.com',
+  //   avatarUrl: '',
+  //   roleList: ['超级管理员']
+  // }
+  userInfo.value = result
 }
 fetchDetailUserApi()
 
-const activeName = ref('first')
+const activeName = ref('second')
 
 const dialogVisible = ref(false)
 
@@ -75,18 +105,8 @@ const saveAvatar = async () => {
       </div>
       <ElDivider />
       <div class="flex justify-between items-center">
-        <div>昵称：</div>
-        <div>{{ userInfo?.realName }}</div>
-      </div>
-      <ElDivider />
-      <div class="flex justify-between items-center">
         <div>手机号码：</div>
         <div>{{ userInfo?.phoneNumber ?? '-' }}</div>
-      </div>
-      <ElDivider />
-      <div class="flex justify-between items-center">
-        <div>用户邮箱：</div>
-        <div>{{ userInfo?.email ?? '-' }}</div>
       </div>
       <ElDivider />
       <div class="flex justify-between items-center">
@@ -102,11 +122,8 @@ const saveAvatar = async () => {
       </div>
       <ElDivider />
     </ContentWrap>
-    <ContentWrap title="基本资料" class="flex-[3] ml-20px">
+    <ContentWrap title="密码修改" class="flex-[3] ml-20px">
       <ElTabs v-model="activeName">
-        <ElTabPane label="基本信息" name="first">
-          <EditInfo :user-info="userInfo" />
-        </ElTabPane>
         <ElTabPane label="修改密码" name="second">
           <EditPassword />
         </ElTabPane>

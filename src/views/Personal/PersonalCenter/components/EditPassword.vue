@@ -4,7 +4,8 @@ import { useForm } from '@/hooks/web/useForm'
 import { reactive, ref } from 'vue'
 import { useValidator } from '@/hooks/web/useValidator'
 import { ElMessage, ElMessageBox, ElDivider } from 'element-plus'
-
+import { editPassWord } from '@/api/login'
+import { useUserStore } from '@/store/modules/user'
 const { required } = useValidator()
 
 const formSchema = reactive<FormSchema[]>([
@@ -90,6 +91,18 @@ const save = async () => {
       .then(async () => {
         try {
           saveLoading.value = true
+          const userStore = useUserStore()
+          const loginInfo = userStore.getLoginInfo
+          if (!loginInfo) {
+            console.error('登录信息未获取到，请先确保用户已登录')
+            return
+          }
+          const res = await editPassWord({ elForm, userId: loginInfo.userId })
+          if (res.data.code === 200) {
+            ElMessage.success(res.data.message || '密码修改成功')
+          } else {
+            ElMessage.error(res.data.message || '密码修改失败')
+          }
           // 这里可以调用修改密码的接口
           ElMessage.success('修改成功')
         } catch (error) {

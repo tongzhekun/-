@@ -34,21 +34,8 @@ const schema = reactive<DescriptionsSchema[]>([
     label: t('descriptionsDemo.username')
   },
   {
-    field: 'nickName',
-    label: t('descriptionsDemo.nickName')
-  },
-  {
     field: 'phone',
     label: t('descriptionsDemo.phone')
-  },
-  {
-    field: 'email',
-    label: t('descriptionsDemo.email')
-  },
-  {
-    field: 'addr',
-    label: t('descriptionsDemo.addr'),
-    span: 24
   }
 ])
 
@@ -86,22 +73,6 @@ const schema2 = reactive<DescriptionsSchema[]>([
     }
   },
   {
-    field: 'nickName',
-    label: t('descriptionsDemo.nickName'),
-    slots: {
-      label: (row) => {
-        return <span class="is-required--item">{row.label}</span>
-      },
-      default: () => {
-        return (
-          <ElFormItem prop="nickName">
-            <ElInput v-model={form.nickName} />
-          </ElFormItem>
-        )
-      }
-    }
-  },
-  {
     field: 'phone',
     label: t('descriptionsDemo.phone'),
     slots: {
@@ -116,39 +87,6 @@ const schema2 = reactive<DescriptionsSchema[]>([
         )
       }
     }
-  },
-  {
-    field: 'email',
-    label: t('descriptionsDemo.email'),
-    slots: {
-      label: (row) => {
-        return <span class="is-required--item">{row.label}</span>
-      },
-      default: () => {
-        return (
-          <ElFormItem prop="email">
-            <ElInput v-model={form.email} />
-          </ElFormItem>
-        )
-      }
-    }
-  },
-  {
-    field: 'addr',
-    label: t('descriptionsDemo.addr'),
-    slots: {
-      label: (row) => {
-        return <span class="is-required--item">{row.label}</span>
-      },
-      default: () => {
-        return (
-          <ElFormItem prop="addr">
-            <ElInput v-model={form.addr} />
-          </ElFormItem>
-        )
-      }
-    },
-    span: 24
   }
 ])
 

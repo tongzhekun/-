@@ -224,8 +224,6 @@
 
 <script>
 import {
-  uploadTobacco,
-  dowloadTobacco,
   uploadCust,
   tree,
   treeSc,
