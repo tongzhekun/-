@@ -89,7 +89,50 @@ export const queryPeriod = (data: any): Promise<IResponse<any>> => {
 export const queryPeriodBySerialId = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/queryPeriodBySerialId', data)
 }
+export const tree = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/tree', data)
+}
+export const userRole = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/userRole', data)
+}
+export const searchCk = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchCk', data)
+}
+export const exportCk = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/exportCk', data)
+}
 
+export const deleteCk = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/deleteCk', data)
+}
+export const treeSc = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/treeSc', data)
+}
+
+export const alloateKc = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/alloateKc', data)
+}
+export const importKc = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/importKc', data)
+}
+export const wzType = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/wzType', data)
+}
+export const givehistoryKc = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/givehistoryKc', data)
+}
+export const searchHistoryCk = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchHistoryCk', data)
+}
+export const exportHistoryCk = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/exportHistoryCk', data)
+}
+export const searchAllocateCk = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchAllocateCk', data)
+}
+export const exportAllocateCk = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/exportAllocateCk', data)
+}
 // export const loginApi = (data: any): Promise<IResponse<any>> => {
 //   return axios
 //     .post('http://localhost/wzgl/public/index.php/index/checkLogin', data)

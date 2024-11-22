@@ -1,1863 +1,866 @@
-<script setup lang="tsx">
-import { Form } from '@/components/Form'
-import { reactive, ref, onMounted, computed } from 'vue'
-import { useI18n } from '@/hooks/web/useI18n'
-import { ContentWrap } from '@/components/ContentWrap'
-import { useAppStore } from '@/store/modules/app'
-import { SelectOption, RadioOption, CheckboxOption, FormSchema } from '@/components/Form'
-import {
-  ElOption,
-  ElOptionGroup,
-  ElRadio,
-  ElRadioButton,
-  ElCheckbox,
-  ElCheckboxButton,
-  ElInput,
-  ElMessage,
-  ElMessageBox,
-  ElIcon
-} from 'element-plus'
-import { getDictOneApi } from '@/api/common'
-import { Icon } from '@/components/Icon'
-import { BaseButton } from '@/components/Button'
-
-const appStore = useAppStore()
-
-const { t } = useI18n()
-
-const isMobile = computed(() => appStore.getMobile)
-
-const restaurants = ref<Recordable[]>([])
-const querySearch = (queryString: string, cb: Fn) => {
-  const results = queryString
-    ? restaurants.value.filter(createFilter(queryString))
-    : restaurants.value
-  // call callback function to return suggestions
-  cb(results)
-}
-let timeout: NodeJS.Timeout
-const querySearchAsync = (queryString: string, cb: (arg: any) => void) => {
-  const results = queryString
-    ? restaurants.value.filter(createFilter(queryString))
-    : restaurants.value
-
-  clearTimeout(timeout)
-  timeout = setTimeout(() => {
-    cb(results)
-  }, 3000 * Math.random())
-}
-const createFilter = (queryString: string) => {
-  return (restaurant: Recordable) => {
-    return restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
-  }
-}
-const loadAll = () => {
-  return [
-    { value: 'vue', link: 'https://github.com/vuejs/vue' },
-    { value: 'element', link: 'https://github.com/ElemeFE/element' },
-    { value: 'cooking', link: 'https://github.com/ElemeFE/cooking' },
-    { value: 'mint-ui', link: 'https://github.com/ElemeFE/mint-ui' },
-    { value: 'vuex', link: 'https://github.com/vuejs/vuex' },
-    { value: 'vue-router', link: 'https://github.com/vuejs/vue-router' },
-    { value: 'babel', link: 'https://github.com/babel/babel' }
-  ]
-}
-const handleSelect = (item: Recordable) => {
-  console.log(item)
-}
-onMounted(() => {
-  restaurants.value = loadAll()
-})
-
-const initials = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
-const options = ref(
-  Array.from({ length: 1000 }).map((_, idx) => ({
-    value: `Option ${idx + 1}`,
-    label: `${initials[idx % 10]}${idx}`
-  }))
-)
-const options2 = ref(
-  Array.from({ length: 10 }).map((_, idx) => {
-    const label = idx + 1
-    return {
-      value: `Group ${label}`,
-      label: `Group ${label}`,
-      options: Array.from({ length: 10 }).map((_, idx) => ({
-        value: `Option ${idx + 1 + 10 * label}`,
-        label: `${initials[idx % 10]}${idx + 1 + 10 * label}`
-      }))
-    }
-  })
-)
-
-const options3 = [
-  {
-    value: 'guide',
-    label: 'Guide',
-    children: [
-      {
-        value: 'disciplines',
-        label: 'Disciplines',
-        children: [
-          {
-            value: 'consistency',
-            label: 'Consistency'
-          },
-          {
-            value: 'feedback',
-            label: 'Feedback'
-          },
-          {
-            value: 'efficiency',
-            label: 'Efficiency'
-          },
-          {
-            value: 'controllability',
-            label: 'Controllability'
-          }
-        ]
-      },
-      {
-        value: 'navigation',
-        label: 'Navigation',
-        children: [
-          {
-            value: 'side nav',
-            label: 'Side Navigation'
-          },
-          {
-            value: 'top nav',
-            label: 'Top Navigation'
-          }
-        ]
-      }
-    ]
-  },
-  {
-    value: 'component',
-    label: 'Component',
-    children: [
-      {
-        value: 'basic',
-        label: 'Basic',
-        children: [
-          {
-            value: 'layout',
-            label: 'Layout'
-          },
-          {
-            value: 'color',
-            label: 'Color'
-          },
-          {
-            value: 'typography',
-            label: 'Typography'
-          },
-          {
-            value: 'icon',
-            label: 'Icon'
-          },
-          {
-            value: 'button',
-            label: 'Button'
-          }
-        ]
-      },
-      {
-        value: 'form',
-        label: 'Form',
-        children: [
-          {
-            value: 'radio',
-            label: 'Radio'
-          },
-          {
-            value: 'checkbox',
-            label: 'Checkbox'
-          },
-          {
-            value: 'input',
-            label: 'Input'
-          },
-          {
-            value: 'input-number',
-            label: 'InputNumber'
-          },
-          {
-            value: 'select',
-            label: 'Select'
-          },
-          {
-            value: 'cascader',
-            label: 'Cascader'
-          },
-          {
-            value: 'switch',
-            label: 'Switch'
-          },
-          {
-            value: 'slider',
-            label: 'Slider'
-          },
-          {
-            value: 'time-picker',
-            label: 'TimePicker'
-          },
-          {
-            value: 'date-picker',
-            label: 'DatePicker'
-          },
-          {
-            value: 'datetime-picker',
-            label: 'DateTimePicker'
-          },
-          {
-            value: 'upload',
-            label: 'Upload'
-          },
-          {
-            value: 'rate',
-            label: 'Rate'
-          },
-          {
-            value: 'form',
-            label: 'Form'
-          }
-        ]
-      },
-      {
-        value: 'data',
-        label: 'Data',
-        children: [
-          {
-            value: 'table',
-            label: 'Table'
-          },
-          {
-            value: 'tag',
-            label: 'Tag'
-          },
-          {
-            value: 'progress',
-            label: 'Progress'
-          },
-          {
-            value: 'tree',
-            label: 'Tree'
-          },
-          {
-            value: 'pagination',
-            label: 'Pagination'
-          },
-          {
-            value: 'badge',
-            label: 'Badge'
-          }
-        ]
-      },
-      {
-        value: 'notice',
-        label: 'Notice',
-        children: [
-          {
-            value: 'alert',
-            label: 'Alert'
-          },
-          {
-            value: 'loading',
-            label: 'Loading'
-          },
-          {
-            value: 'message',
-            label: 'Message'
-          },
-          {
-            value: 'message-box',
-            label: 'MessageBox'
-          },
-          {
-            value: 'notification',
-            label: 'Notification'
-          }
-        ]
-      },
-      {
-        value: 'navigation',
-        label: 'Navigation',
-        children: [
-          {
-            value: 'menu',
-            label: 'Menu'
-          },
-          {
-            value: 'tabs',
-            label: 'Tabs'
-          },
-          {
-            value: 'breadcrumb',
-            label: 'Breadcrumb'
-          },
-          {
-            value: 'dropdown',
-            label: 'Dropdown'
-          },
-          {
-            value: 'steps',
-            label: 'Steps'
-          }
-        ]
-      },
-      {
-        value: 'others',
-        label: 'Others',
-        children: [
-          {
-            value: 'dialog',
-            label: 'Dialog'
-          },
-          {
-            value: 'tooltip',
-            label: 'Tooltip'
-          },
-          {
-            value: 'popover',
-            label: 'Popover'
-          },
-          {
-            value: 'card',
-            label: 'Card'
-          },
-          {
-            value: 'carousel',
-            label: 'Carousel'
-          },
-          {
-            value: 'collapse',
-            label: 'Collapse'
-          }
-        ]
-      }
-    ]
-  }
-]
-
-const generateData = () => {
-  const data: {
-    value: number
-    desc: string
-    disabled: boolean
-  }[] = []
-  for (let i = 1; i <= 15; i++) {
-    data.push({
-      value: i,
-      desc: `Option ${i}`,
-      disabled: i % 4 === 0
-    })
-  }
-  return data
-}
-
-const holidays = [
-  '2021-10-01',
-  '2021-10-02',
-  '2021-10-03',
-  '2021-10-04',
-  '2021-10-05',
-  '2021-10-06',
-  '2021-10-07'
-]
-
-const isHoliday = ({ dayjs }) => {
-  return holidays.includes(dayjs.format('YYYY-MM-DD'))
-}
-
-const treeSelectData = [
-  {
-    value: '1',
-    label: 'Level one 1',
-    children: [
-      {
-        value: '1-1',
-        label: 'Level two 1-1',
-        children: [
-          {
-            value: '1-1-1',
-            label: 'Level three 1-1-1'
-          }
-        ]
-      }
-    ]
-  },
-  {
-    value: '2',
-    label: 'Level one 2',
-    children: [
-      {
-        value: '2-1',
-        label: 'Level two 2-1',
-        children: [
-          {
-            value: '2-1-1',
-            label: 'Level three 2-1-1'
-          }
-        ]
-      },
-      {
-        value: '2-2',
-        label: 'Level two 2-2',
-        children: [
-          {
-            value: '2-2-1',
-            label: 'Level three 2-2-1'
-          }
-        ]
-      }
-    ]
-  },
-  {
-    value: '3',
-    label: 'Level one 3',
-    children: [
-      {
-        value: '3-1',
-        label: 'Level two 3-1',
-        children: [
-          {
-            value: '3-1-1',
-            label: 'Level three 3-1-1'
-          }
-        ]
-      },
-      {
-        value: '3-2',
-        label: 'Level two 3-2',
-        children: [
-          {
-            value: '3-2-1',
-            label: 'Level three 3-2-1'
-          }
-        ]
-      }
-    ]
-  }
-]
-
-// 模拟远程加载
-const getTreeSelectData = () => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(treeSelectData)
-    }, 3000)
-  })
-}
-
-let id = 0
-
-const imageUrl = ref('')
-
-const schema = reactive<FormSchema[]>([
-  {
-    field: 'field1',
-    label: t('formDemo.input'),
-    component: 'Divider'
-  },
-  {
-    field: 'field2',
-    label: t('formDemo.default'),
-    component: 'Input',
-    componentProps: {
-      formatter: (value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ','),
-      parser: (value) => value.replace(/\$\s?|(,*)/g, '')
-    }
-  },
-  {
-    field: 'field3',
-    label: `${t('formDemo.icon')}1`,
-    component: 'Input',
-    componentProps: {
-      suffixIcon: <Icon icon="vi-ep:calendar" />,
-      prefixIcon: <Icon icon="vi-ep:share" />
-    }
-  },
-  {
-    field: 'field4',
-    label: `${t('formDemo.icon')}2`,
-    component: 'Input',
-    componentProps: {
-      slots: {
-        suffix: () => {
-          return <Icon icon="vi-ep:share" />
-        },
-        prefix: () => <Icon icon="vi-ep:calendar" />
-      }
-    }
-  },
-  {
-    field: 'field5',
-    label: t('formDemo.mixed'),
-    component: 'Input',
-    componentProps: {
-      slots: {
-        prepend: () => <Icon icon="vi-ep:calendar" />,
-        append: () => <Icon icon="vi-ep:share" />
-      }
-    }
-  },
-  {
-    field: 'input-field7',
-    label: t('formDemo.password'),
-    component: 'Input',
-    componentProps: {
-      showPassword: true
-    }
-  },
-  {
-    field: 'field6',
-    label: t('formDemo.textarea'),
-    component: 'Input',
-    componentProps: {
-      type: 'textarea',
-      rows: 2
-    }
-  },
-  {
-    field: 'field7',
-    label: t('formDemo.autocomplete'),
-    component: 'Divider'
-  },
-  {
-    field: 'field8',
-    label: t('formDemo.default'),
-    component: 'Autocomplete',
-    componentProps: {
-      fetchSuggestions: querySearch,
-      on: {
-        select: handleSelect
-      }
-    }
-  },
-  {
-    field: 'field9',
-    label: t('formDemo.slot'),
-    component: 'Autocomplete',
-    componentProps: {
-      fetchSuggestions: querySearch,
-      on: {
-        select: handleSelect
-      },
-      slots: {
-        default: ({ item }) => {
-          return (
-            <>
-              <div class="value">{item?.value}</div>
-              <span class="link">{item?.link}</span>
-            </>
-          )
-        }
-      }
-    }
-  },
-  {
-    field: 'autocomplete-field10',
-    label: t('formDemo.remoteSearch'),
-    component: 'Autocomplete',
-    componentProps: {
-      fetchSuggestions: querySearchAsync,
-      on: {
-        select: handleSelect
-      }
-    }
-  },
-  {
-    field: 'field10',
-    component: 'Divider',
-    label: t('formDemo.inputNumber')
-  },
-  {
-    field: 'field11',
-    label: t('formDemo.default'),
-    component: 'InputNumber',
-    value: 0
-  },
-  {
-    field: 'field12',
-    label: t('formDemo.position'),
-    component: 'InputNumber',
-    componentProps: {
-      controlsPosition: 'right'
-    },
-    value: 10
-  },
-  {
-    field: 'field13',
-    label: t('formDemo.select'),
-    component: 'Divider'
-  },
-  {
-    field: 'field14',
-    label: t('formDemo.default'),
-    component: 'Select',
-    componentProps: {
-      options: [
-        {
-          disabled: true,
-          label: 'option1',
-          value: '1'
-        },
-        {
-          label: 'option2',
-          value: '2'
-        }
-      ]
-    }
-  },
-  {
-    field: 'field15',
-    label: t('formDemo.slot'),
-    component: 'Select',
-    componentProps: {
-      options: [
-        {
-          label: 'option1',
-          value: '1'
-        },
-        {
-          label: 'option2',
-          value: '2'
-        }
-      ],
-      slots: {
-        default: (options: SelectOption[]) => {
-          if (options.length) {
-            return options?.map((v) => {
-              return <ElOption key={v.value} label={v.label} value={v.value} />
-            })
-          } else {
-            return null
-          }
-        },
-        prefix: () => <Icon icon="vi-ep:calendar" />
-      }
-    }
-  },
-  {
-    field: 'select-field18',
-    label: t('formDemo.optionSlot'),
-    component: 'Select',
-    componentProps: {
-      options: [
-        {
-          value: 'Beijing',
-          label: 'Beijing'
-        },
-        {
-          value: 'Shanghai',
-          label: 'Shanghai'
-        },
-        {
-          value: 'Nanjing',
-          label: 'Nanjing'
-        },
-        {
-          value: 'Chengdu',
-          label: 'Chengdu'
-        },
-        {
-          value: 'Shenzhen',
-          label: 'Shenzhen'
-        },
-        {
-          value: 'Guangzhou',
-          label: 'Guangzhou'
-        }
-      ],
-      slots: {
-        optionDefault: (option: SelectOption) => {
-          return (
-            <>
-              <span style="float: left">{option.label}</span>
-              <span style="float: right; color: var(--el-text-color-secondary); font-size: 13px;">
-                {option.value}
-              </span>
-            </>
-          )
-        }
-      }
-    }
-  },
-  {
-    field: 'field16',
-    label: t('formDemo.selectGroup'),
-    component: 'Select',
-    componentProps: {
-      options: [
-        {
-          label: 'option1',
-          options: [
-            {
-              disabled: true,
-              label: 'option1-1',
-              value: '1-1'
-            },
-            {
-              label: 'option1-2',
-              value: '1-2'
-            }
-          ]
-        },
-        {
-          label: 'option2',
-          options: [
-            {
-              label: 'option2-1',
-              value: '2-1'
-            },
-            {
-              label: 'option2-2',
-              value: '2-2'
-            }
-          ]
-        }
-      ]
-    }
-  },
-  {
-    field: 'field17',
-    label: `${t('formDemo.selectGroup')} ${t('formDemo.slot')}`,
-    component: 'Select',
-    componentProps: {
-      options: [
-        {
-          label: 'option1',
-          options: [
-            {
-              label: 'option1-1',
-              value: '1-1'
-            },
-            {
-              label: 'option1-2',
-              value: '1-2'
-            }
-          ]
-        },
-        {
-          label: 'option2',
-          options: [
-            {
-              label: 'option2-1',
-              value: '2-1'
-            },
-            {
-              label: 'option2-2',
-              value: '2-2'
-            }
-          ]
-        }
-      ],
-      slots: {
-        optionGroupDefault: (option: SelectOption) => {
-          return (
-            <ElOptionGroup key={option.label} label={`${option.label} ${option.label}`}>
-              {option?.options?.map((v) => {
-                return <ElOption key={v.value} label={v.label} value={v.value} />
-              })}
-            </ElOptionGroup>
-          )
-        }
-      }
-    }
-  },
-  {
-    field: 'field18',
-    label: `${t('formDemo.selectV2')}`,
-    component: 'Divider'
-  },
-  {
-    field: 'field19',
-    label: t('formDemo.default'),
-    component: 'SelectV2',
-    componentProps: {
-      value: undefined,
-      options: options.value
-    }
-  },
-  {
-    field: 'field20',
-    label: t('formDemo.slot'),
-    component: 'SelectV2',
-    componentProps: {
-      options: options.value,
-      slots: {
-        default: (option: SelectOption) => {
-          return (
-            <>
-              <span style="margin-right: 8px">{option?.label}</span>
-              <span style="color: var(--el-text-color-secondary); font-size: 13px">
-                {option?.value}
-              </span>
-            </>
-          )
-        }
-      }
-    }
-  },
-  {
-    field: 'field21',
-    label: t('formDemo.selectGroup'),
-    component: 'SelectV2',
-    componentProps: {
-      options: options2.value
-    }
-  },
-  {
-    field: 'field22',
-    label: `${t('formDemo.selectGroup')} ${t('formDemo.slot')}`,
-    component: 'SelectV2',
-    componentProps: {
-      options: options2.value,
-      slots: {
-        default: (option: SelectOption) => {
-          return (
-            <>
-              <span style="margin-right: 8px">{option?.label}</span>
-              <span style="color: var(--el-text-color-secondary); font-size: 13px">
-                {option?.value}
-              </span>
-            </>
-          )
-        }
-      }
-    }
-  },
-  {
-    field: 'field23',
-    label: t('formDemo.cascader'),
-    component: 'Divider'
-  },
-  {
-    field: 'field24',
-    label: t('formDemo.default'),
-    component: 'Cascader',
-    componentProps: {
-      options: options3,
-      props: {
-        multiple: true
-      }
-    }
-  },
-  {
-    field: 'field25',
-    label: t('formDemo.slot'),
-    component: 'Cascader',
-    componentProps: {
-      options: options3,
-      slots: {
-        default: ({ data, node }) => {
-          return (
-            <>
-              <span>{data.label}</span>
-              {!node.isLeaf ? <span> ({data.children.length}) </span> : null}
-            </>
-          )
-        }
-      }
-    }
-  },
-  {
-    field: 'field26',
-    label: t('formDemo.switch'),
-    component: 'Divider'
-  },
-  {
-    field: 'field27',
-    label: t('formDemo.default'),
-    component: 'Switch',
-    value: false
-  },
-  {
-    field: 'field28',
-    label: t('formDemo.icon'),
-    component: 'Switch',
-    value: false,
-    componentProps: {
-      activeIcon: <Icon icon="ep:check" />,
-      inactiveIcon: <Icon icon="ep:close" />
-    }
-  },
-  {
-    field: 'field29',
-    label: t('formDemo.rate'),
-    component: 'Divider'
-  },
-  {
-    field: 'field30',
-    label: t('formDemo.default'),
-    component: 'Rate',
-    value: 0
-  },
-  {
-    field: 'field31',
-    label: t('formDemo.icon'),
-    component: 'Rate',
-    value: null,
-    componentProps: {
-      voidIcon: <Icon icon="vi-ep:chat-round" />,
-      icons: [
-        <Icon icon="vi-ep:chat-round" />,
-        <Icon icon="vi-ep:chat-line-round" />,
-        <Icon icon="vi-ep:chat-dot-round" />
-      ]
-    }
-  },
-  {
-    field: 'field32',
-    label: t('formDemo.colorPicker'),
-    component: 'Divider'
-  },
-  {
-    field: 'field33',
-    label: t('formDemo.default'),
-    component: 'ColorPicker'
-  },
-  {
-    field: 'field34',
-    label: t('formDemo.transfer'),
-    component: 'Divider'
-  },
-  {
-    field: 'field35',
-    label: t('formDemo.default'),
-    component: 'Transfer',
-    componentProps: {
-      props: {
-        key: 'value',
-        label: 'desc'
-      },
-      data: generateData()
-    },
-    value: [],
-    colProps: {
-      span: 24
-    }
-  },
-  {
-    field: 'field36',
-    label: t('formDemo.slot'),
-    component: 'Transfer',
-    componentProps: {
-      props: {
-        key: 'value',
-        label: 'desc'
-      },
-      filterable: true,
-      leftDefaultChecked: [2, 3],
-      rightDefaultChecked: [1],
-      titles: ['Source', 'Target'],
-      buttonTexts: ['To Left', 'To Right'],
-      format: {
-        noChecked: '${total}',
-        hasChecked: '${checked}/${total}'
-      },
-      data: generateData(),
-      slots: {
-        default: ({ option }) => {
-          return (
-            <span>
-              {option.value} - {option.desc}
-            </span>
-          )
-        },
-        leftFooter: () => {
-          return (
-            <BaseButton class="transfer-footer" size="small">
-              Operation
-            </BaseButton>
-          )
-        },
-        rightFooter: () => {
-          return (
-            <BaseButton class="transfer-footer" size="small">
-              Operation
-            </BaseButton>
-          )
-        }
-      }
-    },
-    value: [1],
-    colProps: {
-      span: 24
-    }
-  },
-  {
-    field: 'field37',
-    label: `${t('formDemo.render')}`,
-    component: 'Transfer',
-    componentProps: {
-      props: {
-        key: 'value',
-        label: 'desc',
-        disabled: 'disabled'
-      },
-      leftDefaultChecked: [2, 3],
-      rightDefaultChecked: [1],
-      data: generateData(),
-      renderContent: (h, option) => {
-        return h('span', null, `${option.value} - ${option.desc}`)
-      }
-    },
-    value: [1],
-    colProps: {
-      span: 24
-    }
-  },
-  {
-    field: 'field38',
-    label: t('formDemo.radio'),
-    component: 'Divider'
-  },
-  {
-    field: 'field39-2',
-    label: t('formDemo.radioGroup'),
-    component: 'RadioGroup',
-    componentProps: {
-      options: [
-        {
-          // disabled: true,
-          label: 'option-1',
-          value: '1'
-        },
-        {
-          label: 'option-2',
-          value: '2'
-        }
-      ]
-    }
-  },
-  {
-    field: 'field39-3',
-    label: `${t('formDemo.radioGroup')} ${t('formDemo.slot')}`,
-    component: 'RadioGroup',
-    componentProps: {
-      options: [
-        {
-          // disabled: true,
-          label: 'option-1',
-          value: '1'
-        },
-        {
-          label: 'option-2',
-          value: '2'
-        }
-      ],
-      slots: {
-        default: (options: RadioOption[]) => {
-          return options?.map((v) => {
-            return <ElRadio label={v.label + `(${v.value})`} value={v.value} />
-          })
-        }
-      }
-    }
-  },
-  {
-    field: 'field40',
-    label: t('formDemo.button'),
-    component: 'RadioButton',
-    componentProps: {
-      options: [
-        {
-          label: 'option-1',
-          value: '1'
-        },
-        {
-          label: 'option-2',
-          value: '2'
-        }
-      ]
-    }
-  },
-  {
-    field: 'field40-1',
-    label: `${t('formDemo.button')} ${t('formDemo.slot')}`,
-    component: 'RadioButton',
-    componentProps: {
-      options: [
-        {
-          label: 'option-1',
-          value: '1'
-        },
-        {
-          label: 'option-2',
-          value: '2'
-        }
-      ],
-      slots: {
-        default: (options: RadioOption[]) => {
-          return options?.map((v) => {
-            return <ElRadioButton label={v.label + `(${v.value})`} value={v.value} />
-          })
-        }
-      }
-    }
-  },
-  {
-    field: 'field41',
-    label: t('formDemo.checkbox'),
-    component: 'Divider'
-  },
-  {
-    field: 'field42-2',
-    label: t('formDemo.checkboxGroup'),
-    component: 'CheckboxGroup',
-    value: [],
-    componentProps: {
-      options: [
-        {
-          label: 'option-1',
-          value: '1'
-        },
-        {
-          label: 'option-2',
-          value: '2'
-        },
-        {
-          label: 'option-3',
-          value: '3'
-        }
-      ]
-    }
-  },
-  {
-    field: 'field42-3',
-    label: `${t('formDemo.checkboxGroup')} ${t('formDemo.slot')}`,
-    component: 'CheckboxGroup',
-    value: [],
-    componentProps: {
-      options: [
-        {
-          label: 'option-1',
-          value: '1'
-        },
-        {
-          label: 'option-2',
-          value: '2'
-        },
-        {
-          label: 'option-3',
-          value: '3'
-        }
-      ],
-      slots: {
-        default: (options: CheckboxOption[]) => {
-          return options?.map((v) => {
-            return <ElCheckbox label={v.label + `(${v.value})`} value={v.value} />
-          })
-        }
-      }
-    }
-  },
-  {
-    field: 'field43',
-    label: t('formDemo.button'),
-    component: 'CheckboxButton',
-    value: [],
-    componentProps: {
-      options: [
-        {
-          disabled: true,
-          label: 'option-1',
-          value: '1'
-        },
-        {
-          label: 'option-2',
-          value: '2'
-        },
-        {
-          label: 'option-3',
-          value: '23'
-        }
-      ]
-    }
-  },
-  {
-    field: 'field43-1',
-    label: `${t('formDemo.button')} ${t('formDemo.slot')}`,
-    component: 'CheckboxButton',
-    value: [],
-    componentProps: {
-      options: [
-        {
-          disabled: true,
-          label: 'option-1',
-          value: '1'
-        },
-        {
-          label: 'option-2',
-          value: '2'
-        },
-        {
-          label: 'option-3',
-          value: '23'
-        }
-      ],
-      slots: {
-        default: (options: CheckboxOption[]) => {
-          return options?.map((v) => {
-            return <ElCheckboxButton label={v.label + `(${v.value})`} value={v.value} />
-          })
-        }
-      }
-    }
-  },
-  {
-    field: 'field44',
-    component: 'Divider',
-    label: t('formDemo.slider')
-  },
-  {
-    field: 'field45',
-    component: 'Slider',
-    label: t('formDemo.default'),
-    value: 0
-  },
-  {
-    field: 'field46',
-    component: 'Divider',
-    label: t('formDemo.datePicker')
-  },
-  {
-    field: 'field47',
-    component: 'DatePicker',
-    label: t('formDemo.default'),
-    componentProps: {
-      type: 'date'
-    }
-  },
-  {
-    field: 'field48',
-    component: 'DatePicker',
-    label: t('formDemo.shortcuts'),
-    componentProps: {
-      type: 'date',
-      disabledDate: (time: Date) => {
-        return time.getTime() > Date.now()
-      },
-      shortcuts: [
-        {
-          text: t('formDemo.today'),
-          value: new Date()
-        },
-        {
-          text: t('formDemo.yesterday'),
-          value: () => {
-            const date = new Date()
-            date.setTime(date.getTime() - 3600 * 1000 * 24)
-            return date
-          }
-        },
-        {
-          text: t('formDemo.aWeekAgo'),
-          value: () => {
-            const date = new Date()
-            date.setTime(date.getTime() - 3600 * 1000 * 24 * 7)
-            return date
-          }
-        }
-      ]
-    }
-  },
-  {
-    field: 'field47-1',
-    component: 'DatePicker',
-    label: t('formDemo.slot'),
-    value: '2021-10-29',
-    componentProps: {
-      type: 'date',
-      slots: {
-        default: (cell: any) => {
-          return (
-            <div class={{ cell: true, current: cell.isCurrent }}>
-              <span class="text">{cell.text}</span>
-              {isHoliday(cell) ? <span class="holiday" /> : null}
-            </div>
-          )
-        }
-      }
-    }
-  },
-  {
-    field: 'field49',
-    component: 'DatePicker',
-    label: t('formDemo.week'),
-    componentProps: {
-      type: 'week',
-      format: `[${t('formDemo.week')}]`
-    }
-  },
-  {
-    field: 'field50',
-    component: 'DatePicker',
-    label: t('formDemo.year'),
-    componentProps: {
-      type: 'year'
-    }
-  },
-  {
-    field: 'field51',
-    component: 'DatePicker',
-    label: t('formDemo.month'),
-    componentProps: {
-      type: 'month'
-    }
-  },
-  {
-    field: 'field52',
-    component: 'DatePicker',
-    label: t('formDemo.dates'),
-    componentProps: {
-      type: 'dates'
-    }
-  },
-  {
-    field: 'field53',
-    component: 'DatePicker',
-    label: t('formDemo.daterange'),
-    componentProps: {
-      type: 'daterange'
-    }
-  },
-  {
-    field: 'field54',
-    component: 'DatePicker',
-    label: t('formDemo.monthrange'),
-    componentProps: {
-      type: 'monthrange'
-    }
-  },
-  {
-    field: 'field56',
-    component: 'Divider',
-    label: t('formDemo.dateTimePicker')
-  },
-  {
-    field: 'field57',
-    component: 'DatePicker',
-    label: t('formDemo.default'),
-    componentProps: {
-      type: 'datetime'
-    }
-  },
-  {
-    field: 'field58',
-    component: 'DatePicker',
-    label: t('formDemo.shortcuts'),
-    componentProps: {
-      type: 'datetime',
-      shortcuts: [
-        {
-          text: t('formDemo.today'),
-          value: new Date()
-        },
-        {
-          text: t('formDemo.yesterday'),
-          value: () => {
-            const date = new Date()
-            date.setTime(date.getTime() - 3600 * 1000 * 24)
-            return date
-          }
-        },
-        {
-          text: t('formDemo.aWeekAgo'),
-          value: () => {
-            const date = new Date()
-            date.setTime(date.getTime() - 3600 * 1000 * 24 * 7)
-            return date
-          }
-        }
-      ]
-    }
-  },
-  {
-    field: 'field59',
-    component: 'DatePicker',
-    label: t('formDemo.dateTimerange'),
-    componentProps: {
-      type: 'datetimerange'
-    }
-  },
-  {
-    field: 'field60',
-    component: 'Divider',
-    label: t('formDemo.timePicker')
-  },
-  {
-    field: 'field61',
-    component: 'TimePicker',
-    label: t('formDemo.default')
-  },
-  {
-    field: 'field62',
-    component: 'Divider',
-    label: t('formDemo.timeSelect')
-  },
-  {
-    field: 'field63',
-    component: 'TimeSelect',
-    label: t('formDemo.default')
-  },
-  {
-    field: 'field64',
-    component: 'Divider',
-    label: t('formDemo.richText')
-  },
-  {
-    field: 'field65',
-    component: 'Editor',
-    value: 'hello world',
-    label: t('formDemo.default'),
-    colProps: {
-      span: 24
-    }
-  },
-  {
-    field: 'field66',
-    component: 'Divider',
-    label: t('formDemo.inputPassword')
-  },
-  {
-    field: 'field67',
-    component: 'InputPassword',
-    label: t('formDemo.default'),
-    componentProps: {
-      strength: true
-    }
-  },
-  {
-    field: 'field68',
-    component: 'Divider',
-    label: `${t('formDemo.form')} ${t('formDemo.slot')}`
-  },
-  {
-    field: 'field69',
-    component: 'Input',
-    label: `label`,
-    formItemProps: {
-      slots: {
-        label: ({ label }) => {
-          return (
-            <div class="custom-label">
-              <span class="label-text">custom {label}</span>
-            </div>
-          )
-        }
-      }
-    }
-  },
-  {
-    field: 'field69-1',
-    component: 'Input',
-    label: `custom formItem`,
-    formItemProps: {
-      slots: {
-        default: (formModel: any) => {
-          return <ElInput v-model={formModel['field69-1']} />
-        }
-      }
-    }
-  },
-  {
-    field: 'field70',
-    component: 'Divider',
-    label: `${t('formDemo.remoteLoading')}`
-  },
-  {
-    field: 'field71',
-    label: `${t('formDemo.select')}`,
-    component: 'Select',
-    componentProps: {
-      options: []
-    },
-    // 远程加载option
-    optionApi: async () => {
-      const res = await getDictOneApi()
-      return res.data
-    }
-  },
-  {
-    field: 'field72',
-    label: `${t('formDemo.selectV2')}`,
-    component: 'SelectV2',
-    componentProps: {
-      options: []
-    },
-    // 远程加载option
-    optionApi: async () => {
-      const res = await getDictOneApi()
-      return res.data
-    }
-  },
-  {
-    field: 'field73',
-    label: `${t('formDemo.checkboxGroup')}`,
-    component: 'CheckboxGroup',
-    componentProps: {
-      options: []
-    },
-    // 远程加载option
-    optionApi: async () => {
-      const res = await getDictOneApi()
-      return res.data
-    }
-  },
-  {
-    field: 'field74',
-    label: `${t('formDemo.radioGroup')}`,
-    component: 'RadioGroup',
-    componentProps: {
-      options: []
-    },
-    // 远程加载option
-    optionApi: async () => {
-      const res = await getDictOneApi()
-      return res.data
-    }
-  },
-  {
-    field: 'field82',
-    label: `${t('formDemo.treeSelect')}`,
-    component: 'TreeSelect',
-    // 远程加载option
-    optionApi: async () => {
-      const res = await getTreeSelectData()
-      return res
-    }
-  },
-  {
-    field: 'field75',
-    component: 'Divider',
-    label: `${t('formDemo.treeSelect')}`
-  },
-  {
-    field: 'field76',
-    component: 'TreeSelect',
-    label: `${t('formDemo.default')}`,
-    componentProps: {
-      renderAfterExpand: false,
-      data: treeSelectData
-    }
-  },
-  {
-    field: 'field76',
-    component: 'TreeSelect',
-    label: `${t('formDemo.showCheckbox')}`,
-    componentProps: {
-      renderAfterExpand: false,
-      showCheckbox: true,
-      data: treeSelectData
-    }
-  },
-  {
-    field: 'field77',
-    component: 'TreeSelect',
-    label: `${t('formDemo.selectAnyLevel')}`,
-    componentProps: {
-      renderAfterExpand: false,
-      showCheckbox: true,
-      checkStrictly: true,
-      checkOnClickNode: true,
-      data: treeSelectData
-    }
-  },
-  {
-    field: 'field78',
-    component: 'TreeSelect',
-    label: `${t('formDemo.multiple')}`,
-    componentProps: {
-      renderAfterExpand: false,
-      multiple: true,
-      showCheckbox: true,
-      checkStrictly: true,
-      checkOnClickNode: true,
-      data: treeSelectData
-    }
-  },
-  {
-    field: 'field79',
-    component: 'TreeSelect',
-    label: `${t('formDemo.filterable')}`,
-    componentProps: {
-      renderAfterExpand: false,
-      multiple: true,
-      filterable: true,
-      showCheckbox: true,
-      checkStrictly: true,
-      checkOnClickNode: true,
-      filterNodeMethod: (value, data) => data.label.includes(value),
-      data: treeSelectData
-    }
-  },
-  {
-    field: 'field80',
-    component: 'TreeSelect',
-    label: `${t('formDemo.customContent')}`,
-    componentProps: {
-      renderAfterExpand: false,
-      multiple: true,
-      filterable: true,
-      showCheckbox: true,
-      checkStrictly: true,
-      checkOnClickNode: true,
-      filterNodeMethod: (value, data) => data.label.includes(value),
-      slots: {
-        default: ({ data: { label } }) => {
-          return (
-            <>
-              {label}
-              <span style="color: gray">(suffix)</span>
-            </>
-          )
-        }
-      },
-      data: treeSelectData
-    }
-  },
-  {
-    field: 'field81',
-    component: 'TreeSelect',
-    label: `${t('formDemo.lazyLoad')}`,
-    componentProps: {
-      renderAfterExpand: false,
-      lazy: true,
-      load: (node, resolve) => {
-        if (node.isLeaf) return resolve([])
-
-        setTimeout(() => {
-          resolve([
-            {
-              value: ++id,
-              label: `lazy load node${id}`
-            },
-            {
-              value: ++id,
-              label: `lazy load node${id}`,
-              isLeaf: true
-            }
-          ])
-        }, 400)
-      },
-      multiple: true,
-      filterable: true,
-      showCheckbox: true,
-      checkStrictly: true,
-      checkOnClickNode: true,
-      filterNodeMethod: (value, data) => data.label.includes(value),
-      slots: {
-        default: ({ data: { label } }) => {
-          return (
-            <>
-              {label}
-              <span style="color: gray">(suffix)</span>
-            </>
-          )
-        }
-      },
-      data: treeSelectData
-    }
-  },
-  {
-    field: 'field82',
-    component: 'Divider',
-    label: `${t('formDemo.upload')}`
-  },
-  {
-    field: 'field83',
-    component: 'Upload',
-    label: `${t('formDemo.default')}`,
-    componentProps: {
-      limit: 3,
-      action: 'https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15',
-      fileList: [
-        {
-          name: 'element-plus-logo.svg',
-          url: 'https://element-plus.org/images/element-plus-logo.svg'
-        },
-        {
-          name: 'element-plus-logo2.svg',
-          url: 'https://element-plus.org/images/element-plus-logo.svg'
-        }
-      ],
-      multiple: true,
-      onPreview: (uploadFile) => {
-        console.log(uploadFile)
-      },
-      onRemove: (file) => {
-        console.log(file)
-      },
-      beforeRemove: (uploadFile) => {
-        return ElMessageBox.confirm(`Cancel the transfer of ${uploadFile.name} ?`).then(
-          () => true,
-          () => false
-        )
-      },
-      onExceed: (files, uploadFiles) => {
-        ElMessage.warning(
-          `The limit is 3, you selected ${files.length} files this time, add up to ${
-            files.length + uploadFiles.length
-          } totally`
-        )
-      },
-      slots: {
-        default: () => <BaseButton type="primary">Click to upload</BaseButton>,
-        tip: () => <div class="el-upload__tip">jpg/png files with a size less than 500KB.</div>
-      }
-    }
-  },
-  {
-    field: 'field84',
-    component: 'Upload',
-    label: `${t('formDemo.userAvatar')}`,
-    componentProps: {
-      action: 'https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15',
-      showFileList: false,
-      onSuccess: (_response, uploadFile) => {
-        imageUrl.value = URL.createObjectURL(uploadFile.raw!)
-      },
-      beforeUpload: (rawFile) => {
-        if (rawFile.type !== 'image/jpeg') {
-          ElMessage.error('Avatar picture must be JPG format!')
-          return false
-        } else if (rawFile.size / 1024 / 1024 > 2) {
-          ElMessage.error('Avatar picture size can not exceed 2MB!')
-          return false
-        }
-        return true
-      },
-      slots: {
-        default: () => (
-          <>
-            {imageUrl.value ? <img src={imageUrl.value} class="avatar" /> : null}
-            {!imageUrl.value ? (
-              <ElIcon class="avatar-uploader-icon" size="large">
-                add
-              </ElIcon>
-            ) : null}
-          </>
-        )
-      }
-    }
-  },
-  {
-    field: 'field85',
-    component: 'Divider',
-    label: t('formDemo.jsonEditor')
-  },
-  {
-    field: 'field86',
-    component: 'JsonEditor',
-    label: t('formDemo.default'),
-    value: {
-      a: 1,
-      b: 2
-    }
-  },
-  {
-    field: 'field87',
-    component: 'Divider',
-    label: t('formDemo.iconPicker')
-  },
-  {
-    field: 'field88',
-    component: 'IconPicker',
-    label: t('formDemo.default'),
-    value: 'vi-tdesign:archway'
-  },
-  {
-    field: 'field89',
-    component: 'Divider',
-    label: t('formDemo.iAgree')
-  },
-  {
-    field: 'field90',
-    component: 'IAgree',
-    label: t('formDemo.default'),
-    componentProps: {
-      text: '我同意《用户协议》',
-      link: [
-        {
-          text: '《用户协议》',
-          url: 'https://element-plus.org/'
-        }
-      ]
-    }
-  }
-])
-</script>
-
 <template>
-  <ContentWrap :title="t('formDemo.defaultForm')" :message="t('formDemo.formDes')">
-    <Form :schema="schema" label-width="auto" :label-position="isMobile ? 'top' : 'right'" />
-  </ContentWrap>
+  <div class="container">
+    <el-form :model="form" ref="formRef" :rules="formRules">
+      <el-row type="flex" justify="center" style="margin-top: -15px">
+        <el-col :span="9">
+          <el-form-item label="机构：" prop="instCode">
+            <el-tree-select
+              check-strictly
+              v-model="form.instCode"
+              :data="instCodeOptions"
+              :render-after-expand="false"
+              style="width: 240px"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="9">
+          <el-form-item label="物料名称：" prop="materialName">
+            <el-input
+              v-model="form.materialName"
+              style="width: 85%; height: 40px"
+              placeholder="请输入物料名称"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row type="flex" justify="center">
+        <el-col :span="24" style="text-align: center">
+          <!-- <el-button type="primary" round>查询</el-button> -->
+          <el-button type="primary" @click="searchClick">查询</el-button>
+          <el-button type="info" @click="exportClick">导出库存</el-button>
+          <el-button type="success" @click="importClick">导入库存</el-button>
+          <el-button type="danger" @click="allocateClick">库存分配</el-button>
+          <el-button type="warning" @click="historyClick">移送历史库存</el-button>
+        </el-col>
+      </el-row>
+      <el-row style="margin-top: -15px">
+        <el-col :span="24">
+          <el-pagination
+            background
+            size="small"
+            layout="prev, pager, next"
+            :total="total"
+            v-model:current-page="currentPage"
+            :page-size="pageSize"
+            @current-change="fetchData"
+          />
+          <el-table
+            :data="form.loanData"
+            border
+            v-loading="loading"
+            element-loading-text="加载中"
+            :element-loading-spinner="svg"
+            element-loading-svg-view-box="-10, -10, 50, 50"
+            element-loading-background="rgba(122, 122, 122, 0.8)"
+            style="width: 97%; height: 325px; margin-top: 5px"
+          >
+            <el-table-column
+              prop="material_name"
+              header-align="center"
+              fixed
+              label="物料名称"
+              width="auto"
+            />
+            <el-table-column
+              prop="end_time"
+              header-align="center"
+              label="发放结束时间"
+              align="center"
+              width="auto"
+            />
+            <el-table-column
+              prop="creation_time"
+              header-align="center"
+              label="入库时间"
+              align="center"
+              width="auto"
+            />
+            <el-table-column
+              prop="delay_time"
+              header-align="center"
+              align="center"
+              label="延期时间"
+              width="auto"
+            />
+            <el-table-column
+              prop="inventory_quantity"
+              align="center"
+              header-align="center"
+              label="物料数量"
+              width="100px"
+            />
+            <el-table-column
+              prop="project"
+              align="center"
+              header-align="center"
+              label="操作"
+              v-if="role === '1'"
+              width="100px"
+            >
+              <template #default="scope">
+                <el-button
+                  round
+                  type="danger"
+                  size="small"
+                  @click.prevent="deleteKcClick(scope.row)"
+                  >删除
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-col>
+      </el-row>
+      <el-dialog
+        v-model="dialogVisibleKc"
+        title="附件操作"
+        width="550px"
+        class="centered-dialog custom-width-dialog"
+      >
+        <div style="margin-top: 20px">
+          <el-row>
+            <el-col :span="4">
+              <span>下载模版:</span>
+            </el-col>
+            <el-col :span="5">
+              <a
+                href="#"
+                @click.prevent="downloadTemplateKc"
+                style="color: #409eff; text-decoration: underline"
+                >物料库存模版表</a
+              >
+            </el-col>
+          </el-row>
+          <el-row style="margin-top: 15px">
+            <el-col :span="4">
+              <span>上传文件（xlsx格式）:</span>
+            </el-col>
+            <el-col :span="5">
+              <input type="file" ref="fileInput" id="file-input" accept=".xlsx" />
+            </el-col>
+          </el-row>
+        </div>
+        <el-row>
+          <el-col :span="24" style="margin-top: 20px; text-align: center">
+            <el-button @click="uploadKcClick" type="primary">提交</el-button>
+            <el-button @click="dialogVisibleKc = false">取消</el-button>
+          </el-col>
+        </el-row>
+      </el-dialog>
+      <el-dialog
+        v-model="dialogVisibleAllocate"
+        title="附件操作"
+        width="550px"
+        class="centered-dialog custom-width-dialog"
+      >
+        <div style="margin-top: 20px">
+          <el-row>
+            <el-col :span="4">
+              <span>下载模版:</span>
+            </el-col>
+            <el-col :span="5">
+              <a
+                href="#"
+                @click.prevent="downloadTemplateAllocate"
+                style="color: #409eff; text-decoration: underline"
+                >库存分配模版表</a
+              >
+            </el-col>
+          </el-row>
+          <el-row style="margin-top: 15px">
+            <el-col :span="4">
+              <span>上传文件（xlsx格式）:</span>
+            </el-col>
+            <el-col :span="5">
+              <input type="file" ref="fileInput1" id="file-input1" accept=".csv" />
+            </el-col>
+          </el-row>
+        </div>
+        <el-row>
+          <el-col :span="24" style="margin-top: 20px; text-align: center">
+            <el-button @click="uploadAllocateClick" type="primary">提交</el-button>
+            <el-button @click="dialogVisibleAllocate = false">取消</el-button>
+          </el-col>
+        </el-row>
+      </el-dialog>
+      <el-dialog
+        v-model="dialogVisibleHistory"
+        title="附件操作"
+        width="550px"
+        class="centered-dialog custom-width-dialog"
+      >
+        <div style="margin-top: 20px">
+          <el-row>
+            <el-col :span="4">
+              <span>下载模版:</span>
+            </el-col>
+            <el-col :span="5">
+              <a
+                href="#"
+                @click.prevent="downloadTemplateHistory"
+                style="color: #409eff; text-decoration: underline"
+                >移送历史库存模版表</a
+              >
+            </el-col>
+          </el-row>
+          <el-row style="margin-top: 15px">
+            <el-col :span="4">
+              <span>上传文件（xlsx格式）:</span>
+            </el-col>
+            <el-col :span="5">
+              <input type="file" ref="fileInput2" id="file-input2" accept=".csv" />
+            </el-col>
+          </el-row>
+        </div>
+        <el-row>
+          <el-col :span="24" style="margin-top: 20px; text-align: center">
+            <el-button @click="uploadHistoryClick" type="primary">提交</el-button>
+            <el-button @click="dialogVisibleHistory = false">取消</el-button>
+          </el-col>
+        </el-row>
+      </el-dialog>
+    </el-form>
+  </div>
 </template>
 
-<style lang="less">
-.cell {
-  height: 30px;
-  padding: 3px 0;
-  box-sizing: border-box;
+<script>
+import {
+  uploadTobacco,
+  dowloadTobacco,
+  uploadCust,
+  tree,
+  treeSc,
+  searchCk,
+  importKc,
+  wzType,
+  alloateKc,
+  givehistoryKc,
+  exportCk,
+  deleteCk,
+  userRole
+} from '@/api/login'
+import * as XLSX from 'xlsx'
+import { useUserStore } from '@/store/modules/user'
+export default {
+  data() {
+    return {
+      role: '0', //1是本部库存管理员
+      loading: false,
+      total: 0, // 总记录数
+      currentPage: 1, // 当前页码
+      pageSize: 10, // 每页记录数
+      wzOptions: [],
+      userId: '',
+      uploadArrayKc: [],
+      uploadArrayAllocate: [],
+      uploadArrayHistory: [],
+      instCodeOptions: [],
+      instCodeScOptions: [],
+      dialogVisibleKc: false,
+      dialogVisibleAllocate: false,
+      dialogVisibleHistory: false,
+      form: {
+        instCode: '',
+        materialName: '',
+        loanData: []
+      },
+      formRules: {
+        instCode: [{ required: true, message: '请选择机构', trigger: 'blur' }]
+      }
+    }
+  },
+  async created() {
+    const payload = {}
+    const response = await tree(payload) // 调用 upload 函数并传入 payload
+    this.instCodeOptions = response.data.data
+    const response1 = await treeSc({}) // 调用 upload 函数并传入 payload
+    this.instCodeScOptions = response1.data.data
+    const userStore = useUserStore()
+    const loginInfo = userStore.getLoginInfo
+    this.userId = loginInfo.userId
+    if (useUserStore().getRole.indexOf('yc001') > -1) {
+      this.role = '1'
+    }
+    const responseWzType = await wzType({})
+    this.wzOptions = responseWzType.data.data
+  },
+  methods: {
+    async deleteKcClick(row) {
+      const payload = {
+        materialCode: row.material_code,
+        instCode: '100001'
+      }
+      const response = await deleteCk(payload) // 调用 upload 函数并传入 payload
+      if (response.data.code == 200) {
+        this.$message.success(response.data.message)
+        this.fetchData()
+      } else {
+        this.$message.error(response.data.message)
+      }
+    },
+    allocateClick() {
+      this.$nextTick(() => {
+        if (this.$refs.fileInput1 !== undefined) {
+          this.$refs.fileInput1.value = null
+        }
+      })
+      this.dialogVisibleAllocate = true
+    },
+    historyClick() {
+      this.$nextTick(() => {
+        if (this.$refs.fileInput2 !== undefined) {
+          this.$refs.fileInput2.value = null
+        }
+      })
+      this.dialogVisibleHistory = true
+    },
+    //导入新的库存
+    async uploadKcClick() {
+      try {
+        // 确保文件已上传并处理完成
+        await this.handleFileUploadKc() // 等待文件处理完成
+        if (this.uploadArrayKc.length === 0) {
+          this.$message.warning('没有数据可以提交！')
+          return
+        }
+        const payload = {
+          data: this.uploadArrayKc,
+          userId: this.userId
+        }
+        const response = await importKc(payload) // 调用 upload 函数并传入 payload
+        if (response.data.code === 200) {
+          this.$message.success(response.data.data.message)
+          this.dialogVisibleKc = false // 关闭弹窗
+        } else {
+          this.$message.error(response.data.data.message)
+        }
+      } catch (error) {
+        this.$message.error('上传失败')
+      }
+    },
+    async uploadAllocateClick() {
+      try {
+        // 确保文件已上传并处理完成
+        await this.handleFileUploadAllocate() // 等待文件处理完成
+        if (this.uploadArrayAllocate.length === 0) {
+          this.$message.warning('没有数据可以提交！')
+          return
+        }
+        const payload = {
+          data: this.uploadArrayAllocate,
+          userId: this.userId,
+          allocateCode: '100001'
+        }
+        const response = await alloateKc(payload) // 调用 upload 函数并传入 payload
+        if (response.data.code === 200) {
+          this.$message.success(response.data.data.message)
+          this.dialogVisibleAllocate = false // 关闭弹窗
+        } else {
+          this.$message.error(response.data.data.message)
+        }
+      } catch (error) {
+        this.$message.error('上传失败')
+      }
+    },
+    async uploadHistoryClick() {
+      try {
+        // 确保文件已上传并处理完成
+        await this.handleFileUploadHistory() // 等待文件处理完成
+        if (this.uploadArrayHistory.length === 0) {
+          this.$message.warning('没有数据可以提交！')
+          return
+        }
+        const payload = {
+          data: this.uploadArrayHistory,
+          userId: this.userId
+        }
+        const response = await givehistoryKc(payload) // 调用 upload 函数并传入 payload
+        if (response.data.code === 200) {
+          this.$message.success(response.data.data.message)
+          this.dialogVisibleHistory = false // 关闭弹窗
+        } else {
+          this.$message.error(response.data.data.message)
+        }
+      } catch (error) {
+        this.$message.error('上传失败')
+      }
+    },
+    fetchData() {
+      let validatestat = false
+      this.$refs['formRef'].validate((valid) => {
+        if (valid) {
+          validatestat = true
+        } else {
+          return false
+        }
+      })
+      setTimeout(async () => {
+        if (validatestat) {
+          this.loading = true
+          const payload = {
+            page: this.currentPage,
+            pageSize: this.pageSize,
+            instCode: this.form.instCode,
+            materialName: this.form.materialName
+          }
+          const response = await searchCk(payload) // 调用 upload 函数并传入 payload
+          if (response.data.code == 200) {
+            this.form.loanData = response.data.data
+            this.total = response.data.total
+          } else {
+            this.$message.error(response.data.data.message)
+          }
+          this.loading = false
+        }
+      }, 300)
+      this.$forceUpdate()
+    },
+    async searchClick() {
+      this.currentPage = 1
+      this.fetchData()
+    },
+    importClick() {
+      this.$nextTick(() => {
+        if (this.$refs.fileInput !== undefined) {
+          this.$refs.fileInput.value = null
+        }
+      })
+      this.dialogVisibleKc = true
+    },
+    handleFileUploadAllocate(event) {
+      const fileInput1 = document.getElementById('file-input1')
+      const file = fileInput1.files[0] // 获取用户选择的文件
+      if (!file) {
+        alert('请先选择一个文件')
+        return
+      }
+      const reader = new FileReader() // 创建一个 FileReader 实例
+      return new Promise((resolve, reject) => {
+        // 读取文件内容
+        reader.onload = (e) => {
+          const data = e.target.result
+          // 使用 xlsx 库解析文件内容
+          const workbook = XLSX.read(data, { type: 'array' })
+          // 获取名为 '库存分配模版表' 的工作表
+          const sheet = workbook.Sheets['库存分配模版表']
+          // 如果 'Sheet1' 不存在，提醒用户
+          if (!sheet) {
+            alert('没有找到名为 "库存分配模版表" 的工作表')
+            reject('没有找到工作表')
+            return
+          }
+          // 使用 aoa_to_sheet 方法将工作表转化为数据数组
+          const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 }) // header: 1 表示第一行是表头
+          // 初始化一个空数组，存储处理后的数据对象
+          this.uploadArrayAllocate = []
+          // 获取表头数据
+          const headers = jsonData[0] // 第一行是表头
+          // 从第二行开始处理每一行数据
+          for (let i = 1; i < jsonData.length; i++) {
+            const row = jsonData[i]
+            // 创建一个对象，将每列的数据与表头对应起来
+            const rowObject = headers.reduce((acc, header, index) => {
+              acc[header] = row[index] // 将每一列的值映射到对应的表头
+              return acc
+            }, {})
+            this.uploadArrayAllocate.push(rowObject)
+          }
+          resolve() // 确保数据已更新
+        }
+        reader.onerror = (err) => {
+          reject(err)
+        }
+        // 读取文件
+        reader.readAsArrayBuffer(file)
+      })
+    },
+    handleFileUploadHistory(event) {
+      const fileInput2 = document.getElementById('file-input2')
+      const file = fileInput2.files[0] // 获取用户选择的文件
+      if (!file) {
+        alert('请先选择一个文件')
+        return
+      }
+      const reader = new FileReader() // 创建一个 FileReader 实例
+      return new Promise((resolve, reject) => {
+        // 读取文件内容
+        reader.onload = (e) => {
+          const data = e.target.result
+          // 使用 xlsx 库解析文件内容
+          const workbook = XLSX.read(data, { type: 'array' })
+          const sheet = workbook.Sheets['移送库存模版表']
+          if (!sheet) {
+            alert('没有找到名为 "移送库存模版表" 的工作表')
+            reject('没有找到工作表')
+            return
+          }
+          // 使用 aoa_to_sheet 方法将工作表转化为数据数组
+          const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 }) // header: 1 表示第一行是表头
+          // 初始化一个空数组，存储处理后的数据对象
+          this.uploadArrayHistory = []
+          // 获取表头数据
+          const headers = jsonData[0] // 第一行是表头
+          // 从第二行开始处理每一行数据
+          for (let i = 1; i < jsonData.length; i++) {
+            const row = jsonData[i]
+            // 创建一个对象，将每列的数据与表头对应起来
+            const rowObject = headers.reduce((acc, header, index) => {
+              acc[header] = row[index] // 将每一列的值映射到对应的表头
+              return acc
+            }, {})
+            this.uploadArrayHistory.push(rowObject)
+          }
+          resolve() // 确保数据已更新
+        }
+        reader.onerror = (err) => {
+          reject(err)
+        }
+        // 读取文件
+        reader.readAsArrayBuffer(file)
+      })
+    },
+    handleFileUploadKc(event) {
+      const fileInput = document.getElementById('file-input')
+      const file = fileInput.files[0] // 获取用户选择的文件
+      if (!file) {
+        alert('请先选择一个文件')
+        return
+      }
+      const reader = new FileReader() // 创建一个 FileReader 实例
+      return new Promise((resolve, reject) => {
+        // 读取文件内容
+        reader.onload = (e) => {
+          const data = e.target.result
+          // 使用 xlsx 库解析文件内容
+          const workbook = XLSX.read(data, { type: 'array' })
+          // 获取名为 'Sheet1' 的工作表
+          const sheet = workbook.Sheets['Sheet1']
+          // 如果 'Sheet1' 不存在，提醒用户
+          if (!sheet) {
+            alert('没有找到名为 "Sheet1" 的工作表')
+            reject('没有找到工作表')
+            return
+          }
+          // 使用 aoa_to_sheet 方法将工作表转化为数据数组
+          const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 }) // header: 1 表示第一行是表头
+          // 初始化一个空数组，存储处理后的数据对象
+          this.uploadArrayKc = []
+          // 获取表头数据
+          const headers = jsonData[0] // 第一行是表头
+          // 从第二行开始处理每一行数据
+          for (let i = 1; i < jsonData.length; i++) {
+            const row = jsonData[i]
+            // 创建一个对象，将每列的数据与表头对应起来
+            const rowObject = headers.reduce((acc, header, index) => {
+              acc[header] = row[index] // 将每一列的值映射到对应的表头
+              return acc
+            }, {})
+            this.uploadArrayKc.push(rowObject)
+          }
+          resolve() // 确保数据已更新
+        }
+        reader.onerror = (err) => {
+          reject(err)
+        }
+        // 读取文件
+        reader.readAsArrayBuffer(file)
+      })
+    },
+    async downloadTemplateAllocate() {
+      const responseWzType = await wzType({})
+      this.wzOptions = responseWzType.data.data
+      const data = []
+      data.push(['物料编码', '物料名称', '分配市场部编码', '分配市场部名称', '分配数量'])
+      const wb = XLSX.utils.book_new()
+      const ws = XLSX.utils.aoa_to_sheet(data) // Convert array of arrays to sheet
+      ws['!cols'] = this.calculateColumnWidths(data)
+      XLSX.utils.book_append_sheet(wb, ws, '库存分配模版表') // Append data to workbook
 
-  .text {
-    position: absolute;
-    left: 50%;
-    display: block;
-    width: 24px;
-    height: 24px;
-    margin: 0 auto;
-    line-height: 24px;
-    border-radius: 50%;
-    transform: translateX(-50%);
-  }
+      const dataSc = []
+      dataSc.push(['市场部编码', '市场部名称'])
+      this.instCodeScOptions.forEach((result) => {
+        dataSc.push([result.inst_code, result.inst_name])
+      })
+      const wsSc = XLSX.utils.aoa_to_sheet(dataSc) // Convert array of arrays to sheet
+      wsSc['!cols'] = this.calculateColumnWidths(dataSc)
+      XLSX.utils.book_append_sheet(wb, wsSc, '市场部基础表') // Append data to the same workbook
 
-  &.current {
-    .text {
-      color: #fff;
-      background: #626aef;
+      const dataWz = []
+      dataWz.push(['物料编码', '物料名称', '物料数量'])
+      this.wzOptions.forEach((result) => {
+        dataWz.push([result.material_code, result.material_name, result.inventory_quantity])
+      })
+      const wsWz = XLSX.utils.aoa_to_sheet(dataWz) // Convert array of arrays to sheet
+      wsWz['!cols'] = this.calculateColumnWidths(dataWz)
+      XLSX.utils.book_append_sheet(wb, wsWz, '物料基础表') // Append data to the same workbook
+
+      // Export the workbook
+      const excelBlob = new Blob([XLSX.write(wb, { bookType: 'xlsx', type: 'array' })], {
+        type: 'application/octet-stream'
+      })
+      const link = document.createElement('a')
+      link.href = URL.createObjectURL(excelBlob) // Create blob URL
+      link.setAttribute('download', '库存分配模版表.xlsx') // Set file name
+      document.body.appendChild(link)
+      link.click() // Trigger download
+      document.body.removeChild(link) // Clean up the link
+    },
+    //下载移送库存模版表
+    async downloadTemplateHistory() {
+      const responseWzType = await wzType({})
+      this.wzOptions = responseWzType.data.data
+      const data = []
+      data.push(['物料编码', '物料名称'])
+      const wb = XLSX.utils.book_new()
+      const ws = XLSX.utils.aoa_to_sheet(data) // Convert array of arrays to sheet
+      ws['!cols'] = this.calculateColumnWidths(data)
+      XLSX.utils.book_append_sheet(wb, ws, '移送库存模版表') // Append data to workbookk
+
+      const dataWz = []
+      dataWz.push(['物料编码', '物料名称', '物料数量'])
+      this.wzOptions.forEach((result) => {
+        dataWz.push([result.material_code, result.material_name, result.inventory_quantity])
+      })
+      const wsWz = XLSX.utils.aoa_to_sheet(dataWz) // Convert array of arrays to sheet
+      wsWz['!cols'] = this.calculateColumnWidths(dataWz)
+      XLSX.utils.book_append_sheet(wb, wsWz, '物料基础表') // Append data to the same workbook
+
+      // Export the workbook
+      const excelBlob = new Blob([XLSX.write(wb, { bookType: 'xlsx', type: 'array' })], {
+        type: 'application/octet-stream'
+      })
+      const link = document.createElement('a')
+      link.href = URL.createObjectURL(excelBlob) // Create blob URL
+      link.setAttribute('download', '移送库存模版表.xlsx') // Set file name
+      document.body.appendChild(link)
+      link.click() // Trigger download
+      document.body.removeChild(link) // Clean up the link
+    },
+    async downloadTemplateKc() {
+      const data = []
+      data.push([
+        '物料编码',
+        '物料类型',
+        '物料名称',
+        '物料单位',
+        '物料规格',
+        '采购年份',
+        '是否易耗品',
+        '库存数量',
+        '可用数量',
+        '物料价格',
+        '费用类型',
+        '采购方式',
+        '采购项目名称',
+        '供应商名称',
+        '质保到期时间',
+        '延期时间',
+        '物料发放时间',
+        '物料发放结束时间'
+      ])
+      const wb = XLSX.utils.book_new()
+      const ws = XLSX.utils.aoa_to_sheet(data) // Convert array of arrays to sheet
+      ws['!cols'] = this.calculateColumnWidths(data)
+      XLSX.utils.book_append_sheet(wb, ws, 'Sheet1') // Append data to Sheet2
+      const excelBlob = new Blob([XLSX.write(wb, { bookType: 'xlsx', type: 'array' })], {
+        type: 'application/octet-stream'
+      })
+      const link = document.createElement('a')
+      link.href = URL.createObjectURL(excelBlob) // Create blob URL
+      link.setAttribute('download', '物料库存模版表.xlsx') // Set file name
+      document.body.appendChild(link)
+      link.click() // Trigger download
+      document.body.removeChild(link) // Clean up the link
+    },
+    async exportClick() {
+      const data = []
+      data.push([
+        '物料编码',
+        '物料类型',
+        '物料名称',
+        '物料单位',
+        '物料规格',
+        '采购年份',
+        '是否易耗品',
+        '库存数量',
+        '可用数量',
+        '物料价格',
+        '费用类型',
+        '采购方式',
+        '采购项目名称',
+        '供应商名称',
+        '质保到期时间',
+        '延期时间',
+        '物料发放时间',
+        '物料发放结束时间'
+      ])
+      const payload = {
+        instCode: this.form.instCode,
+        materialName: this.form.materialName
+      }
+      const response = await exportCk(payload) // 调用 upload 函数并传入 payload
+      if (response.data.code == 200) {
+        const loanData1 = response.data.data
+        loanData1.forEach((result) => {
+          data.push([
+            result.material_code,
+            result.material_type,
+            result.material_name,
+            result.material_unit,
+            result.material_specification,
+            result.procurement_time,
+            result.consumable,
+            result.inventory_quantity,
+            result.available_quantity,
+            result.material_price,
+            result.cost_type,
+            result.procurement_method,
+            result.project_name,
+            result.supplier_name,
+            result.warranty_period,
+            result.delay_time,
+            result.release_time,
+            result.end_time
+          ])
+        })
+      } else {
+        this.$message.error(response.data.data.message)
+      }
+      const wb = XLSX.utils.book_new()
+      const ws = XLSX.utils.aoa_to_sheet(data) // Convert array of arrays to sheet
+      ws['!cols'] = this.calculateColumnWidths(data)
+      XLSX.utils.book_append_sheet(wb, ws, 'Sheet1') // Append data to Sheet2
+      const excelBlob = new Blob([XLSX.write(wb, { bookType: 'xlsx', type: 'array' })], {
+        type: 'application/octet-stream'
+      })
+      const link = document.createElement('a')
+      link.href = URL.createObjectURL(excelBlob) // Create blob URL
+      link.setAttribute('download', '库存表.xlsx') // Set file name
+      document.body.appendChild(link)
+      link.click() // Trigger download
+      document.body.removeChild(link) // Clean up the link
+    },
+    calculateColumnWidths(data) {
+      const columnWidths = []
+      for (let colIndex = 0; colIndex < data[0].length; colIndex++) {
+        let maxLength = 0
+        data.forEach((row) => {
+          const cellValue = row[colIndex] ? row[colIndex].toString() : '' // Ensure it's a string
+          maxLength = Math.max(maxLength, cellValue.length)
+        })
+        columnWidths.push({ wch: maxLength + 7 }) // Adding extra padding for clarity
+      }
+      return columnWidths
     }
   }
+}
+</script>
 
-  .holiday {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    width: 6px;
-    height: 6px;
-    background: var(--el-color-danger);
-    border-radius: 50%;
-    transform: translateX(-50%);
-  }
+<style>
+.container {
+  margin: 20px;
 }
 
-.transfer-footer {
-  padding: 6px 5px;
-  margin-left: 15px;
+table {
+  width: 100%;
+  margin-bottom: 20px;
+  overflow: hidden; /* 防止内容溢出 */
+  border: 2px solid #909399; /* 表格整体边框加厚 */
+  border-collapse: separate; /* 使用 separate 避免边框重叠 */
+  border-spacing: 0; /* 确保单元格间距为 0 */
 }
 
-.el-upload {
-  position: relative;
+.el-table--fit {
+  border-right: 1px solid #909399;
+  border-bottom: 0;
+  border-bottom: 1px solid #909399;
+  border-left: 1px solid #909399;
+}
+
+table,
+th,
+td {
+  border: 1px solid #909399; /* 保持统一边框 */
+}
+
+.el-table.cell {
+  padding: 0 12px;
   overflow: hidden;
-  cursor: pointer;
-  border: 1px dashed var(--el-border-color);
-  border-radius: 6px;
-  transition: var(--el-transition-duration-fast);
+  line-height: auto;
+  color: #212121;
+  text-overflow: ellipsis;
+  white-space: normal;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
 }
 
-.el-upload:hover {
-  border-color: var(--el-color-primary);
+/* 表头样式 */
+.el-table__header-wrapper th {
+  color: #000;
+  vertical-align: top; /* 垂直对齐顶部 */
+  border-bottom: none; /* 移除 th 自身的下边框 */
 }
 
-.el-icon.avatar-uploader-icon {
-  width: 178px;
-  height: 178px;
-  font-size: 28px;
-  color: #8c939d;
+/* 表头容器样式 */
+.el-table__header-wrapper {
+  position: relative; /* 设置相对定位 */
+  z-index: 1;
+  height: 41px !important;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+/* 表头下边框伪元素 */
+.el-table__header-wrapper::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2; /* 确保伪元素覆盖表格内容 */
+  height: 1px;
+  background-color: #909399; /* 表头下边框颜色 */
+  content: '';
+}
+
+/* 表体单元格样式 */
+.el-table__body tr td {
+  height: 12px; /* 单元格高度 */
+  padding: 5px !important;
+  color: #212121;
+  border-top: 1px solid #909399; /* 确保中间行上边框存在 */
+  border-right: 1px solid #909399;
+  border-bottom: 1px solid #909399; /* 确保中间行下边框存在 */
+}
+
+/* 去除第一行单元格的上边框 */
+.el-table__body tr:first-child td {
+  border-top: none;
+}
+
+/* 去除最后单元格的右边框 */
+.el-table__body tr td:last-child {
+  border-right: none;
+}
+
+/* 去除最后一行的下边框 */
+.el-table__body tr:last-child td {
+  border-bottom: none;
+}
+
+/* 默认表格单元格样式 */
+.el-table--default.el-table__cell {
+  padding: 0; /* 调整内边距 */
+}
+
+.custom-form-item::v-deep.el-form-item__label {
+  font-size: 18px;
+  color: #000 !important;
+}
+
+.el-dialog__header {
+  height: 54px;
+  padding: 0;
+  margin-right: 0 !important;
   text-align: center;
+  border-bottom: 1px solid var(--el-border-color);
 }
 </style>

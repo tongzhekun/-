@@ -3,7 +3,6 @@ import { store } from '../index'
 import { UserLoginType, UserType } from '@/api/login/types'
 import { ElMessageBox } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
-import { loginOutApi } from '@/api/login'
 import { useTagsViewStore } from './tagsView'
 import router from '@/router'
 
@@ -11,6 +10,7 @@ interface UserState {
   userInfo?: UserType
   tokenKey: string
   token: string
+  role: string
   roleRouters?: string[] | AppCustomRouteRecordRaw[]
   rememberMe: boolean
   loginInfo?: UserLoginType
@@ -25,7 +25,8 @@ export const useUserStore = defineStore('user', {
       roleRouters: undefined,
       // 记住我
       rememberMe: true,
-      loginInfo: undefined
+      loginInfo: undefined,
+      role: '0'
     }
   },
   getters: {
@@ -46,6 +47,9 @@ export const useUserStore = defineStore('user', {
     },
     getLoginInfo(): UserLoginType | undefined {
       return this.loginInfo
+    },
+    getRole(): string {
+      return this.role
     }
   },
   actions: {
@@ -69,10 +73,7 @@ export const useUserStore = defineStore('user', {
         type: 'warning'
       })
         .then(async () => {
-          const res = await loginOutApi().catch(() => {})
-          if (res) {
-            this.reset()
-          }
+          this.reset()
         })
         .catch(() => {})
     },
@@ -92,6 +93,9 @@ export const useUserStore = defineStore('user', {
     },
     setLoginInfo(loginInfo: UserLoginType | undefined) {
       this.loginInfo = loginInfo
+    },
+    setRole(role: string) {
+      this.role = role
     }
   },
   persist: true

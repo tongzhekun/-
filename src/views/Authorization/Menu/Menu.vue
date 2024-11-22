@@ -165,7 +165,6 @@ const AddAction = () => {
 const save = async () => {
   const write = unref(writeRef)
   const formData = await write?.submit()
-  console.log(formData)
   if (formData) {
     saveLoading.value = true
     setTimeout(() => {

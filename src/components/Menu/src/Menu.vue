@@ -40,9 +40,11 @@ export default defineComponent({
       }
     })
 
-    const routers = computed(() =>
-      unref(layout) === 'cutMenu' ? permissionStore.getMenuTabRouters : permissionStore.getRouters
-    )
+    const routers = computed(() => {
+      return unref(layout) === 'cutMenu'
+        ? permissionStore.getMenuTabRouters
+        : permissionStore.getRouters
+    })
 
     const collapse = computed(() => appStore.getCollapse)
 
@@ -50,7 +52,6 @@ export default defineComponent({
 
     const activeMenu = computed(() => {
       const { meta, path } = unref(currentRoute)
-      console.log(meta, meta.activeMenu, '888888888888888889999999999')
       // if set path, the sidebar will highlight the path you set
       if (meta.activeMenu) {
         return meta.activeMenu as string
