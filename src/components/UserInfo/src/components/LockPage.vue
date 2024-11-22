@@ -2,21 +2,18 @@
 import { ref } from 'vue'
 import { ElInput } from 'element-plus'
 import { resetRouter } from '@/router'
-import { useRouter } from 'vue-router'
 import { useStorage } from '@/hooks/web/useStorage'
 import { useLockStore } from '@/store/modules/lock'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useNow } from '@/hooks/web/useNow'
 import { useDesign } from '@/hooks/web/useDesign'
 import { Icon } from '@/components/Icon'
-import { loginOutApi } from '@/api/login'
+import { useUserStore } from '@/store/modules/user'
 import { useTagsViewStore } from '@/store/modules/tagsView'
-
+const userStore = useUserStore()
 const tagsViewStore = useTagsViewStore()
 
 const { clear } = useStorage()
-
-const { replace } = useRouter()
 
 const password = ref('')
 const loading = ref(false)
@@ -48,15 +45,14 @@ async function unLock() {
 }
 
 // 返回登录
-async function goLogin() {
-  const res = await loginOutApi().catch(() => {})
-  if (res) {
-    clear()
-    tagsViewStore.delAllViews()
-    resetRouter() // 重置静态路由表
-    lockStore.resetLockInfo()
-    replace('/login')
-  }
+function goLogin() {
+  clear()
+  tagsViewStore.delAllViews()
+  resetRouter() // 重置静态路由表
+  lockStore.resetLockInfo()
+  // push('/login')
+
+  userStore.reset()
 }
 
 function handleShowForm(show = false) {

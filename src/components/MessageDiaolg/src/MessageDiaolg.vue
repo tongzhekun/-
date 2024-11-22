@@ -22,7 +22,7 @@
       :element-loading-spinner="svg"
       element-loading-svg-view-box="-10, -10, 50, 50"
       element-loading-background="rgba(122, 122, 122, 0.8)"
-      style=" width: 97%; height: 325px;margin-top: 5px"
+      style="width: 97%; height: 325px; margin-top: 5px"
     >
       <el-table-column
         prop="material_name"
@@ -89,7 +89,6 @@ export default {
     const loginInfo = userStore.getLoginInfo
     this.userId = loginInfo.userId
     this.searchClick()
-    console.log('7777777777777')
   },
   created() {},
   methods: {

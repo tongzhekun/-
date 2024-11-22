@@ -52,7 +52,7 @@
             :element-loading-spinner="svg"
             element-loading-svg-view-box="-10, -10, 50, 50"
             element-loading-background="rgba(122, 122, 122, 0.8)"
-            style=" width: 97%; height: 325px;margin-top: 5px"
+            style="width: 97%; height: 325px; margin-top: 5px"
           >
             <el-table-column
               prop="material_name"
@@ -556,7 +556,6 @@ export default {
             }, {})
             this.uploadArrayKc.push(rowObject)
           }
-          console.log(this.uploadArrayKc, '上传的数组')
           resolve() // 确保数据已更新
         }
         reader.onerror = (err) => {

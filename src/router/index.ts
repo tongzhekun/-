@@ -38,6 +38,7 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
   {
     path: '/login',
     component: () => import('@/views/Login/Login.vue'),
+    // redirect: '/gearPlacement/index',
     name: 'Login',
     meta: {
       hidden: true,
@@ -77,6 +78,28 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
       title: '404',
       noTagsView: true
     }
+  },
+  {
+    path: '/gearPlacement',
+    component: Layout,
+    name: 'GearPlacement',
+    meta: {
+      hidden: true
+    },
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/gearPlacement/gearPlacement.vue'),
+        name: 'GearPlacementDemo',
+        meta: {
+          hidden: true,
+          title: t('router.gearPlacement'),
+          icon: 'vi-cib:telegram-plane',
+          alwaysShow: true,
+          noCache: true
+        }
+      }
+    ]
   }
 ]
 
@@ -1674,6 +1697,10 @@ router.beforeEach((to, _, next) => {
     window.open(to.meta.url as string, '_blank') // 跳转到指定网址
   } else {
     next() // 继续正常导航
+  }
+  if (to.name === 'Login') {
+    const redirectParam = '/gearPlacement/index'
+    to.query.redirect = redirectParam
   }
 })
 export const setupRouter = (app: App<Element>) => {
