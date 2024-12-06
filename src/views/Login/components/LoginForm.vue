@@ -274,6 +274,10 @@ const signIn = async () => {
             }
           }
           userStore.setRememberMe(unref(remember))
+          console.log(
+            res.data.data,
+            'res.data.datares.data.datares.data.datares.data.datares.data.data'
+          )
           userStore.setUserInfo(res.data.data)
           // 是否使用动态路由
           if (appStore.getDynamicRouter) {

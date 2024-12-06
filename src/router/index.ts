@@ -110,7 +110,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     meta: {
       title: t('router.allPciture'),
       icon: 'vi-cib:telegram-plane',
-      url: 'http://192.168.115.10/jsc/jsc.php' // 指定外部网址
+      url: 'http://192.168.115.26/jsc/jsc.php' // 指定外部网址
     }
   },
   {
@@ -165,11 +165,48 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     },
     children: [
       {
+        path: 'todo',
+        component: () => import('@/views/materialIssuance/todo.vue'),
+        name: 'Todo',
+        meta: {
+          title: t('router.todo'),
+          noCache: true
+        }
+      },
+      {
+        path: 'done',
+        component: () => import('@/views/materialIssuance/done.vue'),
+        name: 'Done',
+        meta: {
+          title: t('router.done'),
+          noCache: true
+        }
+      },
+      {
         path: 'demandForecast',
         component: () => import('@/views/materialIssuance/demandForecast.vue'),
         name: 'DemandForecast',
         meta: {
           title: t('router.demandForecast'),
+          noCache: true
+        }
+      },
+      {
+        path: 'demandForecastApprove',
+        // component: () => import('@/views/storageManage/storageNow.vue'),
+        component: () => import('@/views/materialIssuance/demandForecastApprove.vue'),
+        name: 'DemandForecastApprove',
+        meta: {
+          title: t('router.demandForecast_approve'),
+          hidden: true
+        }
+      },
+      {
+        path: 'demandForecastTotal',
+        component: () => import('@/views/materialIssuance/demandForecastTotal.vue'),
+        name: 'demandForecastTotal',
+        meta: {
+          title: t('router.demandForecastTotal'),
           noCache: true
         }
       },
@@ -319,7 +356,7 @@ export const littleRouterMap: AppRouteRecordRaw[] = [
     meta: {
       title: t('router.allPciture'),
       icon: 'vi-cib:telegram-plane',
-      url: 'http://192.168.115.10/jsc/jsc.php' // 指定外部网址
+      url: 'http://192.168.115.26/jsc/jsc.php' // 指定外部网址
     }
   },
   {
@@ -334,11 +371,47 @@ export const littleRouterMap: AppRouteRecordRaw[] = [
     },
     children: [
       {
+        path: 'todo',
+        component: () => import('@/views/materialIssuance/todo.vue'),
+        name: 'Todo',
+        meta: {
+          title: t('router.todo'),
+          noCache: true
+        }
+      },
+      {
+        path: 'done',
+        component: () => import('@/views/materialIssuance/done.vue'),
+        name: 'Done',
+        meta: {
+          title: t('router.done'),
+          noCache: true
+        }
+      },
+      {
         path: 'demandForecast',
         component: () => import('@/views/materialIssuance/demandForecast.vue'),
         name: 'DemandForecast',
         meta: {
           title: t('router.demandForecast'),
+          noCache: true
+        }
+      },
+      {
+        path: 'demandForecastApprove',
+        component: () => import('@/views/materialIssuance/demandForecastApprove.vue'),
+        name: 'DemandForecastApprove',
+        meta: {
+          title: t('router.demandForecast_approve'),
+          hidden: true
+        }
+      },
+      {
+        path: 'demandForecastTotal',
+        component: () => import('@/views/materialIssuance/demandForecastTotal.vue'),
+        name: 'demandForecastTotal',
+        meta: {
+          title: t('router.demandForecastTotal'),
           noCache: true
         }
       },

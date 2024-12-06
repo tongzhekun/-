@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <el-form :model="form" ref="formRef">
+    <el-form :model="form" ref="formRef" label-width="130px">
       <el-row type="flex" justify="center" style="margin-top: -20px">
         <el-col :span="9">
           <el-form-item label="用户账号：" prop="userId">
@@ -21,7 +21,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="9">
-          <el-form-item label="用户名：" lable-width="120px" prop="userName">
+          <el-form-item label="用户名：" prop="userName">
             <el-input
               v-model="form.userName"
               style="width: 85%; height: 30px"
@@ -43,17 +43,17 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="5" style=" margin-top: 25px;text-align: left">
+        <el-col :span="5" style="margin-top: 25px; text-align: left">
           <el-button type="primary" @click="searchClick">查询</el-button>
           <el-button type="danger" @click="resetClick">重置</el-button>
         </el-col>
       </el-row>
-      <el-row style="margin-top: -15px">
+      <el-row>
         <el-col :span="24">
           <el-pagination
             background
             size="small"
-            layout="prev, pager, next"
+            layout="total, prev, pager, next"
             :total="total"
             v-model:current-page="currentPage"
             :page-size="pageSize"
@@ -66,6 +66,7 @@
             element-loading-svg-view-box="-10, -10, 50, 50"
             element-loading-background="rgba(122, 122, 122, 0.8)"
             border
+            :header-cell-style="{ color: '#212121' }"
             style="width: 97%; height: 310px; margin-top: 5px"
           >
             <el-table-column
@@ -140,96 +141,126 @@
           </el-table>
         </el-col>
       </el-row>
+    </el-form>
+    <el-form :model="formDialog" :rules="formRulesDialog" ref="formRefDialog" label-width="130px">
       <el-dialog
-        v-model="dialogVisibleRole"
-        title="角色信息"
-        width="550px"
+        v-model="dialogVisible"
+        title="用户信息"
+        width="800px"
+        style="height: 500px; overflow: auto"
         class="centered-dialog custom-width-dialog"
       >
-        <el-row type="flex" justify="center" style="margin-top: -15px">
-          <el-col :span="9">
+        <el-row type="flex" justify="center" style="margin-top: 5px">
+          <el-col :span="12">
             <el-form-item label="用户账号：" prop="userId">
               <el-input
-                v-model="form.userId"
+                v-model="formDialog.userId"
+                :disabled="true"
                 style="width: 85%; height: 40px"
                 placeholder="请输入用户账号"
               />
             </el-form-item>
+            <el-form-item label="机构：" prop="instCode">
+              <el-tree-select
+                check-strictly
+                v-model="formDialog.instCode"
+                :data="instCodeOptions"
+                :render-after-expand="false"
+                style="width: 85%"
+              />
+            </el-form-item>
+            <el-form-item label="员工状态：" prop="status">
+              <el-select
+                v-model="formDialog.status"
+                placeholder="请选择员工状态"
+                style="width: 85%; height: 30px"
+              >
+                <el-option
+                  v-for="item in statusOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-form-item>
           </el-col>
-          <el-col :span="9">
+          <el-col :span="12">
             <el-form-item label="用户名：" prop="userName">
               <el-input
-                v-model="form.userName"
+                v-model="formDialog.userName"
+                :disabled="true"
                 style="width: 85%; height: 40px"
                 placeholder="请输入用户名"
               />
             </el-form-item>
+            <el-form-item label="岗位性质：" prop="type">
+              <el-select
+                v-model="formDialog.type"
+                placeholder="请选择岗位性质"
+                style="width: 85%; height: 30px"
+              >
+                <el-option
+                  v-for="item in typeOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="联系电话：" prop="telephone">
+              <el-input
+                v-model="formDialog.telephone"
+                style="width: 85%; height: 40px"
+                placeholder="请输入联系电话"
+              />
+            </el-form-item>
           </el-col>
         </el-row>
-        <el-row type="flex" justify="center">
-          <el-col :span="24" style="text-align: center">
-            <el-button type="primary" @click="searchClick">查询</el-button>
+        <el-row>
+          <el-col :span="24" style="margin-top: -15px; text-align: left">
+            <el-button type="primary" @click="addRoleClick">新增</el-button>
           </el-col>
         </el-row>
-        <el-row style="margin-top: -15px">
+        <el-row style="margin-top: 5px">
           <el-col :span="24">
             <el-table
-              :data="form.loanData1"
+              :data="formDialog.loanData"
               v-loading="loading"
               element-loading-text="加载中"
               element-loading-svg-view-box="-10, -10, 50, 50"
               element-loading-background="rgba(122, 122, 122, 0.8)"
               border
-              style="width: 97%; height: 325px; margin-top: 5px"
+              :header-cell-style="{ color: '#212121' }"
+              style="width: 97%; height: 200px; margin-top: 5px"
             >
               <el-table-column
-                prop="employee_code "
+                prop="role_id"
                 header-align="center"
                 fixed
-                label="员工编号"
+                align="center"
+                label="角色编号"
                 width="90px"
               />
               <el-table-column
-                prop="employee_name"
+                prop="role_name"
                 header-align="center"
-                label="员工姓名"
+                label="角色名称"
                 align="center"
-                width="90px"
+                width="auto"
               />
               <el-table-column
-                prop="type"
+                prop="remark"
                 header-align="center"
-                label="岗位性质"
+                label="备注"
                 align="center"
-                width="90px"
-              />
-              <el-table-column
-                prop="inst_code"
-                header-align="center"
-                align="center"
-                label="所属机构编码"
-                width="120px"
-              />
-              <el-table-column
-                prop="inst_name"
-                align="center"
-                header-align="center"
-                label="所属机构名称"
-                width="120px"
-              />
-              <el-table-column
-                prop="telephone"
-                align="center"
-                header-align="center"
-                label="手机号"
-                width="120px"
+                width="auto"
               />
               <el-table-column
                 prop="project"
                 align="center"
                 header-align="center"
                 label="操作"
-                width="auto"
+                width="100px"
               >
                 <template #default="scope">
                   <el-button
@@ -242,6 +273,43 @@
                 </template>
               </el-table-column>
             </el-table>
+          </el-col>
+        </el-row>
+        <el-row type="flex" justify="center">
+          <el-col :span="24" style="margin-top: 15px; text-align: center">
+            <el-button type="primary" @click="confirmClick">确定</el-button>
+          </el-col>
+        </el-row>
+      </el-dialog>
+      <el-dialog
+        v-model="dialogVisibleRole"
+        title="角色信息"
+        width="500px"
+        style="height: 200px; overflow: auto"
+        class="centered-dialog custom-width-dialog"
+      >
+        <el-row type="flex" justify="center" style="margin-top: 5px">
+          <el-col :span="24">
+            <el-form-item label="角色名称：" prop="roleId">
+              <el-select
+                v-model="formDialog.roleId"
+                clearable
+                placeholder="请选择角色名称"
+                style="width: 85%; height: 30px"
+              >
+                <el-option
+                  v-for="item in roleOptions"
+                  :key="item.role_id"
+                  :label="item.role_name"
+                  :value="item.role_id"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" style="text-align: center">
+            <el-button type="primary" @click="confirmRoleClick">确认</el-button>
           </el-col>
         </el-row>
       </el-dialog>
@@ -266,6 +334,7 @@ export default {
   data() {
     return {
       dialogVisibleRole: false,
+      dialogVisible: false,
       loading: false,
       total: 0, // 总记录数
       currentPage: 1, // 当前页码
@@ -273,6 +342,26 @@ export default {
       userId: '',
       instCodeOptions: [],
       roleOptions: [],
+      typeOptions: [
+        {
+          label: '管理人员',
+          value: '管理人员'
+        },
+        {
+          label: '客户经理',
+          value: '客户经理'
+        }
+      ],
+      statusOptions: [
+        {
+          label: '在职',
+          value: '在职'
+        },
+        {
+          label: '离职',
+          value: '离职'
+        }
+      ],
       form: {
         roleId: '',
         userName: '',
@@ -280,6 +369,19 @@ export default {
         instCode: '',
         loanData1: [],
         loanData: []
+      },
+      formDialog: {
+        loanData: [],
+        telephone: '',
+        type: '',
+        userName: '',
+        status: '',
+        instCode: '',
+        userId: '',
+        roleId: ''
+      },
+      formRulesDialog: {
+        roleId: [{ required: true, message: '请选择需要新增的角色', trigger: 'blur' }]
       }
     }
   },
@@ -290,13 +392,55 @@ export default {
     const response1 = await searchRole({})
     this.roleOptions = response1.data.data
     const userStore = useUserStore()
-    const loginInfo = userStore.getLoginInfo
+    const loginInfo = userStore.getUserInfo
     this.userId = loginInfo.userId
     this.searchClick()
   },
   methods: {
-    editClick(row) {
+    confirmRoleClick() {
+      this.$refs['formRefDialog'].validate((valid) => {
+        if (valid) {
+          const foundRole = this.formDialog.loanData.find(
+            (role) => role.role_id === this.formDialog.roleId
+          )
+          if (foundRole) {
+            this.dialogVisibleRole = false
+          } else {
+            this.roleOptions.forEach((item) => {
+              if (item.role_id == this.formDialog.roleId) {
+                this.formDialog.loanData.push({
+                  role_id: item.role_id,
+                  role_name: item.role_name,
+                  remark: item.remark
+                })
+              }
+            })
+            this.dialogVisibleRole = false
+          }
+        } else {
+          return false
+        }
+      })
+    },
+    addRoleClick() {
+      this.formDialog.roleId = ''
       this.dialogVisibleRole = true
+    },
+    async editClick(row) {
+      this.dialogVisible = true
+      this.formDialog.instCode = row.inst_code
+      this.formDialog.userId = row.employee_code
+      this.formDialog.userName = row.employee_name
+      this.formDialog.telephone = row.telephone
+      this.formDialog.type = row.type
+      this.formDialog.status = row.status
+      const response = await userMessage({ userId: row.employee_code })
+      this.formDialog.loanData = []
+      response.data.data.forEach((item) => {
+        if (item.role_id != null) {
+          this.formDialog.loanData.push(item)
+        }
+      })
     },
     resetPassWordClick(row) {
       ElMessageBox.confirm('是否确认重置密码?', '提示', {
@@ -305,7 +449,7 @@ export default {
         type: 'warning'
       })
         .then(async () => {
-          const payload = { userId: row.employee_code }
+          const payload = { userId: row.employee_code, userIdOperate: this.userId }
           const response = await resetPassWord(payload) // 调用 upload 函数并传入 payload
           if (response.data.code == 200) {
             this.$message.success(response.data.message)
@@ -315,7 +459,32 @@ export default {
         })
         .catch(() => {})
     },
-    deleteClick(row) {},
+    deleteClick(row) {
+      const indexToRemove = this.formDialog.loanData.findIndex(
+        (item) => item.role_id === row.role_id
+      )
+      this.formDialog.loanData.splice(indexToRemove, 1)
+    },
+    async confirmClick() {
+      const payload = {
+        loanData: this.formDialog.loanData,
+        telephone: this.formDialog.telephone,
+        type: this.formDialog.type,
+        userName: this.formDialog.userName,
+        status: this.formDialog.status,
+        instCode: this.formDialog.instCode,
+        userId: this.formDialog.userId,
+        userIdOperate: this.userId
+      }
+      const response = await submitUserMessage(payload) // 调用 upload 函数并传入 payload
+      if (response.data.code == 200) {
+        this.dialogVisible = false
+        this.fetchData()
+        this.$message.success(response.data.message)
+      } else {
+        this.$message.error(response.data.message)
+      }
+    },
     fetchData() {
       let validatestat = false
       this.$refs['formRef'].validate((valid) => {
@@ -362,7 +531,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .container {
   margin: 10px;
 }
@@ -458,20 +627,21 @@ td {
   padding: 0; /* 调整内边距 */
 }
 
-.el-form-item__label {
-  width: 120px;
-}
-
 .custom-form-item::v-deep.el-form-item__label {
   font-size: 18px;
   color: #000 !important;
 }
 
 .el-dialog__header {
-  height: 54px;
+  height: 35px !important;
   padding: 0;
   margin-right: 0 !important;
   text-align: center;
   border-bottom: 1px solid var(--el-border-color);
+}
+
+:deep(.el-input.is-disabled .el-input__inner) {
+  color: #000 !important;
+  -webkit-text-fill-color: #000 !important;
 }
 </style>

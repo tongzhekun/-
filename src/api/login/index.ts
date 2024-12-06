@@ -178,6 +178,69 @@ export const searchAllocateCk = (data: any): Promise<IResponse<any>> => {
 export const exportAllocateCk = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/exportAllocateCk', data)
 }
+//提交需求预估流程
+export const submitDemand = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/submitDemand', data)
+}
+
+//查询下一审批人列表
+export const searchNextApproval = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchNextApproval', data)
+}
+//查询待办
+export const searchTodo = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchTodo', data)
+}
+//查询需求信息
+export const searchDemand = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchDemand', data)
+}
+//查询当前是不是最后一个节点
+export const searchMaxFlowNode = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchMaxFlowNode', data)
+}
+//查询已办
+export const searchDone = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchDone', data)
+}
+//取消流程
+export const cancel = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/cancel', data)
+}
+//否决流程
+export const deny = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/deny', data)
+}
+//退回第一步流程
+export const backfirst = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/backfirst', data)
+}
+//退回上一步流程
+export const backlast = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/backlast', data)
+}
+
+//流程跟踪
+export const trace = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/trace', data)
+}
+//查询
+export const searchDemandTotal = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchDemandTotal', data)
+}
+//导出
+export const exportDemandTotal = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/exportDemandTotal', data)
+}
+//查询客户姓名
+export const searchCustList = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchCustList', data)
+}
+//查询市场部有物料的
+export const searchDepartWz = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchDepartWz', data)
+}
+
 // export const loginApi = (data: any): Promise<IResponse<any>> => {
 //   return axios
 //     .post('http://localhost/wzgl/public/index.php/index/checkLogin', data)

@@ -41,7 +41,7 @@
           <el-pagination
             background
             size="small"
-            layout="prev, pager, next"
+            layout="total, prev, pager, next"
             :total="total"
             v-model:current-page="currentPage"
             :page-size="pageSize"
@@ -51,11 +51,11 @@
             :data="form.loanData"
             v-loading="loading"
             element-loading-text="加载中"
-            :element-loading-spinner="svg"
+            :header-cell-style="{ color: '#212121' }"
             element-loading-svg-view-box="-10, -10, 50, 50"
             element-loading-background="rgba(122, 122, 122, 0.8)"
             border
-            style=" width: 97%; height: 325px;margin-top: 5px"
+            style="width: 97%; height: 325px; margin-top: 5px"
           >
             <el-table-column
               prop="material_code"
@@ -145,7 +145,7 @@ export default {
     const response1 = await treeSc({}) // 调用 upload 函数并传入 payload
     this.instCodeScOptions = response1.data.data
     const userStore = useUserStore()
-    const loginInfo = userStore.getLoginInfo
+    const loginInfo = userStore.getUserInfo
     this.userId = loginInfo.userId
     this.searchClick()
   },
@@ -247,7 +247,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .container {
   margin: 20px;
 }
@@ -354,5 +354,16 @@ td {
   margin-right: 0 !important;
   text-align: center;
   border-bottom: 1px solid var(--el-border-color);
+}
+
+.el-table .cell {
+  padding: 0 12px;
+  overflow: hidden;
+  line-height: 23px;
+  color: #404040;
+  text-overflow: ellipsis;
+  white-space: normal;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
 }
 </style>

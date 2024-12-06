@@ -24,7 +24,7 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="4" style="text-align: left"> </el-col>
+        <el-col :span="4" style="text-align: left" />
         <el-col :span="10" style="text-align: left">
           <el-button type="info" round @click="paramDialog">卷烟参数设置</el-button>
           <el-button type="danger" round @click="paramSelectDialog">投放规则</el-button>
@@ -38,7 +38,6 @@
             :data="allocationResults"
             v-loading="loading"
             element-loading-text="加载中"
-            :element-loading-spinner="svg"
             element-loading-svg-view-box="-10, -10, 50, 50"
             element-loading-background="rgba(122,122,122,0.8)"
             style="width: 100%; height: 330px"
@@ -61,8 +60,7 @@
                   v-model="scope.row.allocations[reversedLevels.indexOf(level)]"
                   size="small"
                   @blur="handleInputBlur(scope.row)"
-                >
-                </el-input>
+                />
                 <span v-else> {{ scope.row.allocations[reversedLevels.indexOf(level)] }}</span>
               </template>
             </el-table-column>
@@ -124,9 +122,9 @@
             <el-col :span="24">
               <el-form-item label="档位间差距大小" prop="tier">
                 <el-select v-model="formData.selectedLevel" placeholder="请选择档位">
-                  <el-option label="高" :value="1"></el-option>
-                  <el-option label="中" :value="2"></el-option>
-                  <el-option label="低" :value="3"></el-option>
+                  <el-option label="高" :value="1" />
+                  <el-option label="中" :value="2" />
+                  <el-option label="低" :value="3" />
                 </el-select>
               </el-form-item>
             </el-col>
@@ -135,10 +133,10 @@
             <el-col :span="24">
               <el-form-item label="高价烟投放范围" prop="range">
                 <el-select v-model="formData.selectedRange" placeholder="请选择档位">
-                  <el-option label="30-25档" :value="5"></el-option>
-                  <el-option label="30-20档" :value="4"></el-option>
-                  <el-option label="30-15档" :value="3"></el-option>
-                  <el-option label="30-1档" :value="2"></el-option>
+                  <el-option label="30-25档" :value="5" />
+                  <el-option label="30-20档" :value="4" />
+                  <el-option label="30-15档" :value="3" />
+                  <el-option label="30-1档" :value="2" />
                 </el-select>
               </el-form-item>
             </el-col>
@@ -147,8 +145,8 @@
             <el-col :span="24">
               <el-form-item label="客户高档位投放量大于低档位投放量" prop="amount">
                 <el-select v-model="formData.selectedWeekMonth" placeholder="请选择">
-                  <el-option label="月高于" :value="5"></el-option>
-                  <el-option label="周高于" :value="4"></el-option>
+                  <el-option label="月高于" :value="5" />
+                  <el-option label="周高于" :value="4" />
                 </el-select>
               </el-form-item>
             </el-col>
@@ -157,8 +155,8 @@
             <el-col :span="24">
               <el-form-item label="客户之间本周存销比差异性" prop="difference">
                 <el-select v-model="formData.selectedweekDifference" placeholder="请选择">
-                  <el-option label="等于上轮" :value="5"></el-option>
-                  <el-option label="小于上轮" :value="4"></el-option>
+                  <el-option label="等于上轮" :value="5" />
+                  <el-option label="小于上轮" :value="4" />
                 </el-select>
               </el-form-item>
             </el-col>
@@ -185,28 +183,28 @@
               <!-- 预测批发量 -->
               <el-col :span="24">
                 <el-form-item label="预测批发量：" prop="tier">
-                  <el-input v-model="formData.preWholesale" disabled></el-input>
+                  <el-input v-model="formData.preWholesale" disabled />
                 </el-form-item>
               </el-col>
 
               <!-- 预测动销率 -->
               <el-col :span="24">
                 <el-form-item label="预测动销率：" prop="range">
-                  <el-input v-model="formData.preFixRate" disabled></el-input>
+                  <el-input v-model="formData.preFixRate" disabled />
                 </el-form-item>
               </el-col>
 
               <!-- 预测社会销量 -->
               <el-col :span="24">
                 <el-form-item label="预测社会销量：" prop="amount">
-                  <el-input v-model="formData.preSocitySale" disabled></el-input>
+                  <el-input v-model="formData.preSocitySale" disabled />
                 </el-form-item>
               </el-col>
 
               <!-- 预测社会存销比 -->
               <el-col :span="24">
                 <el-form-item label="预测社会存销比：" prop="difference">
-                  <el-input v-model="formData.preSocityStockSaleRate" disabled></el-input>
+                  <el-input v-model="formData.preSocityStockSaleRate" disabled />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -688,7 +686,6 @@ export default {
     async calculateDistribution() {
       this.loading = true
       this.allocationResults = []
-
       ;(this.newAllocationResults = []),
         setTimeout(async () => {
           //查询所有的香烟
@@ -935,7 +932,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .container {
   margin: 5px;
 }

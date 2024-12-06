@@ -48,6 +48,7 @@ export const useUserStore = defineStore('user', {
     getLoginInfo(): UserLoginType | undefined {
       return this.loginInfo
     },
+
     getRole(): string {
       return this.role
     }

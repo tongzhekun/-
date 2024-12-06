@@ -1,8 +1,21 @@
 <template>
   <div class="container">
-    <el-form :model="form" ref="formRef" :rules="formRules">
-      <el-row type="flex" justify="center" style="margin-top: -15px">
-        <el-col :span="9">
+    <el-form :model="form" ref="formRef" :rules="formRules" label-width="130px">
+      <el-row type="flex" justify="center" style="text-align: left">
+        <el-col :span="8">
+          <el-form-item label="时间：" prop="time">
+            <el-date-picker
+              style="height: 40px"
+              v-model="form.time"
+              type="daterange"
+              range-separator="至"
+              start-placeholder="开始时间"
+              end-placeholder="结束时间"
+              size="small"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
           <el-form-item label="机构：" prop="instCode">
             <el-tree-select
               check-strictly
@@ -13,24 +26,22 @@
             />
           </el-form-item>
         </el-col>
-        <el-col :span="9">
-          <el-form-item label="物料名称：" prop="materialName">
+        <el-col :span="8">
+          <el-form-item label="客户经理名称：" prop="user_name">
             <el-input
-              v-model="form.materialName"
+              v-model="form.user_name"
               style="width: 85%; height: 40px"
-              placeholder="请输入物料名称"
-            />
-          </el-form-item>
-        </el-col>
+              placeholder="请输入客户经理名称"
+            /> </el-form-item
+        ></el-col>
       </el-row>
       <el-row type="flex" justify="center">
         <el-col :span="24" style="text-align: center">
-          <!-- <el-button type="primary" round>查询</el-button> -->
           <el-button type="primary" @click="searchClick">查询</el-button>
-          <el-button type="info" @click="exportClick">导出库存</el-button>
+          <el-button type="success" @click="exportClick">导出</el-button>
         </el-col>
       </el-row>
-      <el-row style="margin-top: -15px">
+      <el-row style="margin-top: -10px">
         <el-col :span="24">
           <el-pagination
             background
@@ -43,48 +54,42 @@
           />
           <el-table
             :data="form.loanData"
+            border
             v-loading="loading"
             element-loading-text="加载中"
             element-loading-svg-view-box="-10, -10, 50, 50"
             element-loading-background="rgba(122, 122, 122, 0.8)"
             :header-cell-style="{ color: '#212121' }"
-            border
-            style="width: 97%; height: 325px; margin-top: 5px"
+            style="width: 97%; height: 330px; margin-top: 5px"
           >
             <el-table-column
               prop="material_name"
               header-align="center"
               fixed
+              align="center"
               label="物料名称"
               width="auto"
             />
             <el-table-column
-              prop="warranty_period"
+              prop="material_type"
               header-align="center"
-              label="发放结束时间"
+              label="物料类型"
               align="center"
-              width="auto"
+              width="130px"
             />
             <el-table-column
-              prop="creation_time"
+              prop="consumable"
               header-align="center"
-              label="入库时间"
+              label="是否易耗品(1是0否)"
               align="center"
-              width="auto"
+              width="180px"
             />
             <el-table-column
-              prop="delay_time"
+              prop="num"
               header-align="center"
               align="center"
-              label="延期时间"
-              width="auto"
-            />
-            <el-table-column
-              prop="inventory_quantity"
-              align="center"
-              header-align="center"
-              label="物料数量"
-              width="100px"
+              label="需求数量"
+              width="130px"
             />
           </el-table>
         </el-col>
@@ -94,37 +99,71 @@
 </template>
 
 <script>
-import { tree, searchHistoryCk, exportHistoryCk } from '@/api/login'
+import { searchDemandTotal, tree, exportDemandTotal } from '@/api/login'
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 export default {
   data() {
     return {
-      loading: false,
       total: 0, // 总记录数
       currentPage: 1, // 当前页码
       pageSize: 10, // 每页记录数
+      loading: false,
       userId: '',
       instCodeOptions: [],
       form: {
         instCode: '',
-        materialName: '',
-        loanData: []
+        time: '',
+        loanDataExport: [],
+        loanData: [],
+        user_name: ''
       },
       formRules: {
+        time: [{ required: true, message: '请选择时间', trigger: 'blur' }],
         instCode: [{ required: true, message: '请选择机构', trigger: 'blur' }]
       }
     }
   },
   async created() {
-    const payload = {}
-    const response = await tree(payload) // 调用 upload 函数并传入 payload
+    const response = await tree({}) // 调用 upload 函数并传入 payload
     this.instCodeOptions = response.data.data
-    const userStore = useUserStore()
-    const loginInfo = userStore.getUserInfo
-    this.userId = loginInfo.userId
   },
   methods: {
+    async exportClick() {
+      const payload = {
+        instCode: this.form.instCode,
+        time: this.form.time,
+        user_name: this.form.user_name
+      }
+      const response = await exportDemandTotal(payload) // 调用 upload 函数并传入 payload
+      if (response.data.code == 200) {
+        this.form.loanDataExport = response.data.data
+        const data = []
+        data.push(['物料名称', '物料类型', '是否易耗品(1是0否)', '需求数量'])
+        this.form.loanDataExport.forEach((result) => {
+          data.push([result.material_name, result.material_type, result.consumable, result.num])
+        })
+        const wb = XLSX.utils.book_new()
+        const ws = XLSX.utils.aoa_to_sheet(data) // Convert array of arrays to sheet
+        ws['!cols'] = this.calculateColumnWidths(data)
+        XLSX.utils.book_append_sheet(wb, ws, 'Sheet1') // Append data to Sheet2
+        const excelBlob = new Blob([XLSX.write(wb, { bookType: 'xlsx', type: 'array' })], {
+          type: 'application/octet-stream'
+        })
+        const link = document.createElement('a')
+        link.href = URL.createObjectURL(excelBlob) // Create blob URL
+        link.setAttribute('download', '需求预估汇总导出表.xlsx') // Set file name
+        document.body.appendChild(link)
+        link.click() // Trigger download
+        document.body.removeChild(link) // Clean up the link
+      } else {
+        this.$message.error(response.data.data.message)
+      }
+    },
+    async searchClick() {
+      this.currentPage = 1
+      this.fetchData()
+    },
     fetchData() {
       let validatestat = false
       this.$refs['formRef'].validate((valid) => {
@@ -141,9 +180,10 @@ export default {
             page: this.currentPage,
             pageSize: this.pageSize,
             instCode: this.form.instCode,
-            materialName: this.form.materialName
+            time: this.form.time,
+            user_name: this.form.user_name
           }
-          const response = await searchHistoryCk(payload) // 调用 upload 函数并传入 payload
+          const response = await searchDemandTotal(payload) // 调用 upload 函数并传入 payload
           if (response.data.code == 200) {
             this.form.loanData = response.data.data
             this.total = response.data.total
@@ -153,74 +193,7 @@ export default {
           this.loading = false
         }
       }, 300)
-    },
-    async searchClick() {
-      this.currentPage = 1
-      this.fetchData()
-    },
-    async exportClick() {
-      const data = []
-      data.push([
-        '物料编码',
-        '物料类型',
-        '物料名称',
-        '物料单位',
-        '物料规格',
-        '采购年份',
-        '是否易耗品',
-        '库存数量',
-        '可用数量',
-        '物料价格',
-        '费用类型',
-        '采购方式',
-        '采购项目名称',
-        '供应商名称',
-        '质保到期时间',
-        '延期时间'
-      ])
-      const payload = {
-        instCode: this.form.instCode,
-        materialName: this.form.materialName
-      }
-      const response = await exportHistoryCk(payload) // 调用 upload 函数并传入 payload
-      if (response.data.code == 200) {
-        const loanData1 = response.data.data
-        loanData1.forEach((result) => {
-          data.push([
-            result.material_code,
-            result.material_type,
-            result.material_name,
-            result.material_unit,
-            result.material_specification,
-            result.procurement_time,
-            result.consumable,
-            result.inventory_quantity,
-            result.available_quantity,
-            result.material_price,
-            result.cost_type,
-            result.procurement_method,
-            result.project_name,
-            result.supplier_name,
-            result.warranty_period,
-            result.delay_time
-          ])
-        })
-      } else {
-        this.$message.error(response.data.data.message)
-      }
-      const wb = XLSX.utils.book_new()
-      const ws = XLSX.utils.aoa_to_sheet(data) // Convert array of arrays to sheet
-      ws['!cols'] = this.calculateColumnWidths(data)
-      XLSX.utils.book_append_sheet(wb, ws, 'Sheet1') // Append data to Sheet2
-      const excelBlob = new Blob([XLSX.write(wb, { bookType: 'xlsx', type: 'array' })], {
-        type: 'application/octet-stream'
-      })
-      const link = document.createElement('a')
-      link.href = URL.createObjectURL(excelBlob) // Create blob URL
-      link.setAttribute('download', '历史库存表.xlsx') // Set file name
-      document.body.appendChild(link)
-      link.click() // Trigger download
-      document.body.removeChild(link) // Clean up the link
+      this.$forceUpdate()
     },
     calculateColumnWidths(data) {
       const columnWidths = []
@@ -238,11 +211,15 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .container {
-  margin: 20px;
+  margin-left: 20px !important;
+  margin-right: 20px !important;
 }
-
+:deep(.el-input.is-disabled .el-input__inner) {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
 table {
   width: 100%;
   margin-bottom: 20px;
@@ -253,6 +230,7 @@ table {
 }
 
 .el-table--fit {
+  border-top: 1px solid #909399;
   border-right: 1px solid #909399;
   border-bottom: 0;
   border-bottom: 1px solid #909399;
@@ -269,7 +247,6 @@ td {
   padding: 0 12px;
   overflow: hidden;
   line-height: auto;
-  color: #212121;
   text-overflow: ellipsis;
   white-space: normal;
   box-sizing: border-box;
@@ -346,15 +323,37 @@ td {
   text-align: center;
   border-bottom: 1px solid var(--el-border-color);
 }
-
-.el-table .cell {
-  padding: 0 12px;
-  overflow: hidden;
-  line-height: 23px;
-  color: #404040;
-  text-overflow: ellipsis;
-  white-space: normal;
+:deep(.el-input.is-disabled .el-input__wrapper) {
+  background-color: #dcdcdc;
+  box-shadow: 0 0 0 1px var(--el-disabled-border-color) inset;
+}
+:deep(.el-form-item__label) {
+  align-items: flex-start;
   box-sizing: border-box;
-  overflow-wrap: break-word;
+  color: #000000 !important;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: var(--el-form-label-font-size);
+  height: 32px;
+  justify-content: flex-end;
+  line-height: 32px;
+  padding: 0 12px 0 0;
+}
+:deep(.el-select__wrapper) {
+  align-items: center;
+  background-color: var(--el-fill-color-blank);
+  border-radius: var(--el-border-radius-base);
+  box-shadow: 0 0 0 1px var(--el-border-color) inset;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: flex;
+  font-size: 14px;
+  gap: 6px;
+  line-height: 40px !important;
+  min-height: 40px !important;
+  padding: 4px 12px;
+  position: relative;
+  text-align: left;
+  transition: var(--el-transition-duration);
 }
 </style>

@@ -8,7 +8,7 @@
     <el-pagination
       background
       size="small"
-      layout="prev, pager, next"
+      layout="total, prev, pager, next"
       :total="total"
       v-model:current-page="currentPage"
       :page-size="pageSize"
@@ -19,7 +19,6 @@
       border
       v-loading="loading"
       element-loading-text="加载中"
-      :element-loading-spinner="svg"
       element-loading-svg-view-box="-10, -10, 50, 50"
       element-loading-background="rgba(122, 122, 122, 0.8)"
       style="width: 97%; height: 325px; margin-top: 5px"
@@ -86,7 +85,7 @@ export default {
   },
   mounted() {
     const userStore = useUserStore()
-    const loginInfo = userStore.getLoginInfo
+    const loginInfo = userStore.getUserInfo
     this.userId = loginInfo.userId
     this.searchClick()
   },
@@ -129,7 +128,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .container {
   margin: 20px;
 }
