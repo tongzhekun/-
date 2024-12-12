@@ -90,7 +90,7 @@ const toLastView = () => {
       return
     }
     // You can set another route
-    push(permissionStore.getAddRouters[0].path)
+    push('/materialIssuance/todo')
   }
 }
 

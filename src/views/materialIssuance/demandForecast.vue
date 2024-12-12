@@ -111,141 +111,147 @@
           <el-button type="primary" @click="submitClick">提交流程</el-button>
         </el-col>
       </el-row>
-      <el-dialog
-        v-model="dialogVisible"
-        title="附件操作"
-        width="550px"
-        class="centered-dialog custom-width-dialog"
-      >
-        <div style="margin-top: 20px">
+      <div v-if="dialogVisible">
+        <el-dialog
+          v-model="dialogVisible"
+          title="附件操作"
+          width="550px"
+          class="centered-dialog custom-width-dialog"
+        >
+          <div style="margin-top: 20px">
+            <el-row>
+              <el-col :span="4">
+                <span>下载模版:</span>
+              </el-col>
+              <el-col :span="5">
+                <a
+                  href="#"
+                  @click.prevent="downloadTemplate"
+                  style="color: #409eff; text-decoration: underline"
+                  >物料需求模板表</a
+                >
+              </el-col>
+            </el-row>
+            <el-row style="margin-top: 15px">
+              <el-col :span="4">
+                <span>上传文件（xlsx格式）:</span>
+              </el-col>
+              <el-col :span="5">
+                <input type="file" ref="fileInput" id="file-input" accept=".xlsx" />
+              </el-col>
+            </el-row>
+          </div>
           <el-row>
-            <el-col :span="4">
-              <span>下载模版:</span>
-            </el-col>
-            <el-col :span="5">
-              <a
-                href="#"
-                @click.prevent="downloadTemplate"
-                style="color: #409eff; text-decoration: underline"
-                >物料需求模板表</a
-              >
+            <el-col :span="24" style="margin-top: 20px; text-align: center">
+              <el-button @click="uploadClick" type="primary">提交</el-button>
+              <el-button @click="dialogVisible = false">取消</el-button>
             </el-col>
           </el-row>
-          <el-row style="margin-top: 15px">
-            <el-col :span="4">
-              <span>上传文件（xlsx格式）:</span>
+        </el-dialog>
+      </div>
+      <div v-if="dialogVisibleMessage">
+        <el-dialog
+          v-model="dialogVisibleMessage"
+          title="需求信息"
+          width="800px"
+          style="height: 350px; overflow: auto"
+          class="centered-dialog custom-width-dialog"
+        >
+          <el-row type="flex" justify="center" style="margin-top: 5px">
+            <el-col :span="12">
+              <el-form-item label="物料名称：" prop="material_name">
+                <el-select
+                  @change="materialNameChange"
+                  v-model="form.material_name"
+                  filterable
+                  :disabled="materialNameShow"
+                  placeholder="请选择物料名称"
+                  style="width: 85%; height: 30px"
+                >
+                  <el-option
+                    v-for="item in wzOptions"
+                    :key="item.material_code"
+                    :label="item.material_name"
+                    :value="item.material_code"
+                  />
+                </el-select>
+              </el-form-item>
+              <el-form-item label="物料类型：" prop="material_type">
+                <el-input
+                  :disabled="true"
+                  v-model="form.material_type"
+                  style="width: 85%; height: 40px"
+                  placeholder="请选择物料类型"
+                />
+              </el-form-item>
+              <el-form-item label="需求数量：" prop="num">
+                <el-input
+                  v-model="form.num"
+                  @input="handleInput"
+                  style="width: 85%; height: 40px"
+                  placeholder="请选择需求数量"
+                />
+              </el-form-item>
             </el-col>
-            <el-col :span="5">
-              <input type="file" ref="fileInput" id="file-input" accept=".xlsx" />
+            <el-col :span="12">
+              <el-form-item label="物料编码：" prop="material_code">
+                <el-input
+                  :disabled="true"
+                  v-model="form.material_code"
+                  style="width: 85%; height: 40px"
+                  placeholder="请选择物料编码"
+                />
+              </el-form-item>
+              <el-form-item label="是否易耗品：" prop="consumable">
+                <el-radio-group v-model="form.consumable">
+                  <el-radio value="1" :disabled="true">是</el-radio>
+                  <el-radio value="0" :disabled="true">否</el-radio>
+                </el-radio-group>
+              </el-form-item>
             </el-col>
           </el-row>
-        </div>
-        <el-row>
-          <el-col :span="24" style="margin-top: 20px; text-align: center">
-            <el-button @click="uploadClick" type="primary">提交</el-button>
-            <el-button @click="dialogVisible = false">取消</el-button>
-          </el-col>
-        </el-row>
-      </el-dialog>
-      <el-dialog
-        v-model="dialogVisibleMessage"
-        title="需求信息"
-        width="800px"
-        style="height: 350px; overflow: auto"
-        class="centered-dialog custom-width-dialog"
-      >
-        <el-row type="flex" justify="center" style="margin-top: 5px">
-          <el-col :span="12">
-            <el-form-item label="物料名称：" prop="material_name">
-              <el-select
-                @change="materialNameChange"
-                v-model="form.material_name"
-                filterable
-                :disabled="materialNameShow"
-                placeholder="请选择物料名称"
-                style="width: 85%; height: 30px"
-              >
-                <el-option
-                  v-for="item in wzOptions"
-                  :key="item.material_code"
-                  :label="item.material_name"
-                  :value="item.material_code"
-                />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="物料类型：" prop="material_type">
-              <el-input
-                :disabled="true"
-                v-model="form.material_type"
-                style="width: 85%; height: 40px"
-                placeholder="请选择物料类型"
-              />
-            </el-form-item>
-            <el-form-item label="需求数量：" prop="num">
-              <el-input
-                v-model="form.num"
-                @input="handleInput"
-                style="width: 85%; height: 40px"
-                placeholder="请选择需求数量"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="物料编码：" prop="material_code">
-              <el-input
-                :disabled="true"
-                v-model="form.material_code"
-                style="width: 85%; height: 40px"
-                placeholder="请选择物料编码"
-              />
-            </el-form-item>
-            <el-form-item label="是否易耗品：" prop="consumable">
-              <el-radio-group v-model="form.consumable">
-                <el-radio value="1" :disabled="true">是</el-radio>
-                <el-radio value="0" :disabled="true">否</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24" style="text-align: center">
-            <el-button type="primary" @click="confirmRoleClick">确认</el-button>
-          </el-col>
-        </el-row>
-      </el-dialog>
-      <el-dialog
-        v-model="dialogVisibleApproval"
-        title="选择审批人"
-        width="500px"
-        style="height: 230px; overflow: auto"
-        class="centered-dialog custom-width-dialog"
-      >
-        <el-row type="flex" justify="center" style="margin-top: 5px">
-          <el-col :span="24">
-            <el-form-item label="审批人：" prop="next_approval_id">
-              <el-select
-                v-model="form.next_approval_id"
-                clearable
-                @change="nextApprovalIdChange"
-                placeholder="请选择审批人"
-                style="width: 85%; height: 30px"
-              >
-                <el-option
-                  v-for="item in approveOptions"
-                  :key="item.employee_code"
-                  :label="item.employee_name + '(' + item.employee_code + ')'"
-                  :value="item.employee_code"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24" style="margin-top: 5px; text-align: center">
-            <el-button type="primary" @click="confirmApprovalClick">提交</el-button>
-          </el-col>
-        </el-row>
-      </el-dialog>
+          <el-row>
+            <el-col :span="24" style="text-align: center">
+              <el-button type="primary" @click="confirmRoleClick">确认</el-button>
+            </el-col>
+          </el-row>
+        </el-dialog>
+      </div>
+      <div v-if="dialogVisibleApproval">
+        <el-dialog
+          v-model="dialogVisibleApproval"
+          title="选择审批人"
+          width="500px"
+          style="height: 230px; overflow: auto"
+          class="centered-dialog custom-width-dialog"
+        >
+          <el-row type="flex" justify="center" style="margin-top: 5px">
+            <el-col :span="24">
+              <el-form-item label="审批人：" prop="next_approval_id">
+                <el-select
+                  v-model="form.next_approval_id"
+                  clearable
+                  @change="nextApprovalIdChange"
+                  placeholder="请选择审批人"
+                  style="width: 85%; height: 30px"
+                >
+                  <el-option
+                    v-for="item in approveOptions"
+                    :key="item.employee_code"
+                    :label="item.employee_name + '(' + item.employee_code + ')'"
+                    :value="item.employee_code"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24" style="margin-top: 5px; text-align: center">
+              <el-button type="primary" @click="confirmApprovalClick">提交</el-button>
+            </el-col>
+          </el-row>
+        </el-dialog>
+      </div>
     </el-form>
   </div>
 </template>
@@ -263,7 +269,6 @@ export default {
       materialNameShow: true,
       uploadArray: [],
       wzOptions: [],
-      role: '0', //1是本部库存管理员
       loading: false,
       userId: '',
       dialogVisible: false,
@@ -286,7 +291,9 @@ export default {
         next_approval_name: ''
       },
       formRules: {
-        next_approval_id: [{ required: true, message: '请选择审批人', trigger: 'blur' }]
+        next_approval_id: [{ required: true, message: '请选择审批人', trigger: 'blur' }],
+        num: [{ required: true, message: '请输入需求数量', trigger: 'blur' }],
+        material_name: [{ required: true, message: '请输入物料名称', trigger: 'blur' }]
       }
     }
   },
@@ -418,36 +425,48 @@ export default {
     },
     confirmRoleClick() {
       //新增
-      if (!this.materialNameShow) {
-        //判断原来数据里面有没有，有的话报错
-        let errorType = '1'
-        this.form.loanData.forEach((item) => {
-          if (item.material_code == this.form.material_code) {
-            errorType = '2'
-            return
-          }
-        })
-        if (errorType == '1') {
-          this.form.loanData.push({
-            material_code: this.form.material_code,
-            material_name: this.material_name,
-            material_type: this.form.material_type,
-            consumable: this.form.consumable,
-            num: this.form.num
-          })
-          this.dialogVisibleMessage = false
+      let validatestat = false
+      this.$refs['formRef'].validate((valid) => {
+        if (valid) {
+          validatestat = true
         } else {
-          this.$message.error('该物料已存在！')
+          return false
         }
-        // 修改
-      } else {
-        this.form.loanData.forEach((item) => {
-          if ((item.material_code = this.form.material_code)) {
-            item.num = this.form.num
+      })
+      setTimeout(async () => {
+        if (validatestat) {
+          if (!this.materialNameShow) {
+            //判断原来数据里面有没有，有的话报错
+            let errorType = '1'
+            this.form.loanData.forEach((item) => {
+              if (item.material_code == this.form.material_code) {
+                errorType = '2'
+                return
+              }
+            })
+            if (errorType == '1') {
+              this.form.loanData.push({
+                material_code: this.form.material_code,
+                material_name: this.material_name,
+                material_type: this.form.material_type,
+                consumable: this.form.consumable,
+                num: this.form.num
+              })
+              this.dialogVisibleMessage = false
+            } else {
+              this.$message.error('该物料已存在！')
+            }
+            // 修改
+          } else {
+            this.form.loanData.forEach((item) => {
+              if ((item.material_code = this.form.material_code)) {
+                item.num = this.form.num
+              }
+            })
+            this.dialogVisibleMessage = false
           }
-        })
-        this.dialogVisibleMessage = false
-      }
+        }
+      }, 300)
     },
     materialNameChange() {
       this.form.material_code = this.form.material_name

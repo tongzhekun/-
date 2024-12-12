@@ -10,7 +10,7 @@ const { closeAll, closeLeft, closeRight, closeOther, closeCurrent, refreshPage, 
 
 const closeAllTabs = () => {
   closeAll(() => {
-    push('/gearPlacement/index')
+    push('/materialIssuance/todo')
   })
 }
 
@@ -32,7 +32,7 @@ const refresh = () => {
 
 const closeCurrentTab = () => {
   closeCurrent(undefined, () => {
-    push('/gearPlacement/index')
+    push('/materialIssuance/todo')
   })
 }
 
@@ -41,7 +41,7 @@ const setTabTitle = () => {
 }
 
 const setAnalysisTitle = () => {
-  setTitle(`分析页-${new Date().getTime().toString()}`, '/gearPlacement/index')
+  setTitle(`分析页-${new Date().getTime().toString()}`, '/materialIssuance/todo')
 }
 </script>
 

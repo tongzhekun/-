@@ -16,7 +16,6 @@ import { useValidator } from '@/hooks/web/useValidator'
 // import { Icon } from '@/components/Icon'
 import { useUserStore } from '@/store/modules/user'
 import { BaseButton } from '@/components/Button'
-import { userRole } from '@/api/login'
 // import { changeGlobalNodesTarget } from 'element-plus/es/utils'
 
 const { required } = useValidator()
@@ -244,35 +243,15 @@ const signIn = async () => {
         if (res.data.code === 200) {
           console.log('6666666666')
           // 是否记住我
-          if (unref(remember)) {
-            userStore.setLoginInfo({
-              userId: formData.userId,
-              username: formData.username,
-              password: ''
-            })
-          } else {
-            userStore.setLoginInfo(undefined)
-          }
-          const response = await userRole({ userId: formData.userId }) // 调用 upload 函数并传入 payload
-          if (response.data.code == 200) {
-            const roleKey = response.data.data
-            const roleKeyArray = response.data.data
-            if (roleKey.length > 0) {
-              roleKey.forEach((item) => {
-                roleKeyArray.push(item.role_id)
-              })
-              if (roleKeyArray.length > 1) {
-                const roleId = roleKeyArray.join(',')
-                userStore.setRole(roleId)
-              } else {
-                const roleId = roleKeyArray[0]
-                userStore.setRole(roleId)
-              }
-            } else {
-              const roleId = ''
-              userStore.setRole(roleId)
-            }
-          }
+          // if (unref(remember)) {
+          userStore.setLoginInfo({
+            userId: formData.userId,
+            username: formData.username,
+            password: ''
+          })
+          // } else {
+          //   userStore.setLoginInfo(undefined)
+          // }
           userStore.setRememberMe(unref(remember))
           console.log(
             res.data.data,

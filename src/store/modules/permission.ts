@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { asyncRouterMap, constantRouterMap, littleRouterMap } from '@/router'
+import { asyncRouterMap, constantRouterMap } from '@/router'
 import {
   generateRoutesByFrontEnd,
   generateRoutesByServer,
@@ -52,11 +52,7 @@ export const usePermissionStore = defineStore('permission', {
           routerMap = generateRoutesByFrontEnd(cloneDeep(asyncRouterMap), routers as string[])
         } else {
           // 直接读取静态路由表111
-          if (useUserStore().getRole.indexOf('yc001') > -1) {
-            routerMap = cloneDeep(asyncRouterMap)
-          } else {
-            routerMap = cloneDeep(littleRouterMap)
-          }
+          routerMap = cloneDeep(asyncRouterMap)
         }
         // 动态路由，404一定要放到最后面
         this.addRouters = routerMap.concat([
@@ -69,7 +65,7 @@ export const usePermissionStore = defineStore('permission', {
             //   breadcrumb: false
             // }
             path: '/',
-            redirect: '/gearPlacement/index',
+            redirect: '/materialIssuance/todo',
             name: 'Root',
             meta: {
               hidden: true

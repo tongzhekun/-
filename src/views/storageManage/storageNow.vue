@@ -241,6 +241,7 @@ import { useUserStore } from '@/store/modules/user'
 export default {
   data() {
     return {
+      roleKeyArray: [],
       role: '0', //1是本部库存管理员
       loading: false,
       total: 0, // 总记录数
@@ -275,7 +276,15 @@ export default {
     const userStore = useUserStore()
     const loginInfo = userStore.getUserInfo
     this.userId = loginInfo.userId
-    if (useUserStore().getRole.indexOf('yc001') > -1) {
+    const response2 = await userRole({ userId: this.userId })
+    const roleKey = response2.data.data
+    this.roleKeyArray = []
+    if (roleKey.length > 0) {
+      roleKey.forEach((item) => {
+        this.roleKeyArray.push(item.role_id)
+      })
+    }
+    if (this.roleKeyArray.indexOf('yc001') > -1) {
       this.role = '1'
     }
     const responseWzType = await wzType({})

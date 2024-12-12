@@ -1,5 +1,5 @@
 <script lang="tsx">
-import { computed, defineComponent, unref, PropType } from 'vue'
+import { computed, defineComponent, unref, PropType, ref, onMounted } from 'vue'
 import { ElMenu, ElScrollbar } from 'element-plus'
 import { useAppStore } from '@/store/modules/app'
 import { usePermissionStore } from '@/store/modules/permission'
@@ -7,11 +7,14 @@ import { useRenderMenuItem } from './components/useRenderMenuItem'
 import { useRouter } from 'vue-router'
 import { isUrl } from '@/utils/is'
 import { useDesign } from '@/hooks/web/useDesign'
+import { userRole } from '@/api/login'
 
+import { useUserStore } from '@/store/modules/user'
+const userStore = useUserStore()
 const { getPrefixCls } = useDesign()
 
 const prefixCls = getPrefixCls('menu')
-
+const result = ref<string[] | null>(null)
 export default defineComponent({
   name: 'Menu',
   props: {
@@ -39,12 +42,82 @@ export default defineComponent({
         return 'horizontal'
       }
     })
+    const userRole1 = async (): Promise<string[]> => {
+      return new Promise((resolve) => {
+        setTimeout(async () => {
+          if (userStore.getLoginInfo) {
+            const userId = userStore.getLoginInfo.userId
+            const response = await userRole({ userId })
+            if (response.data) {
+              const roleKey = response.data.data
+              const roleKeyArray: string[] = []
+              if (Array.isArray(roleKey) && roleKey.length > 0) {
+                roleKey.forEach((item) => {
+                  roleKeyArray.push(item.role_id)
+                })
+                resolve(roleKeyArray) // 返回解析后的角色数组
+              } else {
+                resolve([]) // 返回空数组
+              }
+            } else {
+              resolve([]) // 返回空数组
+            }
+          } else {
+            resolve([]) // 返回空数组
+          }
+        }, 200) // 模拟 2 秒的异步操作
+      })
+    }
 
-    const routers = computed(() => {
-      return unref(layout) === 'cutMenu'
-        ? permissionStore.getMenuTabRouters
-        : permissionStore.getRouters
+    // 在 mounted 钩子中调用异步函数并更新 result
+    onMounted(async () => {
+      result.value = await userRole1()
     })
+
+    // 使用 computed 来计算路由
+    const routers = computed(() => {
+      if (!result.value) {
+        return [] // 如果 result 为空，直接返回空数组
+      }
+
+      // 获取用户角色
+      const userRoleArray = result.value
+      console.log(userRoleArray, Array.isArray(userRoleArray), 'userRoleArray')
+
+      // 判断 layout 是否为 'cutMenu'，并返回对应的路由
+      const routerArray =
+        unref(layout) === 'cutMenu' ? permissionStore.getMenuTabRouters : permissionStore.getRouters
+
+      // 如果 layout 不是 'cutMenu'，加入角色判断逻辑
+      routerArray.forEach((item) => {
+        // 针对 GearPlacement 路由进行角色判断
+        if (item.name === 'GearPlacement') {
+          if (Array.isArray(userRoleArray) && userRoleArray.indexOf('yc009') === -1) {
+            // item.meta.hidden = true
+          }
+        }
+        // 如果有子路由，默认都显示
+        if (item.children != null) {
+          for (let i = 0; i < item.children.length; i++) {
+            if (
+              item.children[i].name === 'GearPlacementDemo' &&
+              Array.isArray(userRoleArray) &&
+              userRoleArray.indexOf('yc009') === -1
+            ) {
+              // item.children[i].meta.hidden = true
+            } else {
+              // item.children[i].meta.hidden = false
+            }
+          }
+        }
+      })
+      return routerArray
+    })
+    // const routers = computed(() => {
+    //   return unref(layout) === 'cutMenu'
+    //     ? permissionStore.getMenuTabRouters
+    //     : permissionStore.getRouters
+    // })
 
     const collapse = computed(() => appStore.getCollapse)
 

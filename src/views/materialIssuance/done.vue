@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import { searchDone, searchDemand } from '@/api/login'
+import { searchDone, searchDemand, searchWzApply } from '@/api/login'
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 export default {
@@ -112,15 +112,25 @@ export default {
       this.form.loanData = []
       // 创建一个数组来存储所有的异步操作Promise
       const promises = responseDone.data.data.map(async (item) => {
-        const responseDemand = await searchDemand({ busi_id: item.busi_id })
-        item.apply_id = responseDemand.data.data[0].user_id
-        item.apply_name = responseDemand.data.data[0].user_name
-        item.time = responseDemand.data.data[0].time
         // 1和2是需求预估
-        if (item.flow_no === '1' || item.flow_no === '2') {
-          item.url = '/materialIssuance/demandForecastApprove'
+        if (item.flow_no == '1' || item.flow_no == '2') {
+          const responseDemand = await searchDemand({ busi_id: item.busi_id })
+          item.apply_id = responseDemand.data.data[0].user_id
+          item.apply_name = responseDemand.data.data[0].user_name
+          item.time = responseDemand.data.data[0].time
+          // 1和2是需求预估
+          if (item.flow_no === '1' || item.flow_no === '2') {
+            item.url = '/materialIssuance/demandForecastApprove'
+          }
+          return item
+        } else if (item.flow_no == '3' || item.flow_no == '4') {
+          const responseDemand = await searchWzApply({ busi_id: item.busi_id })
+          item.apply_id = responseDemand.data.data[0].user_id
+          item.apply_name = responseDemand.data.data[0].user_name
+          item.time = responseDemand.data.data[0].time
+          item.url = '/materialIssuance/reviewApprove'
+          return item
         }
-        return item
       })
       // 使用Promise.all等待所有异步操作完成
       const processedItems = await Promise.all(promises)

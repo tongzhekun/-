@@ -5,6 +5,7 @@
         <el-col :span="9">
           <el-form-item label="客户名称：" prop="custom_name">
             <el-autocomplete
+              @change="inputName"
               v-model="form.custom_name"
               :fetch-suggestions="querySearchAsync"
               placeholder="请输入客户名称"
@@ -65,12 +66,41 @@
           <el-form-item label="申请物料名称：" prop="material_name">
             <el-autocomplete
               v-model="form.material_name"
+              @change="inputName1"
               :fetch-suggestions="querySearchAsync1"
               placeholder="请输入申请物料名称"
               style="width: 85%; height: 40px"
               @select="handleSelect1"
             />
           </el-form-item>
+          <el-form-item label="物料数量：" prop="num">
+            <el-input
+              v-model="form.num"
+              @input="handleInput"
+              style="width: 85%; height: 40px"
+              placeholder="请选择物料数量"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="9">
+          <el-form-item label="终端层级：" prop="terminal_level">
+            <el-input
+              class="inputClass"
+              v-model="form.terminal_level"
+              :disabled="true"
+              style="width: 85%; height: 40px"
+            />
+          </el-form-item>
+          <el-form-item label="是否易耗品：" prop="consumable">
+            <el-radio-group v-model="form.consumable">
+              <el-radio value="1" :disabled="true">是</el-radio>
+              <el-radio value="0" :disabled="true">否</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row type="flex" justify="center" style="text-align: left">
+        <el-col :span="9">
           <el-form-item label="发起人编号：" prop="user_id">
             <el-input
               class="inputClass"
@@ -90,20 +120,6 @@
           </el-form-item>
         </el-col>
         <el-col :span="9">
-          <el-form-item label="终端层级：" prop="terminal_level">
-            <el-input
-              class="inputClass"
-              v-model="form.terminal_level"
-              :disabled="true"
-              style="width: 85%; height: 40px"
-            />
-          </el-form-item>
-          <el-form-item label="是否易耗品：" prop="consumable">
-            <el-radio-group v-model="form.consumable">
-              <el-radio value="1" :disabled="true">是</el-radio>
-              <el-radio value="0" :disabled="true">否</el-radio>
-            </el-radio-group>
-          </el-form-item>
           <el-form-item label="发起人所属机构：" prop="inst_name">
             <el-input
               v-model="form.inst_name"
@@ -127,45 +143,54 @@
           <el-button type="primary" @click="submitClick">提交流程</el-button>
         </el-col>
       </el-row>
-      <el-dialog
-        v-model="dialogVisibleApproval"
-        title="选择审批人"
-        width="500px"
-        style="height: 230px; overflow: auto"
-        class="centered-dialog custom-width-dialog"
-      >
-        <el-row type="flex" justify="center" style="margin-top: 5px">
-          <el-col :span="24">
-            <el-form-item label="审批人：" prop="next_approval_id">
-              <el-select
-                v-model="form.next_approval_id"
-                clearable
-                @change="nextApprovalIdChange"
-                placeholder="请选择审批人"
-                style="width: 85%; height: 30px"
-              >
-                <el-option
-                  v-for="item in approveOptions"
-                  :key="item.employee_code"
-                  :label="item.employee_name + '(' + item.employee_code + ')'"
-                  :value="item.employee_code"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24" style="margin-top: 5px; text-align: center">
-            <el-button type="primary" @click="confirmApprovalClick">提交</el-button>
-          </el-col>
-        </el-row>
-      </el-dialog>
+      <div v-if="dialogVisibleApproval">
+        <el-dialog
+          v-model="dialogVisibleApproval"
+          title="选择审批人"
+          width="500px"
+          style="height: 230px; overflow: auto"
+          class="centered-dialog custom-width-dialog"
+        >
+          <el-row type="flex" justify="center" style="margin-top: 5px">
+            <el-col :span="24">
+              <el-form-item label="审批人：" prop="next_approval_id">
+                <el-select
+                  v-model="form.next_approval_id"
+                  clearable
+                  @change="nextApprovalIdChange"
+                  placeholder="请选择审批人"
+                  style="width: 85%; height: 30px"
+                >
+                  <el-option
+                    v-for="item in approveOptions"
+                    :key="item.employee_code"
+                    :label="item.employee_name + '(' + item.employee_code + ')'"
+                    :value="item.employee_code"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24" style="margin-top: 5px; text-align: center">
+              <el-button type="primary" @click="confirmApprovalClick">提交</el-button>
+            </el-col>
+          </el-row>
+        </el-dialog>
+      </div>
     </el-form>
   </div>
 </template>
 
 <script>
-import { searchDepartWz, searchCustList, userMessage } from '@/api/login'
+import {
+  searchDepartWz,
+  searchCustList,
+  userMessage,
+  searchNextApproval,
+  submitWzApply,
+  searchWzApply
+} from '@/api/login'
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 export default {
@@ -177,14 +202,8 @@ export default {
       flow_no: '3',
       material_name: '',
       materialNameShow: true,
-      uploadArray: [],
-      wzOptions: [],
-      role: '0', //1是本部库存管理员
-      loading: false,
       userId: '',
-      dialogVisible: false,
       dialogVisibleApproval: false,
-      dialogVisibleMessage: false,
       approveOptions: [],
       form: {
         inst_code: '',
@@ -198,22 +217,39 @@ export default {
         operator_telephone: '',
         custom_address: '',
         employee_name: '',
+        material_code: '',
         material_name: '',
         terminal_level: '',
         consumable: '',
+        num: '',
         next_approval_id: '',
         next_approval_name: ''
       },
       formRules: {
-        next_approval_id: [{ required: true, message: '请选择审批人', trigger: 'blur' }]
+        next_approval_id: [{ required: true, message: '请选择审批人', trigger: 'blur' }],
+        num: [{ required: true, message: '请输入物料数量', trigger: 'blur' }],
+        custom_name: [{ required: true, message: '请输入客户名称', trigger: 'blur' }],
+        material_name: [{ required: true, message: '请输入申请物料名称', trigger: 'blur' }],
+        custom_license: [{ required: true, message: '选择客户名称后返显', trigger: 'blur' }],
+        consumable: [{ required: true, message: '选择物料种类后返显', trigger: 'blur' }]
       }
     }
   },
   async created() {
     this.busi_id = this.$route.query.busi_id
     if (this.busi_id != undefined && this.busi_id != '') {
-      const responseDemand = await searchDemand({ busi_id: this.busi_id })
-      this.form.loanData = responseDemand.data.data
+      const responseDemand = await searchWzApply({ busi_id: this.busi_id })
+      this.form.custom_name = responseDemand.data.data[0].custom_name
+      this.form.operator_name = responseDemand.data.data[0].operator_name
+      this.form.custom_license = responseDemand.data.data[0].custom_license
+      this.form.operator_telephone = responseDemand.data.data[0].operator_telephone
+      this.form.custom_address = responseDemand.data.data[0].custom_address
+      this.form.employee_name = responseDemand.data.data[0].employee_name
+      this.form.material_code = responseDemand.data.data[0].material_code
+      this.form.material_name = responseDemand.data.data[0].material_name
+      this.form.terminal_level = responseDemand.data.data[0].terminal_level
+      this.form.consumable = responseDemand.data.data[0].consumable
+      this.form.num = responseDemand.data.data[0].num
     } else {
       this.busi_id = ''
     }
@@ -226,8 +262,6 @@ export default {
     this.form.inst_code = response.data.data[0].inst_code
     this.form.inst_name = response.data.data[0].inst_name
     this.form.telephone = response.data.data[0].telephone
-    const responseWzType = await searchDepartWz({ inst_code: this.form.inst_code })
-    this.wzOptions = responseWzType.data.data
     if (this.form.inst_code.substring(5, 6) === '1') {
       this.flow_no = '4'
     } else {
@@ -237,7 +271,8 @@ export default {
   methods: {
     async querySearchAsync(queryString, cb) {
       const responseResult = await searchCustList({
-        custom_name: queryString
+        custom_name: queryString,
+        user_id: this.form.user_id
       })
       this.customArray = []
       responseResult.data.data.forEach((item) => {
@@ -255,6 +290,7 @@ export default {
       cb(this.customArray)
     },
     handleSelect(item) {
+      console.log('999999999999988888888')
       this.form.custom_name = item.custom_name
       this.form.operator_name = item.operator_name
       this.form.custom_license = item.custom_license
@@ -262,6 +298,28 @@ export default {
       this.form.custom_address = item.custom_address
       this.form.employee_name = item.employee_name
       this.form.terminal_level = item.terminal_level
+      this.$forceUpdate()
+    },
+    inputName() {
+      this.form.operator_name = ''
+      this.form.custom_license = ''
+      this.form.operator_telephone = ''
+      this.form.custom_address = ''
+      this.form.employee_name = ''
+      this.form.terminal_level = ''
+    },
+    inputName1() {
+      this.form.consumable = ''
+    },
+    handleInput() {
+      let value = this.form.num
+      if (value !== null && value !== '') {
+        // 使用正则表达式匹配，只保留数字部分
+        value = value.toString().replace(/\D/g, '')
+        this.form.num = value
+      } else {
+        this.form.num = null
+      }
     },
     async querySearchAsync1(queryString, cb) {
       const responseResult = await searchDepartWz({
@@ -273,14 +331,18 @@ export default {
         this.wzArray.push({
           value: item.material_name,
           material_name: item.material_name,
+          material_code: item.material_code,
           consumable: item.consumable
         })
       })
       cb(this.wzArray)
     },
     handleSelect1(item) {
+      console.log('111111111111')
       this.form.material_name = item.material_name
       this.form.consumable = item.consumable
+      this.form.material_code = item.material_code
+      this.$forceUpdate()
     },
     nextApprovalIdChange() {
       this.approveOptions.forEach((item) => {
@@ -290,72 +352,66 @@ export default {
       })
     },
     async confirmApprovalClick() {
-      let validatestat = false
-      this.$refs['formRef'].validate((valid) => {
-        if (valid) {
-          validatestat = true
-        } else {
-          return false
-        }
-      })
-      setTimeout(async () => {
-        if (validatestat) {
-          try {
-            const responseResult = await submitDemand({
-              busi_id: this.busi_id,
-              flow_no: this.flow_no,
-              flow_node: '1',
-              flow_title:
-                '关于' + this.form.custom_name + '申请' + this.form.material_name + '的需求',
-              approval_content: '',
-              flow_node_name: '客户经理发起',
-              approval_name: this.form.user_name,
-              loanData: this.form.loanData,
-              user_id: this.userId,
-              user_name: this.form.user_name,
-              inst_code: this.form.inst_code,
-              inst_name: this.form.inst_name,
-              telephone: this.form.telephone,
-              next_approval_id: this.form.next_approval_id,
-              next_approval_name: this.form.next_approval_name
-            })
-            this.dialogVisibleApproval = false
-            this.$message.success(responseResult.data.message)
-            this.$router.push('/materialIssuance/todo')
-          } catch (error) {
-            this.$message.error('流程发起失败')
-          }
-        }
-      }, 300)
+      try {
+        const responseResult = await submitWzApply({
+          busi_id: this.busi_id,
+          flow_no: this.flow_no,
+          flow_node: '1',
+          flow_title: this.form.custom_name + '的' + this.form.material_name + '的物料申请',
+          approval_content: '',
+          flow_node_name: '客户经理发起',
+          approval_name: this.form.user_name,
+          user_id: this.userId,
+          user_name: this.form.user_name,
+          inst_code: this.form.inst_code,
+          inst_name: this.form.inst_name,
+          telephone: this.form.telephone,
+          next_approval_id: this.form.next_approval_id,
+          next_approval_name: this.form.next_approval_name,
+          custom_name: this.form.custom_name,
+          operator_name: this.form.operator_name,
+          custom_license: this.form.custom_license,
+          operator_telephone: this.form.operator_telephone,
+          custom_address: this.form.custom_address,
+          employee_name: this.form.employee_name,
+          material_code: this.form.material_code,
+          material_name: this.form.material_name,
+          terminal_level: this.form.terminal_level,
+          consumable: this.form.consumable,
+          num: this.form.num
+        })
+        this.dialogVisibleApproval = false
+        this.$message.success(responseResult.data.message)
+        this.$router.push('/materialIssuance/todo')
+      } catch (error) {
+        this.$message.error('流程发起失败')
+      }
       this.$forceUpdate()
     },
     async submitClick() {
-      console.log(this.form.loanData, 'this.form.loanData')
-      if (this.form.loanData === null || this.form.loanData.length === 0) {
-        this.$message.warning('请先新增物料需求表数据')
-      } else {
-        if (this.form.inst_code.length != 7) {
-          this.$message.warning('只有市场部的客户经理能发起需求预估')
-        } else {
-          const responseResult = await searchNextApproval({
-            inst_code: this.form.inst_code,
-            flow_no: this.flow_no,
-            flow_node: '1'
-          })
-          this.approveOptions = responseResult.data.data
-          this.dialogVisibleApproval = true
+      let validatestat = false
+      try {
+        // 使用await等待验证完成，返回的结果就是验证是否通过（true或false）
+        validatestat = await this.$refs['formRef'].validate()
+      } catch (error) {
+        // 这里可以处理验证过程中出现的异常，比如显示错误提示等
+        console.log(error)
+      }
+      setTimeout(async () => {
+        if (validatestat) {
+          if (this.form.inst_code.length != 7) {
+            this.$message.warning('只有市场部的客户经理能发起物料申请')
+          } else {
+            const responseResult = await searchNextApproval({
+              inst_code: this.form.inst_code,
+              flow_no: this.flow_no,
+              flow_node: '1'
+            })
+            this.approveOptions = responseResult.data.data
+            this.dialogVisibleApproval = true
+          }
         }
-      }
-    },
-    handleInput() {
-      let value = this.form.num
-      if (value !== null && value !== '') {
-        // 使用正则表达式匹配，只保留数字部分
-        value = value.toString().replace(/\D/g, '')
-        this.form.num = value
-      } else {
-        this.form.num = null
-      }
+      }, 300)
     }
   }
 }

@@ -131,6 +131,7 @@ export default {
     storageDistribution: '库存分配记录',
     materialIssuance: '物料发放',
     review: '物料申请',
+    review_approve: '物料申请审核',
     todo: '我的待办',
     done: '我的已办',
     demandForecast: '需求预估发起',

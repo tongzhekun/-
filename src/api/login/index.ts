@@ -241,6 +241,19 @@ export const searchDepartWz = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchDepartWz', data)
 }
 
+//提交物料申请
+export const submitWzApply = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/submitWzApply', data)
+}
+//查询物料申请
+export const searchWzApply = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchWzApply', data)
+}
+//查询发放进度
+export const searchReviewProcess = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchReviewProcess', data)
+}
+
 // export const loginApi = (data: any): Promise<IResponse<any>> => {
 //   return axios
 //     .post('http://localhost/wzgl/public/index.php/index/checkLogin', data)

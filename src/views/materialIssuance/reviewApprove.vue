@@ -3,6 +3,100 @@
     <el-form :model="form" ref="formRef" :rules="formRules" label-width="130px">
       <el-row type="flex" justify="center" style="margin-top: -15px; text-align: left">
         <el-col :span="9">
+          <el-form-item label="客户名称：" prop="custom_name">
+            <el-input
+              v-model="form.custom_name"
+              placeholder="请输入客户名称"
+              :disabled="true"
+              style="width: 85%; height: 40px"
+            />
+          </el-form-item>
+          <el-form-item label="负责人：" prop="operator_name">
+            <el-input
+              class="inputClass"
+              v-model="form.operator_name"
+              :disabled="true"
+              style="width: 85%; height: 40px"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="9">
+          <el-form-item label="许可证号：" prop="custom_license">
+            <el-input
+              class="inputClass"
+              v-model="form.custom_license"
+              :disabled="true"
+              style="width: 85%; height: 40px"
+            />
+          </el-form-item>
+          <el-form-item label="经营者电话：" prop="operator_telephone">
+            <el-input
+              class="inputClass"
+              v-model="form.operator_telephone"
+              :disabled="true"
+              style="width: 85%; height: 40px"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row type="flex" justify="center">
+        <el-col :span="18" style="text-align: center">
+          <el-form-item label="经营地址：" prop="custom_address">
+            <el-input
+              class="inputClass"
+              v-model="form.custom_address"
+              :disabled="true"
+              style="width: 94%; height: 40px"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row type="flex" justify="center" style="text-align: left">
+        <el-col :span="9">
+          <el-form-item label="客户经理：" prop="employee_name">
+            <el-input
+              class="inputClass"
+              v-model="form.employee_name"
+              :disabled="true"
+              style="width: 85%; height: 40px"
+            />
+          </el-form-item>
+          <el-form-item label="申请物料名称：" prop="material_name">
+            <el-input
+              v-model="form.material_name"
+              :disabled="true"
+              placeholder="请输入申请物料名称"
+              style="width: 85%; height: 40px"
+            />
+          </el-form-item>
+          <el-form-item label="物料数量：" prop="num">
+            <el-input
+              v-model="form.num"
+              :disabled="true"
+              style="width: 85%; height: 40px"
+              placeholder="请选择物料数量"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="9">
+          <el-form-item label="终端层级：" prop="terminal_level">
+            <el-input
+              class="inputClass"
+              v-model="form.terminal_level"
+              :disabled="true"
+              style="width: 85%; height: 40px"
+            />
+          </el-form-item>
+          <el-form-item label="是否易耗品：" prop="consumable">
+            <el-radio-group v-model="form.consumable">
+              <el-radio value="1" :disabled="true">是</el-radio>
+              <el-radio value="0" :disabled="true">否</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row type="flex" justify="center" style="text-align: left">
+        <el-col :span="9">
           <el-form-item label="发起人编号：" prop="user_id">
             <el-input
               class="inputClass"
@@ -38,50 +132,6 @@
               placeholder="请输入联系电话"
             />
           </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="24">
-          <el-table
-            :data="form.loanData"
-            border
-            v-loading="loading"
-            element-loading-text="加载中"
-            element-loading-svg-view-box="-10, -10, 50, 50"
-            element-loading-background="rgba(122, 122, 122, 0.8)"
-            :header-cell-style="{ color: '#212121' }"
-            style="width: 97%; height: 290px; margin-top: 5px"
-          >
-            <el-table-column
-              prop="material_name"
-              header-align="center"
-              fixed
-              align="center"
-              label="物料名称"
-              width="auto"
-            />
-            <el-table-column
-              prop="material_type"
-              header-align="center"
-              label="物料类型"
-              align="center"
-              width="110px"
-            />
-            <el-table-column
-              prop="consumable"
-              header-align="center"
-              label="是否易耗品(1是0否)"
-              align="center"
-              width="180px"
-            />
-            <el-table-column
-              prop="num"
-              header-align="center"
-              align="center"
-              label="需求数量"
-              width="110px"
-            />
-          </el-table>
         </el-col>
       </el-row>
       <el-row
@@ -204,11 +254,10 @@
 
 <script>
 import {
-  wzType,
-  submitDemand,
+  submitWzApply,
   userMessage,
   searchNextApproval,
-  searchDemand,
+  searchWzApply,
   searchTodo,
   searchMaxFlowNode,
   cancel,
@@ -236,6 +285,7 @@ export default {
       material_name: '',
       materialNameShow: true,
       uploadArray: [],
+      role: '0', //1是本部库存管理员
       loading: false,
       user_id: '',
       inst_code: '',
@@ -254,12 +304,17 @@ export default {
         user_id: '',
         user_name: '',
         telephone: '',
-        loanData: [],
-        consumable: '',
+        custom_name: '',
+        operator_name: '',
+        custom_license: '',
+        operator_telephone: '',
+        custom_address: '',
+        employee_name: '',
         material_code: '',
-        num: '',
-        material_type: '',
         material_name: '',
+        terminal_level: '',
+        consumable: '',
+        num: '',
         next_approval_id: '',
         next_approval_name: ''
       },
@@ -273,11 +328,20 @@ export default {
     const loginInfo = userStore.getUserInfo
     this.user_id = loginInfo.userId
     this.busi_id = this.$route.query.busi_id
-    const responseDemand = await searchDemand({ busi_id: this.busi_id })
-    this.form.loanData = responseDemand.data.data
+    const responseDemand = await searchWzApply({ busi_id: this.busi_id })
+    this.form.custom_name = responseDemand.data.data[0].custom_name
+    this.form.operator_name = responseDemand.data.data[0].operator_name
+    this.form.custom_license = responseDemand.data.data[0].custom_license
+    this.form.operator_telephone = responseDemand.data.data[0].operator_telephone
+    this.form.custom_address = responseDemand.data.data[0].custom_address
+    this.form.employee_name = responseDemand.data.data[0].employee_name
+    this.form.material_code = responseDemand.data.data[0].material_code
+    this.form.material_name = responseDemand.data.data[0].material_name
+    this.form.terminal_level = responseDemand.data.data[0].terminal_level
+    this.form.consumable = responseDemand.data.data[0].consumable
+    this.form.num = responseDemand.data.data[0].num
     this.form.user_id = responseDemand.data.data[0].user_id
     //发起人信息
-    console.log(this.form.user_id, this.user_id, 'this.user_id')
     const response = await userMessage({ userId: this.form.user_id })
     this.form.user_name = response.data.data[0].employee_name
     this.form.inst_code = response.data.data[0].inst_code
@@ -496,23 +560,34 @@ export default {
       setTimeout(async () => {
         if (validatestat) {
           try {
-            const responseResult = await submitDemand({
+            const responseResult = await submitWzApply({
               flow_no: this.flow_no,
               flow_node: this.flow_node,
               flow_title: this.flow_title,
               approval_content: this.form.approval_content,
               flow_node_name: this.flow_node_name,
               approval_name: this.form.user_name,
-              loanData: this.form.loanData,
-              user_id: this.user_id,
-              user_name: this.user_name,
-              inst_code: this.inst_code,
-              inst_name: this.inst_name,
-              telephone: this.telephone,
+              custom_name: this.form.custom_name,
+              operator_name: this.form.operator_name,
+              custom_license: this.form.custom_license,
+              operator_telephone: this.form.operator_telephone,
+              custom_address: this.form.custom_address,
+              employee_name: this.form.employee_name,
+              material_code: this.form.material_code,
+              material_name: this.form.material_name,
+              terminal_level: this.form.terminal_level,
+              consumable: this.form.consumable,
+              num: this.form.num,
+              user_id: this.form.user_id,
+              user_name: this.form.user_name,
+              inst_code: this.form.inst_code,
+              inst_name: this.form.inst_name,
+              telephone: this.form.telephone,
               next_approval_id: this.form.next_approval_id,
               next_approval_name: this.form.next_approval_name,
               busi_id: this.busi_id
             })
+            console.log(responseResult.data.code, responseResult.data.code === 300, '8888')
             if (responseResult.data.code === 300) {
               this.$message.error(responseResult.data.message)
             } else {

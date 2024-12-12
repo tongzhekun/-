@@ -1,110 +1,43 @@
 <template>
   <div class="container">
-    <el-form :model="form" ref="formRef" :rules="formRules">
-      <el-row type="flex" justify="center" style="margin-top: -15px">
+    <el-form :model="form" ref="formRef" :rules="formRules" label-width="130px" v-if="showAll">
+      <el-row type="flex" justify="center" style="text-align: left">
         <el-col :span="9">
-          <el-form-item label="发起人：" prop="userName">
-            <el-input
-              v-model="form.userName"
-              style="width: 85%; height: 40px"
-              placeholder="请输入发起人"
-            />
-          </el-form-item>
-          <el-form-item label="客户名称：" prop="userName">
-            <el-input
-              v-model="form.userName"
-              style="width: 85%; height: 40px"
-              placeholder="请输入客户名称"
-            />
-          </el-form-item>
-          <el-form-item label="负责人：" prop="userName">
-            <el-input
-              v-model="form.userName"
-              style="width: 85%; height: 40px"
-              placeholder="请输入负责人"
-            />
-          </el-form-item>
-          <el-form-item label="经营地址：" prop="telephone">
-            <el-input
-              v-model="form.telephone"
-              style="width: 85%; height: 40px"
-              placeholder="请输入经营地址"
-            />
-          </el-form-item>
-          <el-form-item label="终端层级：" prop="telephone">
-            <el-input
-              v-model="form.telephone"
-              style="width: 85%; height: 40px"
-              placeholder="请输入终端层级"
-            />
-          </el-form-item>
-          <el-form-item label="物料名称：" prop="telephone">
-            <el-input
-              v-model="form.telephone"
-              style="width: 85%; height: 40px"
-              placeholder="请输入物料名称"
+          <el-form-item label="年份：" prop="procurement_time">
+            <el-date-picker
+              v-model="form.procurement_time1"
+              @change="procurementChange"
+              type="year"
+              placeholder="请选择年份"
             />
           </el-form-item>
         </el-col>
         <el-col :span="9">
-          <el-form-item label="联系电话：" prop="telephone">
-            <el-input
-              v-model="form.telephone"
-              style="width: 85%; height: 40px"
-              placeholder="请输入联系电话"
-            />
-          </el-form-item>
-          <el-form-item label="许可证号：" prop="telephone">
-            <el-input
-              v-model="form.telephone"
-              style="width: 85%; height: 40px"
-              placeholder="请输入许可证号"
-            />
-          </el-form-item>
-          <el-form-item label="经营者电话：" prop="telephone">
-            <el-input
-              v-model="form.telephone"
-              style="width: 85%; height: 40px"
-              placeholder="请输入经营者电话"
-            />
-          </el-form-item>
-          <el-form-item label="客户经理：" prop="telephone">
-            <el-input
-              v-model="form.telephone"
-              style="width: 85%; height: 40px"
-              placeholder="请输入客户经理"
-            />
-          </el-form-item>
-          <el-form-item label="申请物料类型：" prop="telephone">
-            <el-input
-              v-model="form.telephone"
-              style="width: 85%; height: 40px"
-              placeholder="请输入申请物料类型"
-            />
+          <el-form-item label="市场部：" prop="instCode">
+            <el-select
+              v-model="form.instCode"
+              :disabled="level === '1'"
+              clearable
+              placeholder="请选择市场部"
+              style="width: 85%; height: 30px"
+            >
+              <el-option
+                v-for="item in instCodeScOptions"
+                :key="item.inst_code"
+                :label="item.inst_name"
+                :value="item.inst_code"
+              />
+            </el-select>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row type="flex" justify="center">
         <el-col :span="24" style="text-align: center">
-          <!-- <el-button type="primary" round>查询</el-button> -->
           <el-button type="primary" @click="searchClick">查询</el-button>
-          <el-button type="info" @click="exportClick">导出库存</el-button>
-          <el-button type="success" @click="importClick">导入库存</el-button>
-          <el-button type="danger" @click="allocateClick">库存分配</el-button>
-          <el-button type="warning" @click="historyClick">移送历史库存</el-button>
         </el-col>
       </el-row>
-      <el-row style="margin-top: -15px">
+      <el-row style="margin-top: 10px">
         <el-col :span="24">
-          <el-pagination
-            background
-            size="small"
-            layout="total, prev, pager, next"
-            :total="total"
-            v-model:current-page="currentPage"
-            :page-size="pageSize"
-            @current-change="fetchData"
-          />
           <el-table
             :data="form.loanData"
             border
@@ -112,337 +45,153 @@
             element-loading-text="加载中"
             element-loading-svg-view-box="-10, -10, 50, 50"
             element-loading-background="rgba(122, 122, 122, 0.8)"
-            style="width: 97%; height: 325px; margin-top: 5px"
+            :header-cell-style="{ color: '#212121' }"
+            style="width: 97%; height: 330px; margin-top: 5px"
           >
             <el-table-column
-              prop="material_name"
+              prop="inst_name"
               header-align="center"
               fixed
-              label="物料名称"
+              align="center"
+              :label="level === '0' ? '机构名称' : '客户经理'"
               width="auto"
             />
             <el-table-column
-              prop="end_time"
+              prop="done_amount"
               header-align="center"
-              label="发放结束时间"
+              label="已发放金额"
               align="center"
-              width="auto"
-            />
-            <el-table-column
-              prop="creation_time"
-              header-align="center"
-              label="入库时间"
-              align="center"
-              width="auto"
-            />
-            <el-table-column
-              prop="delay_time"
-              header-align="center"
-              align="center"
-              label="延期时间"
-              width="auto"
-            />
-            <el-table-column
-              prop="inventory_quantity"
-              align="center"
-              header-align="center"
-              label="物料数量"
               width="100px"
             />
             <el-table-column
-              prop="project"
-              align="center"
+              prop="is_consumable"
               header-align="center"
-              label="操作"
-              v-if="role === '1'"
+              label="易耗品金额"
+              align="center"
               width="100px"
-            >
-              <template #default="scope">
-                <el-button
-                  round
-                  type="danger"
-                  size="small"
-                  @click.prevent="deleteKcClick(scope.row)"
-                  >删除
-                </el-button>
-              </template>
-            </el-table-column>
+            />
+            <el-table-column
+              prop="no_consumable"
+              header-align="center"
+              label="非易耗品金额"
+              align="center"
+              width="110px"
+            />
+            <el-table-column
+              prop="no_consumable_num"
+              header-align="center"
+              label="非易耗品数量"
+              align="center"
+              width="110px"
+            />
+            <el-table-column
+              prop="pt_price"
+              header-align="center"
+              label="普通终端金额"
+              align="center"
+              width="110px"
+            />
+            <el-table-column
+              prop="jm_price"
+              header-align="center"
+              label="加盟终端金额"
+              align="center"
+              width="110px"
+            />
+            <el-table-column
+              prop="xd_price"
+              header-align="center"
+              label="现代终端金额"
+              align="center"
+              width="110px"
+            />
           </el-table>
         </el-col>
       </el-row>
-      <el-dialog
-        v-model="dialogVisibleKc"
-        title="附件操作"
-        width="550px"
-        class="centered-dialog custom-width-dialog"
-      >
-        <div style="margin-top: 20px">
-          <el-row>
-            <el-col :span="4">
-              <span>下载模版:</span>
-            </el-col>
-            <el-col :span="5">
-              <a
-                href="#"
-                @click.prevent="downloadTemplateKc"
-                style="color: #409eff; text-decoration: underline"
-                >物料库存模版表</a
-              >
-            </el-col>
-          </el-row>
-          <el-row style="margin-top: 15px">
-            <el-col :span="4">
-              <span>上传文件（xlsx格式）:</span>
-            </el-col>
-            <el-col :span="5">
-              <input type="file" ref="fileInput" id="file-input" accept=".xlsx" />
-            </el-col>
-          </el-row>
-        </div>
-        <el-row>
-          <el-col :span="24" style="margin-top: 20px; text-align: center">
-            <el-button @click="uploadKcClick" type="primary">提交</el-button>
-            <el-button @click="dialogVisibleKc = false">取消</el-button>
-          </el-col>
-        </el-row>
-      </el-dialog>
-      <el-dialog
-        v-model="dialogVisibleAllocate"
-        title="附件操作"
-        width="550px"
-        class="centered-dialog custom-width-dialog"
-      >
-        <div style="margin-top: 20px">
-          <el-row>
-            <el-col :span="4">
-              <span>下载模版:</span>
-            </el-col>
-            <el-col :span="5">
-              <a
-                href="#"
-                @click.prevent="downloadTemplateAllocate"
-                style="color: #409eff; text-decoration: underline"
-                >库存分配模版表</a
-              >
-            </el-col>
-          </el-row>
-          <el-row style="margin-top: 15px">
-            <el-col :span="4">
-              <span>上传文件（xlsx格式）:</span>
-            </el-col>
-            <el-col :span="5">
-              <input type="file" ref="fileInput1" id="file-input1" accept=".csv" />
-            </el-col>
-          </el-row>
-        </div>
-        <el-row>
-          <el-col :span="24" style="margin-top: 20px; text-align: center">
-            <el-button @click="uploadAllocateClick" type="primary">提交</el-button>
-            <el-button @click="dialogVisibleAllocate = false">取消</el-button>
-          </el-col>
-        </el-row>
-      </el-dialog>
-      <el-dialog
-        v-model="dialogVisibleHistory"
-        title="附件操作"
-        width="550px"
-        class="centered-dialog custom-width-dialog"
-      >
-        <div style="margin-top: 20px">
-          <el-row>
-            <el-col :span="4">
-              <span>下载模版:</span>
-            </el-col>
-            <el-col :span="5">
-              <a
-                href="#"
-                @click.prevent="downloadTemplateHistory"
-                style="color: #409eff; text-decoration: underline"
-                >移送历史库存模版表</a
-              >
-            </el-col>
-          </el-row>
-          <el-row style="margin-top: 15px">
-            <el-col :span="4">
-              <span>上传文件（xlsx格式）:</span>
-            </el-col>
-            <el-col :span="5">
-              <input type="file" ref="fileInput2" id="file-input2" accept=".csv" />
-            </el-col>
-          </el-row>
-        </div>
-        <el-row>
-          <el-col :span="24" style="margin-top: 20px; text-align: center">
-            <el-button @click="uploadHistoryClick" type="primary">提交</el-button>
-            <el-button @click="dialogVisibleHistory = false">取消</el-button>
-          </el-col>
-        </el-row>
-      </el-dialog>
     </el-form>
   </div>
 </template>
 
 <script>
 import {
-  uploadCust,
-  tree,
+  searchReviewProcess,
+  userRole,
   treeSc,
-  searchCk,
-  importKc,
   wzType,
-  alloateKc,
-  givehistoryKc,
-  exportCk,
-  deleteCk,
-  userRole
+  submitDemand,
+  userMessage,
+  searchNextApproval,
+  searchDemand
 } from '@/api/login'
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 export default {
   data() {
     return {
-      role: '0', //1是本部库存管理员
-      loading: false,
+      level: '0', //0是各市场部，1是市场部各客户经理，2是客户经理各客户
+      instDisable: false,
+      showAll: true,
+      role: '0',
+      roleKeyArray: [],
       total: 0, // 总记录数
       currentPage: 1, // 当前页码
       pageSize: 10, // 每页记录数
-      wzOptions: [],
+      loading: false,
       userId: '',
-      uploadArrayKc: [],
-      uploadArrayAllocate: [],
-      uploadArrayHistory: [],
-      instCodeOptions: [],
       instCodeScOptions: [],
-      dialogVisibleKc: false,
-      dialogVisibleAllocate: false,
-      dialogVisibleHistory: false,
       form: {
         instCode: '',
-        materialName: '',
-        loanData: []
+        procurement_time: '',
+        procurement_time1: '',
+        loanData: [],
+        user_name: '',
+        user_id: ''
       },
       formRules: {
-        instCode: [{ required: true, message: '请选择机构', trigger: 'blur' }]
+        procurement_time: [{ required: true, message: '请选择年份', trigger: 'blur' }]
       }
     }
   },
   async created() {
-    const payload = {}
-    const response = await tree(payload) // 调用 upload 函数并传入 payload
-    this.instCodeOptions = response.data.data
-    const response1 = await treeSc({}) // 调用 upload 函数并传入 payload
-    this.instCodeScOptions = response1.data.data
     const userStore = useUserStore()
     const loginInfo = userStore.getUserInfo
     this.userId = loginInfo.userId
-    if (useUserStore().getRole.indexOf('yc001') > -1) {
+    this.form.user_id = loginInfo.userId
+    const response2 = await userRole({ userId: this.userId })
+    const roleKey = response2.data.data
+    this.roleKeyArray = []
+    if (roleKey.length > 0) {
+      roleKey.forEach((item) => {
+        this.roleKeyArray.push(item.role_id)
+      })
+    }
+    if (this.roleKeyArray.indexOf('yc006') > -1) {
       this.role = '1'
     }
-    const responseWzType = await wzType({})
-    this.wzOptions = responseWzType.data.data
+    const response = await userMessage({ userId: this.userId })
+    this.form.user_name = response.data.data[0].employee_name
+    this.form.inst_code = response.data.data[0].inst_code
+    this.form.inst_name = response.data.data[0].inst_name
+    this.form.telephone = response.data.data[0].telephone
+    const response1 = await treeSc({ inst_code: this.form.inst_code }) // 调用 upload 函数并传入 payload
+    this.instCodeScOptions = response1.data.data
+    if (this.role == '0' && this.form.inst_code.length === 6) {
+      this.showAll = false
+      this.$message.warning('当前用户没有权限，请联系管理员添加')
+    } else {
+      if (this.form.inst_code.length === 7) {
+        this.level = '1'
+      }
+      this.form.procurement_time1 = new Date()
+      this.form.procurement_time = new Date().getFullYear()
+    }
+    this.searchClick()
   },
   methods: {
-    async deleteKcClick(row) {
-      const payload = {
-        materialCode: row.material_code,
-        instCode: '100001'
-      }
-      const response = await deleteCk(payload) // 调用 upload 函数并传入 payload
-      if (response.data.code == 200) {
-        this.$message.success(response.data.message)
-        this.fetchData()
-      } else {
-        this.$message.error(response.data.message)
-      }
+    procurementChange() {
+      this.form.procurement_time = this.form.procurement_time1.getFullYear()
     },
-    allocateClick() {
-      this.$nextTick(() => {
-        if (this.$refs.fileInput1 !== undefined) {
-          this.$refs.fileInput1.value = null
-        }
-      })
-      this.dialogVisibleAllocate = true
-    },
-    historyClick() {
-      this.$nextTick(() => {
-        if (this.$refs.fileInput2 !== undefined) {
-          this.$refs.fileInput2.value = null
-        }
-      })
-      this.dialogVisibleHistory = true
-    },
-    //导入新的库存
-    async uploadKcClick() {
-      try {
-        // 确保文件已上传并处理完成
-        await this.handleFileUploadKc() // 等待文件处理完成
-        if (this.uploadArrayKc.length === 0) {
-          this.$message.warning('没有数据可以提交！')
-          return
-        }
-        const payload = {
-          data: this.uploadArrayKc,
-          userId: this.userId
-        }
-        const response = await importKc(payload) // 调用 upload 函数并传入 payload
-        if (response.data.code === 200) {
-          this.$message.success(response.data.data.message)
-          this.dialogVisibleKc = false // 关闭弹窗
-        } else {
-          this.$message.error(response.data.data.message)
-        }
-      } catch (error) {
-        this.$message.error('上传失败')
-      }
-    },
-    async uploadAllocateClick() {
-      try {
-        // 确保文件已上传并处理完成
-        await this.handleFileUploadAllocate() // 等待文件处理完成
-        if (this.uploadArrayAllocate.length === 0) {
-          this.$message.warning('没有数据可以提交！')
-          return
-        }
-        const payload = {
-          data: this.uploadArrayAllocate,
-          userId: this.userId,
-          allocateCode: '100001'
-        }
-        const response = await alloateKc(payload) // 调用 upload 函数并传入 payload
-        if (response.data.code === 200) {
-          this.$message.success(response.data.data.message)
-          this.dialogVisibleAllocate = false // 关闭弹窗
-        } else {
-          this.$message.error(response.data.data.message)
-        }
-      } catch (error) {
-        this.$message.error('上传失败')
-      }
-    },
-    async uploadHistoryClick() {
-      try {
-        // 确保文件已上传并处理完成
-        await this.handleFileUploadHistory() // 等待文件处理完成
-        if (this.uploadArrayHistory.length === 0) {
-          this.$message.warning('没有数据可以提交！')
-          return
-        }
-        const payload = {
-          data: this.uploadArrayHistory,
-          userId: this.userId
-        }
-        const response = await givehistoryKc(payload) // 调用 upload 函数并传入 payload
-        if (response.data.code === 200) {
-          this.$message.success(response.data.data.message)
-          this.dialogVisibleHistory = false // 关闭弹窗
-        } else {
-          this.$message.error(response.data.data.message)
-        }
-      } catch (error) {
-        this.$message.error('上传失败')
-      }
-    },
-    fetchData() {
+    async searchClick() {
       let validatestat = false
       this.$refs['formRef'].validate((valid) => {
         if (valid) {
@@ -455,12 +204,11 @@ export default {
         if (validatestat) {
           this.loading = true
           const payload = {
-            page: this.currentPage,
-            pageSize: this.pageSize,
+            procurement_time: this.form.procurement_time,
             instCode: this.form.instCode,
-            materialName: this.form.materialName
+            user_id: this.form.user_id
           }
-          const response = await searchCk(payload) // 调用 upload 函数并传入 payload
+          const response = await searchReviewProcess(payload) // 调用 upload 函数并传入 payload
           if (response.data.code == 200) {
             this.form.loanData = response.data.data
             this.total = response.data.total
@@ -471,331 +219,6 @@ export default {
         }
       }, 300)
       this.$forceUpdate()
-    },
-    async searchClick() {
-      this.currentPage = 1
-      this.fetchData()
-    },
-    importClick() {
-      this.$nextTick(() => {
-        if (this.$refs.fileInput !== undefined) {
-          this.$refs.fileInput.value = null
-        }
-      })
-      this.dialogVisibleKc = true
-    },
-    handleFileUploadAllocate(event) {
-      const fileInput1 = document.getElementById('file-input1')
-      const file = fileInput1.files[0] // 获取用户选择的文件
-      if (!file) {
-        alert('请先选择一个文件')
-        return
-      }
-      const reader = new FileReader() // 创建一个 FileReader 实例
-      return new Promise((resolve, reject) => {
-        // 读取文件内容
-        reader.onload = (e) => {
-          const data = e.target.result
-          // 使用 xlsx 库解析文件内容
-          const workbook = XLSX.read(data, { type: 'array' })
-          // 获取名为 '库存分配模版表' 的工作表
-          const sheet = workbook.Sheets['库存分配模版表']
-          // 如果 'Sheet1' 不存在，提醒用户
-          if (!sheet) {
-            alert('没有找到名为 "库存分配模版表" 的工作表')
-            reject('没有找到工作表')
-            return
-          }
-          // 使用 aoa_to_sheet 方法将工作表转化为数据数组
-          const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 }) // header: 1 表示第一行是表头
-          // 初始化一个空数组，存储处理后的数据对象
-          this.uploadArrayAllocate = []
-          // 获取表头数据
-          const headers = jsonData[0] // 第一行是表头
-          // 从第二行开始处理每一行数据
-          for (let i = 1; i < jsonData.length; i++) {
-            const row = jsonData[i]
-            // 创建一个对象，将每列的数据与表头对应起来
-            const rowObject = headers.reduce((acc, header, index) => {
-              acc[header] = row[index] // 将每一列的值映射到对应的表头
-              return acc
-            }, {})
-            this.uploadArrayAllocate.push(rowObject)
-          }
-          resolve() // 确保数据已更新
-        }
-        reader.onerror = (err) => {
-          reject(err)
-        }
-        // 读取文件
-        reader.readAsArrayBuffer(file)
-      })
-    },
-    handleFileUploadHistory(event) {
-      const fileInput2 = document.getElementById('file-input2')
-      const file = fileInput2.files[0] // 获取用户选择的文件
-      if (!file) {
-        alert('请先选择一个文件')
-        return
-      }
-      const reader = new FileReader() // 创建一个 FileReader 实例
-      return new Promise((resolve, reject) => {
-        // 读取文件内容
-        reader.onload = (e) => {
-          const data = e.target.result
-          // 使用 xlsx 库解析文件内容
-          const workbook = XLSX.read(data, { type: 'array' })
-          const sheet = workbook.Sheets['移送库存模版表']
-          if (!sheet) {
-            alert('没有找到名为 "移送库存模版表" 的工作表')
-            reject('没有找到工作表')
-            return
-          }
-          // 使用 aoa_to_sheet 方法将工作表转化为数据数组
-          const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 }) // header: 1 表示第一行是表头
-          // 初始化一个空数组，存储处理后的数据对象
-          this.uploadArrayHistory = []
-          // 获取表头数据
-          const headers = jsonData[0] // 第一行是表头
-          // 从第二行开始处理每一行数据
-          for (let i = 1; i < jsonData.length; i++) {
-            const row = jsonData[i]
-            // 创建一个对象，将每列的数据与表头对应起来
-            const rowObject = headers.reduce((acc, header, index) => {
-              acc[header] = row[index] // 将每一列的值映射到对应的表头
-              return acc
-            }, {})
-            this.uploadArrayHistory.push(rowObject)
-          }
-          resolve() // 确保数据已更新
-        }
-        reader.onerror = (err) => {
-          reject(err)
-        }
-        // 读取文件
-        reader.readAsArrayBuffer(file)
-      })
-    },
-    handleFileUploadKc(event) {
-      const fileInput = document.getElementById('file-input')
-      const file = fileInput.files[0] // 获取用户选择的文件
-      if (!file) {
-        alert('请先选择一个文件')
-        return
-      }
-      const reader = new FileReader() // 创建一个 FileReader 实例
-      return new Promise((resolve, reject) => {
-        // 读取文件内容
-        reader.onload = (e) => {
-          const data = e.target.result
-          // 使用 xlsx 库解析文件内容
-          const workbook = XLSX.read(data, { type: 'array' })
-          // 获取名为 'Sheet1' 的工作表
-          const sheet = workbook.Sheets['Sheet1']
-          // 如果 'Sheet1' 不存在，提醒用户
-          if (!sheet) {
-            alert('没有找到名为 "Sheet1" 的工作表')
-            reject('没有找到工作表')
-            return
-          }
-          // 使用 aoa_to_sheet 方法将工作表转化为数据数组
-          const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 }) // header: 1 表示第一行是表头
-          // 初始化一个空数组，存储处理后的数据对象
-          this.uploadArrayKc = []
-          // 获取表头数据
-          const headers = jsonData[0] // 第一行是表头
-          // 从第二行开始处理每一行数据
-          for (let i = 1; i < jsonData.length; i++) {
-            const row = jsonData[i]
-            // 创建一个对象，将每列的数据与表头对应起来
-            const rowObject = headers.reduce((acc, header, index) => {
-              acc[header] = row[index] // 将每一列的值映射到对应的表头
-              return acc
-            }, {})
-            this.uploadArrayKc.push(rowObject)
-          }
-          resolve() // 确保数据已更新
-        }
-        reader.onerror = (err) => {
-          reject(err)
-        }
-        // 读取文件
-        reader.readAsArrayBuffer(file)
-      })
-    },
-    async downloadTemplateAllocate() {
-      const responseWzType = await wzType({})
-      this.wzOptions = responseWzType.data.data
-      const data = []
-      data.push(['物料编码', '物料名称', '分配市场部编码', '分配市场部名称', '分配数量'])
-      const wb = XLSX.utils.book_new()
-      const ws = XLSX.utils.aoa_to_sheet(data) // Convert array of arrays to sheet
-      ws['!cols'] = this.calculateColumnWidths(data)
-      XLSX.utils.book_append_sheet(wb, ws, '库存分配模版表') // Append data to workbook
-
-      const dataSc = []
-      dataSc.push(['市场部编码', '市场部名称'])
-      this.instCodeScOptions.forEach((result) => {
-        dataSc.push([result.inst_code, result.inst_name])
-      })
-      const wsSc = XLSX.utils.aoa_to_sheet(dataSc) // Convert array of arrays to sheet
-      wsSc['!cols'] = this.calculateColumnWidths(dataSc)
-      XLSX.utils.book_append_sheet(wb, wsSc, '市场部基础表') // Append data to the same workbook
-
-      const dataWz = []
-      dataWz.push(['物料编码', '物料名称', '物料数量'])
-      this.wzOptions.forEach((result) => {
-        dataWz.push([result.material_code, result.material_name, result.inventory_quantity])
-      })
-      const wsWz = XLSX.utils.aoa_to_sheet(dataWz) // Convert array of arrays to sheet
-      wsWz['!cols'] = this.calculateColumnWidths(dataWz)
-      XLSX.utils.book_append_sheet(wb, wsWz, '物料基础表') // Append data to the same workbook
-
-      // Export the workbook
-      const excelBlob = new Blob([XLSX.write(wb, { bookType: 'xlsx', type: 'array' })], {
-        type: 'application/octet-stream'
-      })
-      const link = document.createElement('a')
-      link.href = URL.createObjectURL(excelBlob) // Create blob URL
-      link.setAttribute('download', '库存分配模版表.xlsx') // Set file name
-      document.body.appendChild(link)
-      link.click() // Trigger download
-      document.body.removeChild(link) // Clean up the link
-    },
-    //下载移送库存模版表
-    async downloadTemplateHistory() {
-      const responseWzType = await wzType({})
-      this.wzOptions = responseWzType.data.data
-      const data = []
-      data.push(['物料编码', '物料名称'])
-      const wb = XLSX.utils.book_new()
-      const ws = XLSX.utils.aoa_to_sheet(data) // Convert array of arrays to sheet
-      ws['!cols'] = this.calculateColumnWidths(data)
-      XLSX.utils.book_append_sheet(wb, ws, '移送库存模版表') // Append data to workbookk
-
-      const dataWz = []
-      dataWz.push(['物料编码', '物料名称', '物料数量'])
-      this.wzOptions.forEach((result) => {
-        dataWz.push([result.material_code, result.material_name, result.inventory_quantity])
-      })
-      const wsWz = XLSX.utils.aoa_to_sheet(dataWz) // Convert array of arrays to sheet
-      wsWz['!cols'] = this.calculateColumnWidths(dataWz)
-      XLSX.utils.book_append_sheet(wb, wsWz, '物料基础表') // Append data to the same workbook
-
-      // Export the workbook
-      const excelBlob = new Blob([XLSX.write(wb, { bookType: 'xlsx', type: 'array' })], {
-        type: 'application/octet-stream'
-      })
-      const link = document.createElement('a')
-      link.href = URL.createObjectURL(excelBlob) // Create blob URL
-      link.setAttribute('download', '移送库存模版表.xlsx') // Set file name
-      document.body.appendChild(link)
-      link.click() // Trigger download
-      document.body.removeChild(link) // Clean up the link
-    },
-    async downloadTemplateKc() {
-      const data = []
-      data.push([
-        '物料编码',
-        '物料类型',
-        '物料名称',
-        '物料单位',
-        '物料规格',
-        '采购年份',
-        '是否易耗品',
-        '库存数量',
-        '可用数量',
-        '物料价格',
-        '费用类型',
-        '采购方式',
-        '采购项目名称',
-        '供应商名称',
-        '质保到期时间',
-        '延期时间',
-        '物料发放时间',
-        '物料发放结束时间'
-      ])
-      const wb = XLSX.utils.book_new()
-      const ws = XLSX.utils.aoa_to_sheet(data) // Convert array of arrays to sheet
-      ws['!cols'] = this.calculateColumnWidths(data)
-      XLSX.utils.book_append_sheet(wb, ws, 'Sheet1') // Append data to Sheet2
-      const excelBlob = new Blob([XLSX.write(wb, { bookType: 'xlsx', type: 'array' })], {
-        type: 'application/octet-stream'
-      })
-      const link = document.createElement('a')
-      link.href = URL.createObjectURL(excelBlob) // Create blob URL
-      link.setAttribute('download', '物料库存模版表.xlsx') // Set file name
-      document.body.appendChild(link)
-      link.click() // Trigger download
-      document.body.removeChild(link) // Clean up the link
-    },
-    async exportClick() {
-      const data = []
-      data.push([
-        '物料编码',
-        '物料类型',
-        '物料名称',
-        '物料单位',
-        '物料规格',
-        '采购年份',
-        '是否易耗品',
-        '库存数量',
-        '可用数量',
-        '物料价格',
-        '费用类型',
-        '采购方式',
-        '采购项目名称',
-        '供应商名称',
-        '质保到期时间',
-        '延期时间',
-        '物料发放时间',
-        '物料发放结束时间'
-      ])
-      const payload = {
-        instCode: this.form.instCode,
-        materialName: this.form.materialName
-      }
-      const response = await exportCk(payload) // 调用 upload 函数并传入 payload
-      if (response.data.code == 200) {
-        const loanData1 = response.data.data
-        loanData1.forEach((result) => {
-          data.push([
-            result.material_code,
-            result.material_type,
-            result.material_name,
-            result.material_unit,
-            result.material_specification,
-            result.procurement_time,
-            result.consumable,
-            result.inventory_quantity,
-            result.available_quantity,
-            result.material_price,
-            result.cost_type,
-            result.procurement_method,
-            result.project_name,
-            result.supplier_name,
-            result.warranty_period,
-            result.delay_time,
-            result.release_time,
-            result.end_time
-          ])
-        })
-      } else {
-        this.$message.error(response.data.data.message)
-      }
-      const wb = XLSX.utils.book_new()
-      const ws = XLSX.utils.aoa_to_sheet(data) // Convert array of arrays to sheet
-      ws['!cols'] = this.calculateColumnWidths(data)
-      XLSX.utils.book_append_sheet(wb, ws, 'Sheet1') // Append data to Sheet2
-      const excelBlob = new Blob([XLSX.write(wb, { bookType: 'xlsx', type: 'array' })], {
-        type: 'application/octet-stream'
-      })
-      const link = document.createElement('a')
-      link.href = URL.createObjectURL(excelBlob) // Create blob URL
-      link.setAttribute('download', '库存表.xlsx') // Set file name
-      document.body.appendChild(link)
-      link.click() // Trigger download
-      document.body.removeChild(link) // Clean up the link
     },
     calculateColumnWidths(data) {
       const columnWidths = []
@@ -813,11 +236,15 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .container {
-  margin: 20px;
+  margin-left: 20px !important;
+  margin-right: 20px !important;
 }
-
+:deep(.el-input.is-disabled .el-input__inner) {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
 table {
   width: 100%;
   margin-bottom: 20px;
@@ -844,7 +271,6 @@ td {
   padding: 0 12px;
   overflow: hidden;
   line-height: auto;
-  color: #212121;
   text-overflow: ellipsis;
   white-space: normal;
   box-sizing: border-box;
@@ -920,5 +346,21 @@ td {
   margin-right: 0 !important;
   text-align: center;
   border-bottom: 1px solid var(--el-border-color);
+}
+:deep(.el-input.is-disabled .el-input__wrapper) {
+  background-color: #dcdcdc;
+  box-shadow: 0 0 0 1px var(--el-disabled-border-color) inset;
+}
+:deep(.el-form-item__label) {
+  align-items: flex-start;
+  box-sizing: border-box;
+  color: #000000 !important;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: var(--el-form-label-font-size);
+  height: 32px;
+  justify-content: flex-end;
+  line-height: 32px;
+  padding: 0 12px 0 0;
 }
 </style>
