@@ -285,7 +285,6 @@ export default {
       material_name: '',
       materialNameShow: true,
       uploadArray: [],
-      role: '0', //1是本部库存管理员
       loading: false,
       user_id: '',
       inst_code: '',

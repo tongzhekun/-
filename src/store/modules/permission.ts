@@ -5,7 +5,6 @@ import {
   generateRoutesByServer,
   flatMultiLevelRoutes
 } from '@/utils/routerHelper'
-import { useUserStore } from '@/store/modules/user'
 import { store } from '../index'
 import { cloneDeep } from 'lodash-es'
 
