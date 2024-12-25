@@ -3,29 +3,24 @@
     <el-form :model="form" ref="formRef" :rules="formRules" label-width="130px" v-if="showAll">
       <el-row type="flex" justify="center" style="text-align: left">
         <el-col :span="9">
-          <el-form-item label="年份：" prop="procurement_time">
-            <el-date-picker
-              v-model="form.procurement_time1"
-              @change="procurementChange"
-              type="year"
-              placeholder="请选择年份"
-            />
+          <el-form-item label="市场部：" prop="inst_name">
+            <el-input v-model="form.inst_name" :disabled="true" />
           </el-form-item>
         </el-col>
         <el-col :span="9">
-          <el-form-item label="市场部：" prop="instCode">
+          <el-form-item label="客户经理：" prop="user_id">
             <el-select
-              v-model="form.instCode"
-              :disabled="level === '1'"
+              filterable
+              v-model="form.user_id"
               clearable
-              placeholder="请选择市场部"
+              placeholder="请选择客户经理"
               style="width: 85%; height: 30px"
             >
               <el-option
-                v-for="item in instCodeScOptions"
-                :key="item.inst_code"
-                :label="item.inst_name"
-                :value="item.inst_code"
+                v-for="item in userIdOptions"
+                :key="item.employee_code"
+                :label="item.employee_name"
+                :value="item.employee_code"
               />
             </el-select>
           </el-form-item>
@@ -49,11 +44,11 @@
             style="width: 97%; height: 330px; margin-top: 5px"
           >
             <el-table-column
-              :prop="level === '0' ? 'inst_name' : 'user_name'"
+              prop="user_name"
               header-align="center"
               fixed
               align="center"
-              :label="level === '0' ? '机构名称' : '客户经理'"
+              label="客户经理"
               width="auto"
             >
               <template #default="scope">
@@ -61,7 +56,7 @@
                   style="color: #409eff; cursor: pointer"
                   @click="handleClick(scope.$index, scope.row)"
                 >
-                  {{ level === '0' ? scope.row.inst_name : scope.row.user_name }}
+                  {{ scope.row.user_name }}
                 </div>
               </template>
             </el-table-column>
@@ -123,8 +118,8 @@
 
 <script>
 import {
+  empSc,
   searchReviewProcessKhjl,
-  searchReviewProcess,
   userRole,
   treeSc,
   wzType,
@@ -148,9 +143,10 @@ export default {
       pageSize: 10, // 每页记录数
       loading: false,
       userId: '',
-      instCodeScOptions: [],
+      userIdOptions: [],
       form: {
-        instCode: '',
+        inst_code: '',
+        inst_name: '',
         procurement_time: '',
         procurement_time1: '',
         loanData: [],
@@ -163,10 +159,13 @@ export default {
     }
   },
   async created() {
+    this.form.procurement_time1 = this.$route.query.procurement_time1
+    this.form.procurement_time = this.$route.query.procurement_time
+    this.form.inst_code = this.$route.query.inst_code
+    this.form.inst_name = this.$route.query.inst_name
     const userStore = useUserStore()
     const loginInfo = userStore.getUserInfo
     this.userId = loginInfo.userId
-    this.form.user_id = loginInfo.userId
     const response2 = await userRole({ userId: this.userId })
     const roleKey = response2.data.data
     this.roleKeyArray = []
@@ -178,59 +177,25 @@ export default {
     if (this.roleKeyArray.indexOf('yc006') > -1) {
       this.role = '1'
     }
-    const response = await userMessage({ userId: this.userId })
-    this.form.user_name = response.data.data[0].employee_name
-    this.form.inst_code = response.data.data[0].inst_code
-    this.form.inst_name = response.data.data[0].inst_name
-    this.form.telephone = response.data.data[0].telephone
-    const response1 = await treeSc({ inst_code: this.form.inst_code }) // 调用 upload 函数并传入 payload
-    this.instCodeScOptions = response1.data.data
-    //小角色是营销中心的和业务科的看不了
-    if (this.role == '0' && this.form.inst_code.length === 6) {
-      this.showAll = false
-      this.$message.warning('当前用户没有权限，请联系管理员添加')
-    } else {
-      //市场部的是能看市场部里面的客户经理，不然技能看到机构的数据
-      if (this.form.inst_code.length === 7) {
-        this.level = '1'
-        this.form.instCode = this.form.inst_code
-      }
-      this.form.procurement_time1 = new Date()
-      this.form.procurement_time = new Date().getFullYear()
-    }
+    const response1 = await empSc({ inst_code: this.form.inst_code }) // 调用 upload 函数并传入 payload
+    this.userIdOptions = response1.data.data
     this.searchClick()
   },
   methods: {
     handleClick(index, row) {
-      if (this.level === '0') {
-        this.$router.push({
-          path: 'IssuanceProgressKhjl',
-          query: {
-            inst_code: row.inst_code,
-            procurement_time: this.form.procurement_time,
-            procurement_time1: this.form.procurement_time1, // 这里的value2是你要传递的第二个参数的值，根据实际情况替换
-            inst_name: row.inst_name // 同理，添加更多要传递的参数
-          }
-        })
-      } else if (this.level === '1') {
-        this.$router.push({
-          path: 'IssuanceProgressKh',
-          query: {
-            user_id: row.user_id,
-            user_name: row.user_name,
-            inst_code: row.inst_code,
-            procurement_time1: this.form.procurement_time1,
-            procurement_time: this.form.procurement_time, // 这里的value2是你要传递的第二个参数的值，根据实际情况替换
-            inst_name: row.inst_name // 同理，添加更多要传递的参数
-          }
-        })
-      }
-    },
-    procurementChange() {
-      this.form.procurement_time = this.form.procurement_time1.getFullYear()
+      this.$router.push({
+        path: 'IssuanceProgressKh',
+        query: {
+          user_id: row.user_id,
+          user_name: row.user_name,
+          inst_code: this.form.inst_code,
+          procurement_time1: this.form.procurement_time1,
+          procurement_time: this.form.procurement_time, // 这里的value2是你要传递的第二个参数的值，根据实际情况替换
+          inst_name: this.form.inst_name // 同理，添加更多要传递的参数
+        }
+      })
     },
     async searchClick() {
-      console.log('1111')
       let validatestat = false
       this.$refs['formRef'].validate((valid) => {
         if (valid) {
@@ -241,42 +206,21 @@ export default {
       })
       setTimeout(async () => {
         if (validatestat) {
-          console.log(this.level, this.level === '1', '2222')
-          if (this.level === '0') {
-            this.loading = true
-            const payload = {
-              procurement_time: this.form.procurement_time,
-              instCode: this.form.instCode,
-              user_id: this.form.user_id,
-              role: this.role
-            }
-            console.log('3333')
-            const response = await searchReviewProcess(payload) // 调用 upload 函数并传入 payload
-            if (response.data.code == 200) {
-              this.form.loanData = response.data.data
-              this.total = response.data.total
-            } else {
-              this.$message.error(response.data.data.message)
-            }
-            this.loading = false
-          } else if (this.level === '1') {
-            console.log('444')
-            this.loading = true
-            const payload = {
-              procurement_time: this.form.procurement_time,
-              instCode: this.form.instCode,
-              user_id: this.role == '1' ? '' : this.form.user_id,
-              role: this.role
-            }
-            const response = await searchReviewProcessKhjl(payload) // 调用 upload 函数并传入 payload
-            if (response.data.code == 200) {
-              this.form.loanData = response.data.data
-              this.total = response.data.total
-            } else {
-              this.$message.error(response.data.data.message)
-            }
-            this.loading = false
+          this.loading = true
+          const payload = {
+            procurement_time: this.form.procurement_time,
+            instCode: this.form.inst_code,
+            user_id: this.form.user_id,
+            role: this.role
           }
+          const response = await searchReviewProcessKhjl(payload) // 调用 upload 函数并传入 payload
+          if (response.data.code == 200) {
+            this.form.loanData = response.data.data
+            this.total = response.data.total
+          } else {
+            this.$message.error(response.data.data.message)
+          }
+          this.loading = false
         }
       }, 300)
       this.$forceUpdate()

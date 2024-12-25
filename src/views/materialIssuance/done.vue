@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import { searchDone, searchDemand, searchWzApply } from '@/api/login'
+import { searchDone, searchDemand, searchWzApply, searchDemandApplyTotal } from '@/api/login'
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 export default {
@@ -129,6 +129,13 @@ export default {
           item.apply_name = responseDemand.data.data[0].user_name
           item.time = responseDemand.data.data[0].time
           item.url = '/materialIssuance/reviewApprove'
+          return item
+        } else if (item.flow_no == '5') {
+          const responseDemand = await searchDemandApplyTotal({ busi_id: item.busi_id })
+          item.apply_id = responseDemand.data.data[0].user_id
+          item.apply_name = responseDemand.data.data[0].user_name
+          item.time = responseDemand.data.data[0].time
+          item.url = '/materialIssuance/demandForecastTotalApplyApprove'
           return item
         }
       })

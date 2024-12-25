@@ -253,7 +253,28 @@ export const searchWzApply = (data: any): Promise<IResponse<any>> => {
 export const searchReviewProcess = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchReviewProcess', data)
 }
+//查询发放进度-客户经理
+export const searchReviewProcessKhjl = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchReviewProcessKhjl', data)
+}
+//查询发放进度-客户
+export const searchReviewProcessKh = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchReviewProcessKh', data)
+}
 
+//某一市场部的客户经理
+export const empSc = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/empSc', data)
+}
+
+//提交需求汇总申报
+export const submitDemandTotal = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/submitDemandTotal', data)
+}
+//查询需求汇总申报明细
+export const searchDemandApplyTotal = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchDemandApplyTotal', data)
+}
 // export const loginApi = (data: any): Promise<IResponse<any>> => {
 //   return axios
 //     .post('http://localhost/wzgl/public/index.php/index/checkLogin', data)

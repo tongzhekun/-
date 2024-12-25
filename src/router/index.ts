@@ -179,6 +179,24 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         }
       },
       {
+        path: 'demandForecastTotalApply',
+        component: () => import('@/views/materialIssuance/demandForecastTotalApply.vue'),
+        name: 'DemandForecastTotalApply',
+        meta: {
+          title: t('router.demandForecastTotalApply'),
+          noCache: true
+        }
+      },
+      {
+        path: 'demandForecastTotalApplyApprove',
+        component: () => import('@/views/materialIssuance/demandForecastTotalApplyApprove.vue'),
+        name: 'DemandForecastTotalApplyApprove',
+        meta: {
+          title: t('router.demandForecastTotalApply_approve'),
+          hidden: true
+        }
+      },
+      {
         path: 'demandForecastTotal',
         component: () => import('@/views/materialIssuance/demandForecastTotal.vue'),
         name: 'demandForecastTotal',
@@ -212,6 +230,26 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         meta: {
           title: t('router.issuanceProgress'),
           noCache: true
+        }
+      },
+      {
+        path: 'issuanceProgressKhjl',
+        component: () => import('@/views/materialIssuance/issuanceProgressKhjl.vue'),
+        name: 'IssuanceProgressKhjl',
+        meta: {
+          title: t('router.issuanceProgressKhjl'),
+          noCache: true,
+          hidden: true
+        }
+      },
+      {
+        path: 'issuanceProgressKh',
+        component: () => import('@/views/materialIssuance/issuanceProgressKh.vue'),
+        name: 'IssuanceProgressKh',
+        meta: {
+          title: t('router.issuanceProgressKh'),
+          noCache: true,
+          hidden: true
         }
       },
       {

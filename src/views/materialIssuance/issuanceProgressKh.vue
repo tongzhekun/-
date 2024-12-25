@@ -3,29 +3,24 @@
     <el-form :model="form" ref="formRef" :rules="formRules" label-width="130px" v-if="showAll">
       <el-row type="flex" justify="center" style="text-align: left">
         <el-col :span="9">
-          <el-form-item label="年份：" prop="procurement_time">
-            <el-date-picker
-              v-model="form.procurement_time1"
-              @change="procurementChange"
-              type="year"
-              placeholder="请选择年份"
-            />
+          <el-form-item label="客户经理：" prop="user_name">
+            <el-input :disabled="true" v-model="form.user_name" style="width: 85%; height: 30px" />
           </el-form-item>
         </el-col>
         <el-col :span="9">
-          <el-form-item label="市场部：" prop="instCode">
+          <el-form-item label="客户姓名：" prop="user_id">
             <el-select
-              v-model="form.instCode"
-              :disabled="level === '1'"
+              filterable
+              v-model="form.custom_license"
               clearable
-              placeholder="请选择市场部"
+              placeholder="请选择客户姓名"
               style="width: 85%; height: 30px"
             >
               <el-option
-                v-for="item in instCodeScOptions"
-                :key="item.inst_code"
-                :label="item.inst_name"
-                :value="item.inst_code"
+                v-for="item in custOptions"
+                :key="item.custom_license"
+                :label="item.custom_name"
+                :value="item.custom_license"
               />
             </el-select>
           </el-form-item>
@@ -49,22 +44,13 @@
             style="width: 97%; height: 330px; margin-top: 5px"
           >
             <el-table-column
-              :prop="level === '0' ? 'inst_name' : 'user_name'"
+              prop="custom_name"
               header-align="center"
               fixed
               align="center"
-              :label="level === '0' ? '机构名称' : '客户经理'"
+              label="客户名称"
               width="auto"
-            >
-              <template #default="scope">
-                <div
-                  style="color: #409eff; cursor: pointer"
-                  @click="handleClick(scope.$index, scope.row)"
-                >
-                  {{ level === '0' ? scope.row.inst_name : scope.row.user_name }}
-                </div>
-              </template>
-            </el-table-column>
+            />
             <el-table-column
               prop="done_amount"
               header-align="center"
@@ -87,30 +73,16 @@
               width="110px"
             />
             <el-table-column
-              prop="no_consumable_num"
+              prop="quota_standard"
               header-align="center"
-              label="非易耗品数量"
+              label="定额标准"
               align="center"
               width="110px"
             />
             <el-table-column
-              prop="pt_price"
+              prop="remain_standard"
               header-align="center"
-              label="普通终端金额"
-              align="center"
-              width="110px"
-            />
-            <el-table-column
-              prop="jm_price"
-              header-align="center"
-              label="加盟终端金额"
-              align="center"
-              width="110px"
-            />
-            <el-table-column
-              prop="xd_price"
-              header-align="center"
-              label="现代终端金额"
+              label="剩余定额标准"
               align="center"
               width="110px"
             />
@@ -123,8 +95,8 @@
 
 <script>
 import {
-  searchReviewProcessKhjl,
-  searchReviewProcess,
+  searchCustList,
+  searchReviewProcessKh,
   userRole,
   treeSc,
   wzType,
@@ -141,15 +113,14 @@ export default {
       level: '0', //0是各市场部，1是市场部各客户经理，2是客户经理各客户
       instDisable: false,
       showAll: true,
-      role: '0',
       roleKeyArray: [],
       total: 0, // 总记录数
       currentPage: 1, // 当前页码
       pageSize: 10, // 每页记录数
       loading: false,
-      userId: '',
-      instCodeScOptions: [],
+      custOptions: [],
       form: {
+        custom_license: '',
         instCode: '',
         procurement_time: '',
         procurement_time1: '',
@@ -158,79 +129,28 @@ export default {
         user_id: ''
       },
       formRules: {
-        procurement_time: [{ required: true, message: '请选择年份', trigger: 'blur' }]
+        // procurement_time: [{ required: true, message: '请选择年份', trigger: 'blur' }]
       }
     }
   },
   async created() {
-    const userStore = useUserStore()
-    const loginInfo = userStore.getUserInfo
-    this.userId = loginInfo.userId
-    this.form.user_id = loginInfo.userId
-    const response2 = await userRole({ userId: this.userId })
-    const roleKey = response2.data.data
-    this.roleKeyArray = []
-    if (roleKey.length > 0) {
-      roleKey.forEach((item) => {
-        this.roleKeyArray.push(item.role_id)
-      })
-    }
-    if (this.roleKeyArray.indexOf('yc006') > -1) {
-      this.role = '1'
-    }
-    const response = await userMessage({ userId: this.userId })
-    this.form.user_name = response.data.data[0].employee_name
-    this.form.inst_code = response.data.data[0].inst_code
-    this.form.inst_name = response.data.data[0].inst_name
-    this.form.telephone = response.data.data[0].telephone
-    const response1 = await treeSc({ inst_code: this.form.inst_code }) // 调用 upload 函数并传入 payload
-    this.instCodeScOptions = response1.data.data
-    //小角色是营销中心的和业务科的看不了
-    if (this.role == '0' && this.form.inst_code.length === 6) {
-      this.showAll = false
-      this.$message.warning('当前用户没有权限，请联系管理员添加')
-    } else {
-      //市场部的是能看市场部里面的客户经理，不然技能看到机构的数据
-      if (this.form.inst_code.length === 7) {
-        this.level = '1'
-        this.form.instCode = this.form.inst_code
-      }
-      this.form.procurement_time1 = new Date()
-      this.form.procurement_time = new Date().getFullYear()
-    }
+    this.form.procurement_time1 = this.$route.query.procurement_time1
+    this.form.procurement_time = this.$route.query.procurement_time
+    this.form.user_id = this.$route.query.user_id
+    this.form.user_name = this.$route.query.user_name
+    this.form.instCode = this.$route.query.inst_code
+    const response1 = await searchCustList({
+      custom_name: '',
+      user_id: this.form.user_id
+    })
+    this.custOptions = response1.data.data
     this.searchClick()
   },
   methods: {
-    handleClick(index, row) {
-      if (this.level === '0') {
-        this.$router.push({
-          path: 'IssuanceProgressKhjl',
-          query: {
-            inst_code: row.inst_code,
-            procurement_time: this.form.procurement_time,
-            procurement_time1: this.form.procurement_time1, // 这里的value2是你要传递的第二个参数的值，根据实际情况替换
-            inst_name: row.inst_name // 同理，添加更多要传递的参数
-          }
-        })
-      } else if (this.level === '1') {
-        this.$router.push({
-          path: 'IssuanceProgressKh',
-          query: {
-            user_id: row.user_id,
-            user_name: row.user_name,
-            inst_code: row.inst_code,
-            procurement_time1: this.form.procurement_time1,
-            procurement_time: this.form.procurement_time, // 这里的value2是你要传递的第二个参数的值，根据实际情况替换
-            inst_name: row.inst_name // 同理，添加更多要传递的参数
-          }
-        })
-      }
-    },
     procurementChange() {
       this.form.procurement_time = this.form.procurement_time1.getFullYear()
     },
     async searchClick() {
-      console.log('1111')
       let validatestat = false
       this.$refs['formRef'].validate((valid) => {
         if (valid) {
@@ -241,17 +161,14 @@ export default {
       })
       setTimeout(async () => {
         if (validatestat) {
-          console.log(this.level, this.level === '1', '2222')
           if (this.level === '0') {
             this.loading = true
             const payload = {
               procurement_time: this.form.procurement_time,
-              instCode: this.form.instCode,
               user_id: this.form.user_id,
-              role: this.role
+              custom_license: this.form.custom_license
             }
-            console.log('3333')
-            const response = await searchReviewProcess(payload) // 调用 upload 函数并传入 payload
+            const response = await searchReviewProcessKh(payload) // 调用 upload 函数并传入 payload
             if (response.data.code == 200) {
               this.form.loanData = response.data.data
               this.total = response.data.total
@@ -265,10 +182,9 @@ export default {
             const payload = {
               procurement_time: this.form.procurement_time,
               instCode: this.form.instCode,
-              user_id: this.role == '1' ? '' : this.form.user_id,
-              role: this.role
+              user_id: this.form.user_id
             }
-            const response = await searchReviewProcessKhjl(payload) // 调用 upload 函数并传入 payload
+            const response = await searchReviewProcessKh(payload) // 调用 upload 函数并传入 payload
             if (response.data.code == 200) {
               this.form.loanData = response.data.data
               this.total = response.data.total
