@@ -386,14 +386,16 @@ export default {
     }
   },
   async created() {
-    const payload = {}
+    const userStore = useUserStore()
+    const loginInfo = userStore.getUserInfo
+    this.userId = loginInfo.userId
+    const responseUser = await userMessage({ userId: this.userId })
+    const inst_code = responseUser.data.data[0].inst_code
+    const payload = { inst_code: inst_code }
     const response = await tree(payload) // 调用 upload 函数并传入 payload
     this.instCodeOptions = response.data.data
     const response1 = await searchRole({})
     this.roleOptions = response1.data.data
-    const userStore = useUserStore()
-    const loginInfo = userStore.getUserInfo
-    this.userId = loginInfo.userId
     this.searchClick()
   },
   methods: {

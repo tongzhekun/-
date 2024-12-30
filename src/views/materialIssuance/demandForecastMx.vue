@@ -99,7 +99,7 @@
 </template>
 
 <script>
-import { searchDemandTotal, tree, exportDemandTotal } from '@/api/login'
+import { searchDemandMx, tree, exportDemandMx, userMessage } from '@/api/login'
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 export default {
@@ -125,7 +125,14 @@ export default {
     }
   },
   async created() {
-    const response = await tree({}) // 调用 upload 函数并传入 payload
+    const userStore = useUserStore()
+    const loginInfo = userStore.getUserInfo
+    this.userId = loginInfo.userId
+    const responseUser = await userMessage({ userId: this.userId })
+    const inst_code = responseUser.data.data[0].inst_code
+
+    const payload = { inst_code: inst_code }
+    const response = await tree(payload) // 调用 upload 函数并传入 payload
     this.instCodeOptions = response.data.data
   },
   methods: {
@@ -135,7 +142,7 @@ export default {
         time: this.form.time,
         user_name: this.form.user_name
       }
-      const response = await exportDemandTotal(payload) // 调用 upload 函数并传入 payload
+      const response = await exportDemandMx(payload) // 调用 upload 函数并传入 payload
       if (response.data.code == 200) {
         this.form.loanDataExport = response.data.data
         const data = []
@@ -152,7 +159,7 @@ export default {
         })
         const link = document.createElement('a')
         link.href = URL.createObjectURL(excelBlob) // Create blob URL
-        link.setAttribute('download', '需求预估汇总导出表.xlsx') // Set file name
+        link.setAttribute('download', '需求预估明细导出表.xlsx') // Set file name
         document.body.appendChild(link)
         link.click() // Trigger download
         document.body.removeChild(link) // Clean up the link
@@ -183,7 +190,7 @@ export default {
             time: this.form.time,
             user_name: this.form.user_name
           }
-          const response = await searchDemandTotal(payload) // 调用 upload 函数并传入 payload
+          const response = await searchDemandMx(payload) // 调用 upload 函数并传入 payload
           if (response.data.code == 200) {
             this.form.loanData = response.data.data
             this.total = response.data.total

@@ -224,13 +224,21 @@ export const backlast = (data: any): Promise<IResponse<any>> => {
 export const trace = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/trace', data)
 }
-//查询
-export const searchDemandTotal = (data: any): Promise<IResponse<any>> => {
-  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchDemandTotal', data)
+//查询需求申请
+export const searchDemandMx = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchDemandMx', data)
 }
-//导出
-export const exportDemandTotal = (data: any): Promise<IResponse<any>> => {
-  return axios.post(PATH_URL + '/wzgl/public/index.php/index/exportDemandTotal', data)
+//导出需求申请明细
+export const exportDemandMx = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/exportDemandMx', data)
+}
+//查询需求汇总申请
+export const searchDemandMxTotal = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchDemandMxTotal', data)
+}
+//导出需求汇总申请
+export const exportDemandMxTotal = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/exportDemandMxTotal', data)
 }
 //查询客户姓名
 export const searchCustList = (data: any): Promise<IResponse<any>> => {
@@ -275,6 +283,55 @@ export const submitDemandTotal = (data: any): Promise<IResponse<any>> => {
 export const searchDemandApplyTotal = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchDemandApplyTotal', data)
 }
+//查询需求申报的时间开关
+export const judgeDemandTime = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/judgeDemandTime', data)
+}
+//更新需求汇总申报明细
+export const updateDemandTime = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/updateDemandTime', data)
+}
+//导出机构信息
+export const exportInst = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/exportInst', data)
+}
+//导出员工信息
+export const exportEmp = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/exportEmp', data)
+}
+//导出客户信息
+export const exportCust = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/exportCust', data)
+}
+//导入客户信息
+export const importCust = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/importCust', data)
+}
+//导入员工
+export const importEmp = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/importEmp', data)
+}
+//导入机构
+export const importInst = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/importInst', data)
+}
+//查询客户信息
+export const searchCust = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchCust', data)
+}
+//查询员工
+export const searchEmp = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchEmp', data)
+}
+//查询机构
+export const searchInst = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchInst', data)
+}
+//查询延时的物资
+export const searchDelayMessage = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchDelayMessage', data)
+}
+
 // export const loginApi = (data: any): Promise<IResponse<any>> => {
 //   return axios
 //     .post('http://localhost/wzgl/public/index.php/index/checkLogin', data)

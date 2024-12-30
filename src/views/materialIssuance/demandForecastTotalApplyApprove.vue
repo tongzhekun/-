@@ -7,6 +7,8 @@
             <el-date-picker
               style="height: 40px"
               v-model="form.year"
+              format="YYYY"
+              value-format="YYYY"
               :disabled="true"
               type="year"
               size="small"

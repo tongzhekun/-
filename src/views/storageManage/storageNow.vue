@@ -27,10 +27,12 @@
         <el-col :span="24" style="text-align: center">
           <!-- <el-button type="primary" round>查询</el-button> -->
           <el-button type="primary" @click="searchClick">查询</el-button>
-          <el-button type="info" @click="exportClick">导出库存</el-button>
-          <el-button type="success" @click="importClick">导入库存</el-button>
-          <el-button type="danger" @click="allocateClick">库存分配</el-button>
-          <el-button type="warning" @click="historyClick">移送历史库存</el-button>
+          <el-button type="info" v-if="role === '1'" @click="exportClick">导出库存</el-button>
+          <el-button type="success" v-if="role === '1'" @click="importClick">导入库存</el-button>
+          <el-button type="danger" v-if="role === '1'" @click="allocateClick">库存分配</el-button>
+          <el-button type="warning" v-if="role === '1'" @click="historyClick"
+            >移送历史库存</el-button
+          >
         </el-col>
       </el-row>
       <el-row style="margin-top: -15px">
@@ -234,7 +236,8 @@ import {
   givehistoryKc,
   exportCk,
   deleteCk,
-  userRole
+  userRole,
+  userMessage
 } from '@/api/login'
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
@@ -268,14 +271,16 @@ export default {
     }
   },
   async created() {
-    const payload = {}
+    const userStore = useUserStore()
+    const loginInfo = userStore.getUserInfo
+    this.userId = loginInfo.userId
+    const responseUser = await userMessage({ userId: this.userId })
+    const inst_code = responseUser.data.data[0].inst_code
+    const payload = { inst_code: inst_code }
     const response = await tree(payload) // 调用 upload 函数并传入 payload
     this.instCodeOptions = response.data.data
     const response1 = await treeSc({}) // 调用 upload 函数并传入 payload
     this.instCodeScOptions = response1.data.data
-    const userStore = useUserStore()
-    const loginInfo = userStore.getUserInfo
-    this.userId = loginInfo.userId
     const response2 = await userRole({ userId: this.userId })
     const roleKey = response2.data.data
     this.roleKeyArray = []

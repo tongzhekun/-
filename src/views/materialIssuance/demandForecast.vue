@@ -1,6 +1,12 @@
 <template>
   <div class="container">
-    <el-form :model="form" ref="formRef" :rules="formRules" label-width="130px">
+    <el-form
+      :model="form"
+      ref="formRef"
+      :rules="formRules"
+      label-width="130px"
+      v-if="judgeType === '1'"
+    >
       <el-row type="flex" justify="center" style="margin-top: -15px; text-align: left">
         <el-col :span="9">
           <el-form-item label="发起人编号：" prop="user_id">
@@ -253,16 +259,36 @@
         </el-dialog>
       </div>
     </el-form>
+    <div
+      v-if="judgeType === '0'"
+      style="
+        display: flex;
+        height: 300px;
+        font-size: 30px;
+        color: #e68802;
+        align-items: center;
+        justify-content: center;
+      "
+      >未到需求申报时间</div
+    >
   </div>
 </template>
 
 <script>
-import { wzType, submitDemand, userMessage, searchNextApproval, searchDemand } from '@/api/login'
+import {
+  wzType,
+  submitDemand,
+  userMessage,
+  searchNextApproval,
+  searchDemand,
+  judgeDemandTime
+} from '@/api/login'
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 export default {
   data() {
     return {
+      judgeType: '0',
       busi_id: '',
       flow_no: '1',
       material_name: '',
@@ -298,6 +324,9 @@ export default {
     }
   },
   async created() {
+    const responseJudge = await judgeDemandTime({ name: 'demand' }) // 调用 upload 函数并传入 payload
+    this.judgeType = responseJudge.data.data
+    console.log(this.judgeType, 'this.judgeType')
     this.busi_id = this.$route.query.busi_id
     console.log(this.busi_id, 'asdasds')
     if (this.busi_id != undefined && this.busi_id != '') {

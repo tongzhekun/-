@@ -68,17 +68,97 @@
             @current-change="fetchData"
           /> </el-col
       ></el-row>
+      <el-dialog
+        v-model="dialogVisibleMessage"
+        title="物料到期消息提示"
+        width="1100px"
+        style="text-align: center"
+        class="centered-dialog custom-width-dialog"
+      >
+        <div style="margin-top: 20px">
+          <el-row>
+            <el-col :span="24">
+              <el-table
+                :data="loanDataMessage"
+                border
+                v-loading="loading"
+                element-loading-text="加载中"
+                element-loading-svg-view-box="-10, -10, 50, 50"
+                element-loading-background="rgba(122, 122, 122, 0.8)"
+                :header-cell-style="{ color: '#212121' }"
+                style="width: 97%; height: 325px; margin-top: 5px"
+              >
+                <el-table-column
+                  prop="material_name"
+                  header-align="center"
+                  align="center"
+                  label="物料名称"
+                  width="auto"
+                />
+                <el-table-column
+                  prop="creation_time"
+                  header-align="center"
+                  label="入库时间"
+                  align="center"
+                  width="120px"
+                />
+                <el-table-column
+                  prop="end_time"
+                  header-align="center"
+                  label="发放结束时间"
+                  align="center"
+                  width="120px"
+                />
+                <el-table-column
+                  prop="delay_time"
+                  header-align="center"
+                  align="center"
+                  label="延期时间"
+                  width="120px"
+                />
+                <el-table-column
+                  prop="inventory_quantity"
+                  align="center"
+                  header-align="center"
+                  label="物料数量"
+                  width="100px"
+                />
+                <el-table-column
+                  prop="inst_name"
+                  align="center"
+                  header-align="center"
+                  label="机构名称"
+                  width="auto"
+                />
+              </el-table>
+            </el-col>
+          </el-row>
+        </div>
+      </el-dialog>
     </el-form>
   </div>
 </template>
 
 <script>
-import { searchTodo, searchDemand, searchWzApply, searchDemandApplyTotal } from '@/api/login'
+import {
+  userMessage,
+  userRole,
+  searchTodo,
+  searchDelayMessage,
+  searchDemand,
+  searchWzApply,
+  searchDemandApplyTotal
+} from '@/api/login'
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 export default {
   data() {
     return {
+      role: '0',
+      roleKeyArray: [],
+      loading: false,
+      loanDataMessage: [],
+      dialogVisibleMessage: false,
       userId: '',
       total: 0, // 总记录数
       currentPage: 1, // 当前页码
@@ -95,6 +175,31 @@ export default {
     this.userId = loginInfo.userId
     this.form.user_id = loginInfo.userId
     this.searchClick()
+    const response2 = await userRole({ userId: this.userId })
+    const roleKey = response2.data.data
+    this.roleKeyArray = []
+    if (roleKey.length > 0) {
+      roleKey.forEach((item) => {
+        this.roleKeyArray.push(item.role_id)
+      })
+    }
+    if (this.roleKeyArray.indexOf('yc001') > -1 || this.roleKeyArray.indexOf('yc002') > -1) {
+      this.role = '1'
+    }
+    this.loanDataMessage = []
+    if (this.role === '1') {
+      const responseUser = await userMessage({ userId: this.userId })
+      const inst_code = responseUser.data.data[0].inst_code
+      const response = await searchDelayMessage({ instCode: inst_code }) // 调用 upload 函数并传入 payload
+      if (response.data.code == 200) {
+        this.loanDataMessage = response.data.data
+        if (this.loanDataMessage.length > 0) {
+          this.dialogVisibleMessage = true
+        }
+      } else {
+        this.$message.error(response.data.data.message)
+      }
+    }
     console.log(this.form.loanData, '0000000000000')
   },
   methods: {

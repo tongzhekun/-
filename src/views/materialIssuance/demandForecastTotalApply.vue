@@ -4,7 +4,15 @@
       <el-row type="flex" justify="center" style="margin-top: -15px; text-align: left">
         <el-col :span="9">
           <el-form-item label="申报年份：" prop="year">
-            <el-date-picker style="height: 40px" v-model="form.year" type="year" size="small" />
+            <el-date-picker
+              style="height: 40px"
+              v-model="form.year"
+              @change="yearChange"
+              format="YYYY"
+              value-format="YYYY"
+              type="year"
+              size="small"
+            />
           </el-form-item>
           <el-form-item label="发起人名称：" prop="user_name">
             <el-input
@@ -130,7 +138,7 @@
 import {
   submitDemandTotal,
   searchDemandApplyTotal,
-  searchDemandTotal,
+  searchDemandMx,
   wzType,
   userMessage,
   searchNextApproval
@@ -204,6 +212,9 @@ export default {
     this.flow_no = '5'
   },
   methods: {
+    yearChange() {
+      console.log(this.form.year, 'yearChange')
+    },
     async searchClick() {
       let validatestat = false
       this.$refs['formRef'].validate((valid) => {
@@ -223,7 +234,7 @@ export default {
             time: this.form.dateRange,
             user_name: ''
           }
-          const response = await searchDemandTotal(payload) // 调用 upload 函数并传入 payload
+          const response = await searchDemandMx(payload) // 调用 upload 函数并传入 payload
           if (response.data.code == 200) {
             this.form.loanData = response.data.data
             this.total = response.data.total

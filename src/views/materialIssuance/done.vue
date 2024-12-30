@@ -1,6 +1,21 @@
 <template>
   <div class="container">
     <el-form :model="form" ref="formRef" :rules="formRules" label-width="130px">
+      <el-row type="flex" justify="center" style="text-align: left">
+        <el-col :span="9">
+          <el-form-item label="事项名称：" prop="flow_title">
+            <el-input style="width: 85%; height: 35px" v-model="form.flow_title" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="9">
+          <el-form-item label="申请人：" prop="apply_name">
+            <el-input style="width: 85%; height: 35px" v-model="form.apply_name" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="2">
+          <el-button type="primary" @click="searchClick">查询</el-button>
+        </el-col>
+      </el-row>
       <el-row>
         <el-col :span="24">
           <el-table
@@ -8,7 +23,7 @@
             :header-cell-style="{ color: '#212121' }"
             @row-click="rowClick"
             :row-class-name="tableRowClassName"
-            style="width: 97%; height: 400px; margin-top: 5px"
+            style="width: 97%; height: 350px; margin-top: 5px"
           >
             <el-table-column
               prop="flow_title"
@@ -84,7 +99,9 @@ export default {
       currentPage: 1, // 当前页码
       pageSize: 10, // 每页记录数
       form: {
-        loanData: []
+        loanData: [],
+        flow_title: '',
+        apply_name: ''
       },
       formRules: {}
     }
@@ -106,43 +123,47 @@ export default {
       const responseDone = await searchDone({
         user_id: this.userId,
         page: this.currentPage,
-        pageSize: this.pageSize
+        pageSize: this.pageSize,
+        flow_title: this.form.flow_title,
+        apply_name: this.form.apply_name
       })
       this.total = responseDone.data.total
       this.form.loanData = []
       // 创建一个数组来存储所有的异步操作Promise
-      const promises = responseDone.data.data.map(async (item) => {
-        // 1和2是需求预估
-        if (item.flow_no == '1' || item.flow_no == '2') {
-          const responseDemand = await searchDemand({ busi_id: item.busi_id })
-          item.apply_id = responseDemand.data.data[0].user_id
-          item.apply_name = responseDemand.data.data[0].user_name
-          item.time = responseDemand.data.data[0].time
-          // 1和2是需求预估
-          if (item.flow_no === '1' || item.flow_no === '2') {
-            item.url = '/materialIssuance/demandForecastApprove'
-          }
-          return item
-        } else if (item.flow_no == '3' || item.flow_no == '4') {
-          const responseDemand = await searchWzApply({ busi_id: item.busi_id })
-          item.apply_id = responseDemand.data.data[0].user_id
-          item.apply_name = responseDemand.data.data[0].user_name
-          item.time = responseDemand.data.data[0].time
-          item.url = '/materialIssuance/reviewApprove'
-          return item
-        } else if (item.flow_no == '5') {
-          const responseDemand = await searchDemandApplyTotal({ busi_id: item.busi_id })
-          item.apply_id = responseDemand.data.data[0].user_id
-          item.apply_name = responseDemand.data.data[0].user_name
-          item.time = responseDemand.data.data[0].time
-          item.url = '/materialIssuance/demandForecastTotalApplyApprove'
-          return item
-        }
-      })
-      // 使用Promise.all等待所有异步操作完成
-      const processedItems = await Promise.all(promises)
-      // 将处理好的所有项一次性添加到form.loanData数组中
-      this.form.loanData = processedItems
+      // const promises = responseDone.data.data.map(async (item) => {
+      //   // 1和2是需求预估
+      //   if (item.flow_no == '1' || item.flow_no == '2') {
+      //     const responseDemand = await searchDemand({ busi_id: item.busi_id })
+      //     item.apply_id = responseDemand.data.data[0].user_id
+      //     item.apply_name = responseDemand.data.data[0].user_name
+      //     item.time = responseDemand.data.data[0].time
+      //     // 1和2是需求预估
+      //     if (item.flow_no === '1' || item.flow_no === '2') {
+      //       item.url = '/materialIssuance/demandForecastApprove'
+      //     }
+      //     return item
+      //   } else if (item.flow_no == '3' || item.flow_no == '4') {
+      //     const responseDemand = await searchWzApply({ busi_id: item.busi_id })
+      //     item.apply_id = responseDemand.data.data[0].user_id
+      //     item.apply_name = responseDemand.data.data[0].user_name
+      //     item.time = responseDemand.data.data[0].time
+      //     item.url = '/materialIssuance/reviewApprove'
+      //     return item
+      //   } else if (item.flow_no == '5') {
+      //     const responseDemand = await searchDemandApplyTotal({ busi_id: item.busi_id })
+      //     item.apply_id = responseDemand.data.data[0].user_id
+      //     item.apply_name = responseDemand.data.data[0].user_name
+      //     item.time = responseDemand.data.data[0].time
+      //     item.url = '/materialIssuance/demandForecastTotalApplyApprove'
+      //     return item
+      //   }
+      // })
+      // const processedItems = await Promise.all(promises)
+      // this.form.loanData = processedItems
+      this.form.loanData = responseDone.data.data
+      this.form.loanData = this.form.loanData.filter((item) =>
+        item.apply_name.includes(this.form.apply_name)
+      )
       // 对this.form.loanData进行排序
       this.form.loanData.sort((a, b) => {
         return new Date(b.time).getTime() - new Date(a.time).getTime()

@@ -94,7 +94,7 @@
 </template>
 
 <script>
-import { tree, searchHistoryCk, exportHistoryCk } from '@/api/login'
+import { tree, searchHistoryCk, exportHistoryCk, userMessage } from '@/api/login'
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 export default {
@@ -117,12 +117,14 @@ export default {
     }
   },
   async created() {
-    const payload = {}
-    const response = await tree(payload) // 调用 upload 函数并传入 payload
-    this.instCodeOptions = response.data.data
     const userStore = useUserStore()
     const loginInfo = userStore.getUserInfo
     this.userId = loginInfo.userId
+    const responseUser = await userMessage({ userId: this.userId })
+    const inst_code = responseUser.data.data[0].inst_code
+    const payload = { inst_code: inst_code }
+    const response = await tree(payload) // 调用 upload 函数并传入 payload
+    this.instCodeOptions = response.data.data
   },
   methods: {
     fetchData() {

@@ -197,11 +197,20 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         }
       },
       {
-        path: 'demandForecastTotal',
-        component: () => import('@/views/materialIssuance/demandForecastTotal.vue'),
-        name: 'demandForecastTotal',
+        path: 'demandForecastMx',
+        component: () => import('@/views/materialIssuance/demandForecastMx.vue'),
+        name: 'DemandForecastMx',
         meta: {
-          title: t('router.demandForecastTotal'),
+          title: t('router.demandForecastMx'),
+          noCache: true
+        }
+      },
+      {
+        path: 'demandForecastTotalApplyMx',
+        component: () => import('@/views/materialIssuance/demandForecastTotalApplyMx.vue'),
+        name: 'DemandForecastTotalApplyMx',
+        meta: {
+          title: t('router.demandForecastTotalApplyMx'),
           noCache: true
         }
       },
@@ -275,6 +284,15 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     },
     children: [
       {
+        path: 'inventoryCheck',
+        component: () => import('@/views/materialSupervision/inventoryCheck.vue'),
+        name: 'InventoryCheck',
+        meta: {
+          title: t('router.inventoryCheck'),
+          noCache: true
+        }
+      },
+      {
         path: 'gpsInformation',
         component: () => import('@/views/materialSupervision/gpsInformation.vue'),
         name: 'GpsInformation',
@@ -284,11 +302,29 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         }
       },
       {
-        path: 'verification',
-        component: () => import('@/views/materialSupervision/verification.vue'),
-        name: 'Verification',
+        path: 'qrCode',
+        component: () => import('@/views/materialSupervision/qrCode.vue'),
+        name: 'QrCode',
         meta: {
-          title: t('router.verification'),
+          title: t('router.qrCode'),
+          noCache: true
+        }
+      },
+      {
+        path: 'qrCodeApprove',
+        component: () => import('@/views/materialSupervision/qrCodeApprove.vue'),
+        name: 'QrCodeApprove',
+        meta: {
+          title: t('router.qrCodeApprove'),
+          hidden: true
+        }
+      },
+      {
+        path: 'inventoryReport',
+        component: () => import('@/views/materialSupervision/inventoryReport.vue'),
+        name: 'InventoryReport',
+        meta: {
+          title: t('router.inventoryReport'),
           noCache: true
         }
       }
@@ -367,6 +403,14 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: 'User',
         meta: {
           title: t('router.user')
+        }
+      },
+      {
+        path: 'databaseMaintenance',
+        component: () => import('@/views/databaseMaintenance/databaseMaintenance.vue'),
+        name: 'UatabaseMaintenance',
+        meta: {
+          title: t('router.databaseMaintenance')
         }
       }
     ]
