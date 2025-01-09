@@ -148,7 +148,8 @@ import {
   searchDemand,
   searchWzApply,
   searchDemandApplyTotal,
-  searchInventoryCheckApply
+  searchInventoryCheckApply,
+  searchQrCodeChangeApply
 } from '@/api/login'
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
@@ -264,6 +265,17 @@ export default {
             item.url = '/materialSupervision/inventoryCheck'
           } else {
             item.url = '/materialSupervision/inventoryCheckApprove'
+          }
+          return item
+        } else if (item.flow_no == '8' || item.flow_no == '9') {
+          const responseDemand = await searchQrCodeChangeApply({ busi_id: item.busi_id })
+          item.apply_id = responseDemand.data.data[0].user_id
+          item.apply_name = responseDemand.data.data[0].user_name
+          item.time = responseDemand.data.data[0].time
+          if (item.flow_node === '1') {
+            item.url = '/materialSupervision/qrCode'
+          } else {
+            item.url = '/materialSupervision/qrCodeApprove'
           }
           return item
         }

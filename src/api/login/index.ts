@@ -347,6 +347,14 @@ export const submitInventoryCheckApply = (data: any): Promise<IResponse<any>> =>
 export const updateQrCode = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/updateQrCode', data)
 }
+//提交二维码变更申请
+export const submitQrCodeChangeApply = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/submitQrCodeChangeApply', data)
+}
+//查询二维码变更申请
+export const searchQrCodeChangeApply = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchQrCodeChangeApply', data)
+}
 
 // export const loginApi = (data: any): Promise<IResponse<any>> => {
 //   return axios
