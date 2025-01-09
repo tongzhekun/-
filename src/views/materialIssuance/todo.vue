@@ -147,7 +147,8 @@ import {
   searchDelayMessage,
   searchDemand,
   searchWzApply,
-  searchDemandApplyTotal
+  searchDemandApplyTotal,
+  searchInventoryCheckApply
 } from '@/api/login'
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
@@ -252,6 +253,17 @@ export default {
             item.url = '/materialIssuance/demandForecastTotalApply'
           } else {
             item.url = '/materialIssuance/demandForecastTotalApplyApprove'
+          }
+          return item
+        } else if (item.flow_no == '6' || item.flow_no == '7') {
+          const responseDemand = await searchInventoryCheckApply({ busi_id: item.busi_id })
+          item.apply_id = responseDemand.data.data[0].user_id
+          item.apply_name = responseDemand.data.data[0].user_name
+          item.time = responseDemand.data.data[0].time
+          if (item.flow_node === '1') {
+            item.url = '/materialSupervision/inventoryCheck'
+          } else {
+            item.url = '/materialSupervision/inventoryCheckApprove'
           }
           return item
         }

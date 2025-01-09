@@ -147,6 +147,7 @@ export default {
     materialSupervision: '物料监管',
     gpsInformation: '物料二维码管理',
     inventoryCheck: '物料盘检发起',
+    inventoryCheckApprove: '物料盘检审核',
     qrCode: '二维码变更发起',
     qrCodeApprove: '二维码变更审核',
     inventoryReport: '物料监管报表',

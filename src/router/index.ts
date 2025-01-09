@@ -88,7 +88,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     meta: {
       title: t('router.allPciture'),
       icon: 'vi-cib:telegram-plane',
-      url: 'http://192.168.115.26/jsc/jsc.php' // 指定外部网址
+      url: import.meta.env.VITE_API_BASE_PATH + '/jsc/jsc.php' // 指定外部网址
     }
   },
   {
@@ -290,6 +290,15 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         meta: {
           title: t('router.inventoryCheck'),
           noCache: true
+        }
+      },
+      {
+        path: 'inventoryCheckApprove',
+        component: () => import('@/views/materialSupervision/inventoryCheckApprove.vue'),
+        name: 'InventoryCheckApprove',
+        meta: {
+          title: t('router.inventoryCheckApprove'),
+          hidden: true
         }
       },
       {

@@ -331,6 +331,22 @@ export const searchInst = (data: any): Promise<IResponse<any>> => {
 export const searchDelayMessage = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchDelayMessage', data)
 }
+//查询客户物资的二维码信息
+export const searchQrCode = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchQrCode', data)
+}
+//查询物资盘检记录
+export const searchInventoryCheckApply = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchInventoryCheckApply', data)
+}
+//提交物料盘检信息
+export const submitInventoryCheckApply = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/submitInventoryCheckApply', data)
+}
+//更新二维码信息
+export const updateQrCode = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/updateQrCode', data)
+}
 
 // export const loginApi = (data: any): Promise<IResponse<any>> => {
 //   return axios
