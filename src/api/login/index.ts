@@ -248,6 +248,10 @@ export const searchCustList = (data: any): Promise<IResponse<any>> => {
 export const searchDepartWz = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchDepartWz', data)
 }
+//查询市场部超过到期时间的物料
+export const searchDepartDelayWz = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchDepartDelayWz', data)
+}
 
 //提交物料申请
 export const submitWzApply = (data: any): Promise<IResponse<any>> => {
@@ -256,6 +260,14 @@ export const submitWzApply = (data: any): Promise<IResponse<any>> => {
 //查询物料申请
 export const searchWzApply = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchWzApply', data)
+}
+//提交物料延时申请
+export const submitWzDelayApply = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/submitWzDelayApply', data)
+}
+//查询物料延时申请
+export const searchWzDelayApply = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchWzDelayApply', data)
 }
 //查询发放进度
 export const searchReviewProcess = (data: any): Promise<IResponse<any>> => {
@@ -354,6 +366,18 @@ export const submitQrCodeChangeApply = (data: any): Promise<IResponse<any>> => {
 //查询二维码变更申请
 export const searchQrCodeChangeApply = (data: any): Promise<IResponse<any>> => {
   return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchQrCodeChangeApply', data)
+}
+//查询监管报表
+export const searchInventoryReport = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchInventoryReport', data)
+}
+//物料申请时判断是否是延时物料
+export const isDelayMaterial = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/isDelayMaterial', data)
+}
+//物料申请时延时物料判断申请是否成功
+export const searchFlowStatus = (data: any): Promise<IResponse<any>> => {
+  return axios.post(PATH_URL + '/wzgl/public/index.php/index/searchFlowStatus', data)
 }
 
 // export const loginApi = (data: any): Promise<IResponse<any>> => {

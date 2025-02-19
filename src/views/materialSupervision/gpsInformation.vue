@@ -139,6 +139,7 @@ import { searchQrCode, updateQrCode, searchCustList, userMessage } from '@/api/l
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 export default {
+  name: 'GpsInformation',
   data() {
     return {
       dialogVisible: false,

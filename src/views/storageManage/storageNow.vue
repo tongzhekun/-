@@ -242,6 +242,7 @@ import {
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 export default {
+  name: 'StorageNow',
   data() {
     return {
       roleKeyArray: [],

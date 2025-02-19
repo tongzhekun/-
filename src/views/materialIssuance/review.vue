@@ -97,6 +97,21 @@
               <el-radio value="0" :disabled="true">否</el-radio>
             </el-radio-group>
           </el-form-item>
+          <el-form-item
+            label="延期申请流程编号："
+            class="item-label"
+            v-if="delayType == '1'"
+            prop="delay_busi_id"
+          >
+            <el-input
+              v-model="form.delay_busi_id"
+              style="width: 85%; height: 40px"
+              placeholder="请输入延期申请流程编号"
+            />
+            <el-link @click="reviewDelayClick" style="color: #29d; text-decoration: underline"
+              >延期申请链接</el-link
+            >
+          </el-form-item>
         </el-col>
       </el-row>
       <el-row type="flex" justify="center" style="text-align: left">
@@ -189,13 +204,18 @@ import {
   userMessage,
   searchNextApproval,
   submitWzApply,
-  searchWzApply
+  searchWzApply,
+  isDelayMaterial,
+  searchWzDelayApply,
+  searchFlowStatus
 } from '@/api/login'
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 export default {
+  name: 'Review',
   data() {
     return {
+      delayType: '0', //该物料是否是延期物料
       customArray: [],
       wzArray: [],
       busi_id: '',
@@ -223,15 +243,17 @@ export default {
         consumable: '',
         num: '',
         next_approval_id: '',
-        next_approval_name: ''
+        next_approval_name: '',
+        delay_busi_id: ''
       },
       formRules: {
         next_approval_id: [{ required: true, message: '请选择审批人', trigger: 'blur' }],
         num: [{ required: true, message: '请输入物料数量', trigger: 'blur' }],
         custom_name: [{ required: true, message: '请输入客户名称', trigger: 'blur' }],
         material_name: [{ required: true, message: '请输入申请物料名称', trigger: 'blur' }],
-        custom_license: [{ required: true, message: '选择客户名称后返显', trigger: 'blur' }],
-        consumable: [{ required: true, message: '选择物料种类后返显', trigger: 'blur' }]
+        custom_license: [{ required: true, message: '请选择客户名称后返显', trigger: 'blur' }],
+        consumable: [{ required: true, message: '请选择物料种类后返显', trigger: 'blur' }],
+        delay_busi_id: [{ required: true, message: '请输入延期申请流程编号', trigger: 'blur' }]
       }
     }
   },
@@ -269,6 +291,9 @@ export default {
     }
   },
   methods: {
+    reviewDelayClick() {
+      this.$router.push('/materialIssuance/reviewDelay')
+    },
     async querySearchAsync(queryString, cb) {
       const responseResult = await searchCustList({
         custom_name: queryString,
@@ -337,11 +362,19 @@ export default {
       })
       cb(this.wzArray)
     },
-    handleSelect1(item) {
+    async handleSelect1(item) {
       console.log('111111111111')
       this.form.material_name = item.material_name
       this.form.consumable = item.consumable
       this.form.material_code = item.material_code
+      this.form.delay_busi_id = ''
+      this.delayType = '0'
+      const responseResult = await isDelayMaterial({
+        inst_code: this.form.inst_code,
+        material_code: this.form.material_code
+      })
+      console.log(responseResult.data.data, '.delayTyp')
+      this.delayType = responseResult.data.data[0].delayType
       this.$forceUpdate()
     },
     nextApprovalIdChange() {
@@ -402,12 +435,39 @@ export default {
           if (this.form.inst_code.length != 7) {
             this.$message.warning('只有市场部的客户经理能发起物料申请')
           } else {
-            const responseResult = await searchNextApproval({
-              inst_code: this.form.inst_code,
-              flow_no: this.flow_no,
-              flow_node: '1'
-            })
-            this.approveOptions = responseResult.data.data
+            if (this.form.delay_busi_id == '') {
+              const responseResult = await searchNextApproval({
+                inst_code: this.form.inst_code,
+                flow_no: this.flow_no,
+                flow_node: '1'
+              })
+              this.approveOptions = responseResult.data.data
+            } else {
+              //判断流程状态，再判断是否客户名称、物料名称、物料数量一致
+              const responseFlowResult = await searchFlowStatus({
+                busi_id: this.form.delay_busi_id,
+                flow_status: '5'
+              })
+              if (responseFlowResult.data.data.length == 0) {
+                this.$message.warning('延期申请流程编号有误或流程未结束')
+              } else {
+                const responseDelay = await searchWzDelayApply({ busi_id: this.form.delay_busi_id })
+                if (
+                  this.form.custom_license == responseDelay.data.data[0].custom_license &&
+                  this.form.material_code == responseDelay.data.data[0].material_code &&
+                  this.form.num == responseDelay.data.data[0].num
+                ) {
+                  const responseResult = await searchNextApproval({
+                    inst_code: this.form.inst_code,
+                    flow_no: this.flow_no,
+                    flow_node: '1'
+                  })
+                  this.approveOptions = responseResult.data.data
+                } else {
+                  this.$message.warning('申请与延期申请的信息不一致（客户姓名、物料名称和数量）')
+                }
+              }
+            }
             this.dialogVisibleApproval = true
           }
         }
@@ -558,5 +618,8 @@ td {
   padding: 1px 11px;
   transform: translateZ(0);
   transition: var(--el-transition-box-shadow);
+}
+:deep(.item-label .el-form-item__label) {
+  line-height: 22px !important;
 }
 </style>

@@ -98,6 +98,7 @@ import { tree, searchHistoryCk, exportHistoryCk, userMessage } from '@/api/login
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 export default {
+  name: 'StorageHistory',
   data() {
     return {
       loading: false,

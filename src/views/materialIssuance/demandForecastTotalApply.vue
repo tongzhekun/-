@@ -146,6 +146,7 @@ import {
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 export default {
+  name: 'DemandForecastTotalApply',
   data() {
     return {
       busi_id: '',

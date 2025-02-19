@@ -259,6 +259,7 @@ import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 import { color } from 'echarts'
 export default {
+  name: 'QrCodeApprove',
   data() {
     return {
       files: [], // 存储文件列表

@@ -112,6 +112,7 @@ import {
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 export default {
+  name: 'DemandForecastTotalApplyMx',
   data() {
     return {
       judgeType: '',

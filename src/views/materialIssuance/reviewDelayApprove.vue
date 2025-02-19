@@ -11,10 +11,10 @@
               style="width: 85%; height: 40px"
             />
           </el-form-item>
-          <el-form-item label="客户经度：" prop="longitude">
+          <el-form-item label="负责人：" prop="operator_name">
             <el-input
               class="inputClass"
-              v-model="form.longitude"
+              v-model="form.operator_name"
               :disabled="true"
               style="width: 85%; height: 40px"
             />
@@ -29,106 +29,81 @@
               style="width: 85%; height: 40px"
             />
           </el-form-item>
-          <el-form-item label="客户纬度：" prop="latitude">
+          <el-form-item label="经营者电话：" prop="operator_telephone">
             <el-input
               class="inputClass"
-              v-model="form.latitude"
+              v-model="form.operator_telephone"
               :disabled="true"
               style="width: 85%; height: 40px"
             />
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row type="flex" justify="center" style="margin-top: 5px">
-        <el-col :span="12">
-          <el-table
-            :data="form.loanData"
-            :header-cell-style="{ color: '#212121' }"
-            style="width: 99%; height: 200px; margin-top: 5px; text-align: center"
-          >
-            <el-table-column
-              prop="material_name"
-              header-align="center"
-              fixed
-              align="center"
-              label="物料名称"
-              width="auto"
-            />
-            <el-table-column
-              prop="qr_code"
-              align="center"
-              header-align="center"
-              label="物料二维码编号"
-              width="auto"
-            />
-          </el-table>
-        </el-col>
-      </el-row>
-      <el-row type="flex" justify="center" style="margin-top: 10px">
-        <el-col :span="9">
-          <el-form-item label="盘检经度：" prop="check_longitude">
-            <el-input
-              class="inputClass"
-              :disabled="true"
-              v-model="form.check_longitude"
-              style="width: 85%; height: 40px"
-            />
-          </el-form-item>
-          <el-form-item label="盘检时间：" prop="check_date">
-            <el-date-picker
-              :disabled="true"
-              style="width: 85%; height: 40px"
-              v-model="form.check_date"
-              type="date"
-              size="small"
-            />
-          </el-form-item>
-          <el-form-item label="附件内容：" prop="file_id">
-            <div v-if="files.length > 0">
-              <ul>
-                <li v-for="(file, index) in files" :key="index" style="cursor: pointer">
-                  <span
-                    style="text-decoration: underline; white-space: nowrap"
-                    @click="downloadFile(file)"
-                    >{{ file }}</span
-                  >
-                </li>
-              </ul>
-            </div>
-          </el-form-item>
-        </el-col>
-        <el-col :span="9">
-          <el-form-item label="盘检纬度：" prop="check_latitude">
-            <el-input
-              class="inputClass"
-              :disabled="true"
-              v-model="form.check_latitude"
-              style="width: 85%; height: 40px"
-            />
-          </el-form-item>
-          <el-form-item label="是否超过100米：" prop="is_normal">
-            <el-radio-group v-model="form.is_normal">
-              <el-radio value="1" :disabled="true">是</el-radio>
-              <el-radio value="0" :disabled="true">否</el-radio>
-            </el-radio-group>
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row type="flex" justify="center" style="margin-top: 5px">
+      <el-row type="flex" justify="center">
         <el-col :span="18" style="text-align: center">
-          <el-form-item label="物料信息：" prop="material_message">
+          <el-form-item label="经营地址：" prop="custom_address">
             <el-input
-              :rows="2"
-              :disabled="true"
-              type="textarea"
               class="inputClass"
-              v-model="form.material_message"
+              v-model="form.custom_address"
+              :disabled="true"
               style="width: 94%; height: 40px"
             />
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row type="flex" justify="center" style="margin-top: 10px; text-align: left">
+      <el-row type="flex" justify="center" style="text-align: left">
+        <el-col :span="9">
+          <el-form-item label="客户经理：" prop="employee_name">
+            <el-input
+              class="inputClass"
+              v-model="form.employee_name"
+              :disabled="true"
+              style="width: 85%; height: 40px"
+            />
+          </el-form-item>
+          <el-form-item label="申请物料名称：" prop="material_name">
+            <el-input
+              v-model="form.material_name"
+              :disabled="true"
+              placeholder="请输入申请物料名称"
+              style="width: 85%; height: 40px"
+            />
+          </el-form-item>
+          <el-form-item label="物料数量：" prop="num">
+            <el-input
+              v-model="form.num"
+              :disabled="true"
+              style="width: 85%; height: 40px"
+              placeholder="请选择物料数量"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="9">
+          <el-form-item label="终端层级：" prop="terminal_level">
+            <el-input
+              class="inputClass"
+              v-model="form.terminal_level"
+              :disabled="true"
+              style="width: 85%; height: 40px"
+            />
+          </el-form-item>
+          <el-form-item label="是否易耗品：" prop="consumable">
+            <el-radio-group v-model="form.consumable">
+              <el-radio value="1" :disabled="true">是</el-radio>
+              <el-radio value="0" :disabled="true">否</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="延期申请流程编号：" class="item-label" prop="busi_id">
+            <el-input
+              v-model="busi_id"
+              :disabled="true"
+              style="width: 85%; height: 40px"
+              placeholder="请输入延期申请流程编号"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row type="flex" justify="center" style="text-align: left">
         <el-col :span="9">
           <el-form-item label="发起人编号：" prop="user_id">
             <el-input
@@ -286,12 +261,11 @@
 </template>
 
 <script>
-import axios from 'axios'
 import {
-  submitInventoryCheckApply,
+  submitWzDelayApply,
   userMessage,
   searchNextApproval,
-  searchInventoryCheckApply,
+  searchWzDelayApply,
   searchTodo,
   searchMaxFlowNode,
   cancel,
@@ -305,19 +279,9 @@ import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 import { color } from 'echarts'
 export default {
-  name: 'InventoryCheckApprove',
+  name: 'ReviewApproveDelay',
   data() {
     return {
-      files: [], // 存储文件列表
-      materialCodeArray: [],
-      materialNameArray: [],
-      qrCodeArray: [],
-      materialCodeString: '',
-      materialNameString: '',
-      qrCodeString: '',
-      PATH_URL: import.meta.env.VITE_API_BASE_PATH,
-      upLoadUrl: import.meta.env.VITE_API_BASE_PATH + '/uploads/uploads.php',
-      file_id: '',
       traceDialog: false,
       buttonShow: false,
       currentType: '1', //1是本人审批，2是别人审批自己看审批过的已办，3是已完成
@@ -343,23 +307,22 @@ export default {
       traceOptions: [],
       form: {
         approval_content: '',
-        loanData: [],
         inst_code: '',
         inst_name: '',
         user_id: '',
         user_name: '',
         telephone: '',
         custom_name: '',
-        longitude: '',
-        is_normal: '',
-        check_longitude: '',
-        check_date: '',
-        material_message: '',
-        fileList: [],
+        operator_name: '',
         custom_license: '',
-        latitude: '',
-        check_latitude: '',
+        operator_telephone: '',
+        custom_address: '',
+        employee_name: '',
         material_code: '',
+        material_name: '',
+        terminal_level: '',
+        consumable: '',
+        num: '',
         next_approval_id: '',
         next_approval_name: ''
       },
@@ -373,58 +336,19 @@ export default {
     const loginInfo = userStore.getUserInfo
     this.user_id = loginInfo.userId
     this.busi_id = this.$route.query.busi_id
-    const responseCheck = await searchInventoryCheckApply({ busi_id: this.busi_id })
-    this.form.custom_name = responseCheck.data.data[0].custom_name
-    this.file_id = responseCheck.data.data[0].file_id
-    this.form.longitude = responseCheck.data.data[0].longitude
-    this.form.is_normal = responseCheck.data.data[0].is_normal
-    this.form.check_longitude = responseCheck.data.data[0].check_longitude
-    this.form.check_date = responseCheck.data.data[0].check_date
-    this.form.material_message = responseCheck.data.data[0].material_message
-    this.form.fileList = responseCheck.data.data[0].fileList
-    this.form.custom_license = responseCheck.data.data[0].custom_license
-    this.form.latitude = responseCheck.data.data[0].latitude
-    this.form.check_latitude = responseCheck.data.data[0].check_latitude
-    this.form.material_code = responseCheck.data.data[0].material_code
-    this.form.user_id = responseCheck.data.data[0].user_id
-    this.materialCodeString = responseCheck.data.data[0].material_code_string
-    this.materialNameString = responseCheck.data.data[0].material_name_string
-    this.form.telephone = responseCheck.data.data[0].telephone
-    this.form.user_id = responseCheck.data.data[0].user_id
-    this.form.user_name = responseCheck.data.data[0].user_name
-    console.log(this.materialNameString, 'this.materialNameStringthis.materialNameString')
-    this.qrCodeString = responseCheck.data.data[0].qr_code_string
-    if (this.materialCodeString.indexOf(',') > -1) {
-      this.materialCodeArray = this.materialCodeString.split(',')
-    } else {
-      this.materialCodeArray.push(this.materialCodeString)
-    }
-    if (this.materialNameString.indexOf(',') > -1) {
-      this.materialNameArray = this.materialNameString.split(',')
-    } else {
-      this.materialNameArray.push(this.materialNameString)
-    }
-    if (this.qrCodeString.indexOf(',') > -1) {
-      this.qrCodeArray = this.qrCodeString.split(',')
-    } else {
-      this.qrCodeArray.push(this.qrCodeString)
-    }
-    this.form.loanData = []
-    this.materialCodeArray.forEach((item, index) => {
-      this.form.loanData.push({
-        material_name: this.materialNameArray[index],
-        material_code: this.materialCodeArray[index],
-        qr_code: this.qrCodeArray.length > index ? this.qrCodeArray[index] : ''
-      })
-    })
-    const responseFile = await axios.get(
-      this.PATH_URL + `/uploads/list_files.php?name=${this.file_id}`
-    )
-    if (responseFile.data.files) {
-      this.files = responseFile.data.files // 将返回的文件列表保存到 data 中
-    } else {
-      console.error(responseFile.data.message || '无法获取文件列表')
-    }
+    const responseDemand = await searchWzDelayApply({ busi_id: this.busi_id })
+    this.form.custom_name = responseDemand.data.data[0].custom_name
+    this.form.operator_name = responseDemand.data.data[0].operator_name
+    this.form.custom_license = responseDemand.data.data[0].custom_license
+    this.form.operator_telephone = responseDemand.data.data[0].operator_telephone
+    this.form.custom_address = responseDemand.data.data[0].custom_address
+    this.form.employee_name = responseDemand.data.data[0].employee_name
+    this.form.material_code = responseDemand.data.data[0].material_code
+    this.form.material_name = responseDemand.data.data[0].material_name
+    this.form.terminal_level = responseDemand.data.data[0].terminal_level
+    this.form.consumable = responseDemand.data.data[0].consumable
+    this.form.num = responseDemand.data.data[0].num
+    this.form.user_id = responseDemand.data.data[0].user_id
     //发起人信息
     const response = await userMessage({ userId: this.form.user_id })
     this.form.user_name = response.data.data[0].employee_name
@@ -495,25 +419,6 @@ export default {
     console.log(this.currentType, 'this.currentTypethis.currentType')
   },
   methods: {
-    async downloadFile(file) {
-      try {
-        const response = await axios({
-          url: this.PATH_URL + `/uploads/download.php?name=${this.file_id}&file=${file}`, // 请求下载文件
-          method: 'GET',
-          responseType: 'blob' // 设置响应为 blob 类型，表示文件
-        })
-        // 创建 URL 对象并触发下载
-        const url = window.URL.createObjectURL(new Blob([response.data]))
-        const link = document.createElement('a')
-        link.href = url
-        link.setAttribute('download', file) // 设置下载文件名
-        document.body.appendChild(link)
-        link.click() // 触发下载
-      } catch (error) {
-        console.error('文件下载失败', error)
-        alert('文件下载失败')
-      }
-    },
     backfirstClick() {
       let validatestat = false
       this.$refs['formRef'].validate((valid) => {
@@ -663,36 +568,34 @@ export default {
       setTimeout(async () => {
         if (validatestat) {
           try {
-            const responseResult = await submitInventoryCheckApply({
-              busi_id: this.busi_id,
+            const responseResult = await submitWzDelayApply({
               flow_no: this.flow_no,
               flow_node: this.flow_node,
               flow_title: this.flow_title,
               approval_content: this.form.approval_content,
               flow_node_name: this.flow_node_name,
               approval_name: this.form.user_name,
-              user_id: this.userId,
-              material_code_string: this.materialCodeString,
-              material_name_string: this.materialNameString,
-              qr_code_string: this.qrCodeString,
+              custom_name: this.form.custom_name,
+              operator_name: this.form.operator_name,
+              custom_license: this.form.custom_license,
+              operator_telephone: this.form.operator_telephone,
+              custom_address: this.form.custom_address,
+              employee_name: this.form.employee_name,
+              material_code: this.form.material_code,
+              material_name: this.form.material_name,
+              terminal_level: this.form.terminal_level,
+              consumable: this.form.consumable,
+              num: this.form.num,
+              user_id: this.form.user_id,
               user_name: this.form.user_name,
               inst_code: this.form.inst_code,
               inst_name: this.form.inst_name,
               telephone: this.form.telephone,
               next_approval_id: this.form.next_approval_id,
               next_approval_name: this.form.next_approval_name,
-              custom_name: this.form.custom_name,
-              longitude: this.form.longitude,
-              is_normal: this.form.is_normal,
-              check_date: this.form.check_date,
-              material_message: this.form.material_message,
-              file_id: this.file_id,
-              check_longitude: this.form.check_longitude,
-              custom_license: this.form.custom_license,
-              latitude: this.form.latitude,
-              check_latitude: this.form.check_latitude,
-              material_code: this.form.material_code
+              busi_id: this.busi_id
             })
+            console.log(responseResult.data.code, responseResult.data.code === 300, '8888')
             if (responseResult.data.code === 300) {
               this.$message.error(responseResult.data.message)
             } else {
@@ -870,10 +773,7 @@ td {
   background-color: #dcdcdc;
   box-shadow: 0 0 0 1px var(--el-disabled-border-color) inset;
 }
-:deep(.el-textarea.is-disabled .el-textarea__inner) {
-  background-color: var(--el-disabled-bg-color);
-  box-shadow: 0 0 0 1px var(--el-disabled-border-color) inset;
-  color: #000000;
-  cursor: not-allowed;
+:deep(.item-label .el-form-item__label) {
+  line-height: 22px !important;
 }
 </style>

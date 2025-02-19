@@ -131,6 +131,7 @@ import {
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 export default {
+  name: 'IssuanceProgressKhjl',
   data() {
     return {
       level: '0', //0是各市场部，1是市场部各客户经理，2是客户经理各客户

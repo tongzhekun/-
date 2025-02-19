@@ -108,7 +108,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: 'StorageNow',
         meta: {
           title: t('router.storageNow'),
-          noCache: true
+          noCache: false
         }
       },
       {
@@ -117,7 +117,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: 'StorageHistory',
         meta: {
           title: t('router.storageHistory'),
-          noCache: true
+          noCache: false
         }
       },
       {
@@ -126,7 +126,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: 'StorageDistribution',
         meta: {
           title: t('router.storageDistribution'),
-          noCache: true
+          noCache: false
         }
       }
     ]
@@ -139,7 +139,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     meta: {
       title: t('router.materialIssuance'),
       icon: 'vi-cib:telegram-plane',
-      alwaysShow: true
+      alwaysShow: false
     },
     children: [
       {
@@ -148,7 +148,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: 'Todo',
         meta: {
           title: t('router.todo'),
-          noCache: true
+          noCache: false
         }
       },
       {
@@ -157,7 +157,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: 'Done',
         meta: {
           title: t('router.done'),
-          noCache: true
+          noCache: false
         }
       },
       {
@@ -166,7 +166,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: 'DemandForecast',
         meta: {
           title: t('router.demandForecast'),
-          noCache: true
+          noCache: false
         }
       },
       {
@@ -184,7 +184,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: 'DemandForecastTotalApply',
         meta: {
           title: t('router.demandForecastTotalApply'),
-          noCache: true
+          noCache: false
         }
       },
       {
@@ -202,7 +202,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: 'DemandForecastMx',
         meta: {
           title: t('router.demandForecastMx'),
-          noCache: true
+          noCache: false
         }
       },
       {
@@ -211,7 +211,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: 'DemandForecastTotalApplyMx',
         meta: {
           title: t('router.demandForecastTotalApplyMx'),
-          noCache: true
+          noCache: false
         }
       },
       {
@@ -220,7 +220,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: 'Review',
         meta: {
           title: t('router.review'),
-          noCache: true
+          noCache: false
         }
       },
       {
@@ -233,12 +233,30 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         }
       },
       {
+        path: 'reviewDelay',
+        component: () => import('@/views/materialIssuance/reviewDelay.vue'),
+        name: 'ReviewDelay',
+        meta: {
+          title: t('router.reviewDelay'),
+          noCache: false
+        }
+      },
+      {
+        path: 'reviewDelayApprove',
+        component: () => import('@/views/materialIssuance/reviewDelayApprove.vue'),
+        name: 'ReviewDelayApprove',
+        meta: {
+          title: t('router.reviewDelay_approve'),
+          hidden: true
+        }
+      },
+      {
         path: 'issuanceProgress',
         component: () => import('@/views/materialIssuance/issuanceProgress.vue'),
         name: 'IssuanceProgress',
         meta: {
           title: t('router.issuanceProgress'),
-          noCache: true
+          noCache: false
         }
       },
       {
@@ -247,7 +265,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: 'IssuanceProgressKhjl',
         meta: {
           title: t('router.issuanceProgressKhjl'),
-          noCache: true,
+          noCache: false,
           hidden: true
         }
       },
@@ -257,7 +275,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: 'IssuanceProgressKh',
         meta: {
           title: t('router.issuanceProgressKh'),
-          noCache: true,
+          noCache: false,
           hidden: true
         }
       },
@@ -267,7 +285,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: 'HistoricalIssuance',
         meta: {
           title: t('router.historicalIssuance'),
-          noCache: true
+          noCache: false
         }
       }
     ]
@@ -289,7 +307,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: 'InventoryCheck',
         meta: {
           title: t('router.inventoryCheck'),
-          noCache: true
+          noCache: false
         }
       },
       {
@@ -307,7 +325,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: 'GpsInformation',
         meta: {
           title: t('router.gpsInformation'),
-          noCache: true
+          noCache: false
         }
       },
       {
@@ -316,7 +334,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: 'QrCode',
         meta: {
           title: t('router.qrCode'),
-          noCache: true
+          noCache: false
         }
       },
       {
@@ -334,7 +352,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         name: 'InventoryReport',
         meta: {
           title: t('router.inventoryReport'),
-          noCache: true
+          noCache: false
         }
       }
     ]
@@ -353,7 +371,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
           title: t('router.gearPlacement'),
           icon: 'vi-cib:telegram-plane',
           alwaysShow: true,
-          noCache: true
+          noCache: false
         }
       }
     ]

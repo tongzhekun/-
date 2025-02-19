@@ -125,6 +125,7 @@ import { treeSc, searchAllocateCk, exportAllocateCk } from '@/api/login'
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 export default {
+  name: 'StorageDistribution',
   data() {
     return {
       loading: false,

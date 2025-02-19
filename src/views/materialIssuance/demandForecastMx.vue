@@ -103,6 +103,7 @@ import { searchDemandMx, tree, exportDemandMx, userMessage } from '@/api/login'
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 export default {
+  name: 'DemandForecastMx',
   data() {
     return {
       total: 0, // 总记录数

@@ -228,6 +228,7 @@ import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 import { color } from 'echarts'
 export default {
+  name: 'DemandForecastTotalApplyApprove',
   data() {
     return {
       traceDialog: false,

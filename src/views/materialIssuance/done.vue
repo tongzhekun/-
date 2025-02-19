@@ -92,6 +92,7 @@ import { searchDone, searchDemand, searchWzApply, searchDemandApplyTotal } from 
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 export default {
+  name: 'Done',
   data() {
     return {
       userId: '',
@@ -113,6 +114,10 @@ export default {
     this.form.user_id = loginInfo.userId
     this.searchClick()
     console.log(this.form.loanData, '0000000000000')
+  },
+  activated() {
+    this.searchClick()
+    this.$forceUpdate()
   },
   methods: {
     rowClick(row) {

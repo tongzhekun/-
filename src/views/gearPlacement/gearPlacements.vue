@@ -238,6 +238,7 @@ import * as XLSX from 'xlsx'
 const { formRegister, formMethods } = useForm()
 const { getFormData, getElFormExpose, setValues } = formMethods
 export default {
+  name: 'GearPlacementDemo',
   data() {
     return {
       tobaccoName: '卷烟详情',

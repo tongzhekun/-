@@ -286,6 +286,7 @@ import {
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 export default {
+  name: 'DemandForecast',
   data() {
     return {
       judgeType: '0',

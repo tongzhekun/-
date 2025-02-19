@@ -187,6 +187,7 @@ import {
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 export default {
+  name: 'QrCode',
   data() {
     return {
       filesArray: [],

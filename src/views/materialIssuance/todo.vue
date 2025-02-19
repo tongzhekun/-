@@ -149,11 +149,13 @@ import {
   searchWzApply,
   searchDemandApplyTotal,
   searchInventoryCheckApply,
-  searchQrCodeChangeApply
+  searchQrCodeChangeApply,
+  searchWzDelayApply
 } from '@/api/login'
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 export default {
+  name: 'Todo',
   data() {
     return {
       role: '0',
@@ -204,12 +206,17 @@ export default {
     }
     console.log(this.form.loanData, '0000000000000')
   },
+  activated() {
+    this.searchClick()
+    this.$forceUpdate()
+  },
   methods: {
     rowClick(row) {
       console.log(row.busi_id, 'row.busi_id')
       this.$router.push(row.url + '?busi_id=' + row.busi_id)
     },
     async fetchData() {
+      console.log(this.form.loanData, '11111111111')
       const responseTodo = await searchTodo({
         user_id: this.userId,
         page: this.currentPage,
@@ -276,6 +283,17 @@ export default {
             item.url = '/materialSupervision/qrCode'
           } else {
             item.url = '/materialSupervision/qrCodeApprove'
+          }
+          return item
+        } else if (item.flow_no == '10' || item.flow_no == '11') {
+          const responseDemand = await searchWzDelayApply({ busi_id: item.busi_id })
+          item.apply_id = responseDemand.data.data[0].user_id
+          item.apply_name = responseDemand.data.data[0].user_name
+          item.time = responseDemand.data.data[0].time
+          if (item.flow_node === '1') {
+            item.url = '/materialIssuance/reviewDelay'
+          } else {
+            item.url = '/materialIssuance/reviewDelayApprove'
           }
           return item
         }

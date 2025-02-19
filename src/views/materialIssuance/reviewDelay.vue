@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <el-form :model="form" ref="formRef" :rules="formRules" label-width="150px">
+    <el-form :model="form" ref="formRef" :rules="formRules" label-width="130px">
       <el-row type="flex" justify="center" style="margin-top: -15px; text-align: left">
         <el-col :span="9">
           <el-form-item label="客户名称：" prop="custom_name">
@@ -13,10 +13,10 @@
               @select="handleSelect"
             />
           </el-form-item>
-          <el-form-item label="客户经度：" prop="longitude">
+          <el-form-item label="负责人：" prop="operator_name">
             <el-input
               class="inputClass"
-              v-model="form.longitude"
+              v-model="form.operator_name"
               :disabled="true"
               style="width: 85%; height: 40px"
             />
@@ -31,108 +31,75 @@
               style="width: 85%; height: 40px"
             />
           </el-form-item>
-          <el-form-item label="客户纬度：" prop="latitude">
+          <el-form-item label="经营者电话：" prop="operator_telephone">
             <el-input
               class="inputClass"
-              v-model="form.latitude"
+              v-model="form.operator_telephone"
               :disabled="true"
               style="width: 85%; height: 40px"
             />
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row type="flex" justify="center" style="margin-top: 5px">
-        <el-col :span="12">
-          <el-table
-            :data="form.loanData"
-            :header-cell-style="{ color: '#212121' }"
-            style="width: 99%; height: 200px; margin-top: 5px; text-align: center"
-          >
-            <el-table-column
-              prop="material_name"
-              header-align="center"
-              fixed
-              align="center"
-              label="物料名称"
-              width="auto"
+      <el-row type="flex" justify="center">
+        <el-col :span="18" style="text-align: center">
+          <el-form-item label="经营地址：" prop="custom_address">
+            <el-input
+              class="inputClass"
+              v-model="form.custom_address"
+              :disabled="true"
+              style="width: 94%; height: 40px"
             />
-            <el-table-column
-              prop="qr_code"
-              align="center"
-              header-align="center"
-              label="物料二维码编号"
-              width="auto"
-            />
-          </el-table>
+          </el-form-item>
         </el-col>
       </el-row>
-      <el-row type="flex" justify="center" style="margin-top: 10px">
+      <el-row type="flex" justify="center" style="text-align: left">
         <el-col :span="9">
-          <el-form-item label="盘检经度：" prop="check_longitude">
+          <el-form-item label="客户经理：" prop="employee_name">
             <el-input
               class="inputClass"
-              @change="longChange"
-              v-model="form.check_longitude"
+              v-model="form.employee_name"
+              :disabled="true"
               style="width: 85%; height: 40px"
             />
           </el-form-item>
-          <el-form-item label="盘检时间：" prop="check_date">
-            <el-date-picker
+          <el-form-item label="申请物料名称：" prop="material_name">
+            <el-autocomplete
+              v-model="form.material_name"
+              @change="inputName1"
+              :fetch-suggestions="querySearchAsync1"
+              placeholder="请输入申请物料名称"
               style="width: 85%; height: 40px"
-              v-model="form.check_date"
-              type="date"
-              size="small"
+              @select="handleSelect1"
             />
           </el-form-item>
-          <el-form-item label="附件上传：" prop="fileList">
-            <el-upload
-              ref="upload"
-              v-model:file-list="form.fileList"
-              :action="upLoadUrl"
-              class="upload-demo"
-              multiple
-              :on-remove="handleRemove"
-              :limit="5"
-              :data="{ name: file_id }"
-            >
-              <el-button type="primary">选择附件</el-button>
-              <template #tip>
-                <div class="el-upload__tip">请上传物料的二维码照片</div>
-              </template>
-            </el-upload>
+          <el-form-item label="物料数量：" prop="num">
+            <el-input
+              v-model="form.num"
+              @input="handleInput"
+              style="width: 85%; height: 40px"
+              placeholder="请选择物料数量"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="9">
-          <el-form-item label="盘检纬度：" prop="check_latitude">
+          <el-form-item label="终端层级：" prop="terminal_level">
             <el-input
               class="inputClass"
-              @change="longChange"
-              v-model="form.check_latitude"
+              v-model="form.terminal_level"
+              :disabled="true"
               style="width: 85%; height: 40px"
             />
           </el-form-item>
-          <el-form-item label="是否超过100米：" prop="is_normal">
-            <el-radio-group v-model="form.is_normal">
+          <el-form-item label="是否易耗品：" prop="consumable">
+            <el-radio-group v-model="form.consumable">
               <el-radio value="1" :disabled="true">是</el-radio>
               <el-radio value="0" :disabled="true">否</el-radio>
             </el-radio-group>
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row type="flex" justify="center" style="margin-top: 5px">
-        <el-col :span="18" style="text-align: center">
-          <el-form-item label="物料信息：" prop="material_message">
-            <el-input
-              :rows="2"
-              type="textarea"
-              class="inputClass"
-              v-model="form.material_message"
-              style="width: 94%; height: 40px"
-            />
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row type="flex" justify="center" style="margin-top: 10px; text-align: left">
+      <el-row type="flex" justify="center" style="text-align: left">
         <el-col :span="9">
           <el-form-item label="发起人编号：" prop="user_id">
             <el-input
@@ -171,7 +138,7 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row type="flex" justify="center" style="margin-top: 8px; margin-bottom: 10px">
+      <el-row type="flex" justify="center" style="margin-top: 8px">
         <el-col :span="24" style="text-align: center">
           <el-button type="primary" @click="submitClick">提交流程</el-button>
         </el-col>
@@ -216,219 +183,93 @@
 </template>
 
 <script>
-import axios from 'axios'
 import {
-  searchQrCode,
-  searchDepartWz,
+  searchDepartDelayWz,
   searchCustList,
   userMessage,
   searchNextApproval,
-  submitInventoryCheckApply,
-  searchInventoryCheckApply
+  submitWzDelayApply,
+  searchWzDelayApply
 } from '@/api/login'
 import * as XLSX from 'xlsx'
 import { useUserStore } from '@/store/modules/user'
 export default {
-  name: 'InventoryCheck',
+  name: 'ReviewDelay',
   data() {
     return {
-      filesArray: [],
-      files: [],
-      materialCodeArray: [],
-      materialNameArray: [],
-      qrCodeArray: [],
-      materialCodeString: '',
-      materialNameString: '',
-      qrCodeString: '',
-      PATH_URL: import.meta.env.VITE_API_BASE_PATH,
-      upLoadUrl: import.meta.env.VITE_API_BASE_PATH + '/uploads/uploads.php',
-      file_id: '',
       customArray: [],
       wzArray: [],
       busi_id: '',
-      flow_no: '6',
+      flow_no: '10',
+      material_name: '',
       materialNameShow: true,
       userId: '',
       dialogVisibleApproval: false,
       approveOptions: [],
       form: {
-        loanData: [],
         inst_code: '',
         inst_name: '',
         user_id: '',
         user_name: '',
         telephone: '',
         custom_name: '',
-        longitude: '',
-        is_normal: '',
-        check_longitude: '',
-        check_date: '',
-        material_message: '',
-        fileList: [
-          // {
-          //   name: 'example1.png',
-          //   url: import.meta.env.VITE_API_BASE_PATH + '/uploads/1906011736316854071/机构表 (1).xlsx'
-          // },
-          // {
-          //   name: 'example2.jpg',
-          //   url: import.meta.env.VITE_API_BASE_PATH + '/uploads/1906011736316854071/员工表.xlsx'
-          // }
-        ],
+        operator_name: '',
         custom_license: '',
-        latitude: '',
-        check_latitude: '',
+        operator_telephone: '',
+        custom_address: '',
+        employee_name: '',
         material_code: '',
+        material_name: '',
+        terminal_level: '',
+        consumable: '',
+        num: '',
         next_approval_id: '',
         next_approval_name: ''
       },
       formRules: {
         next_approval_id: [{ required: true, message: '请选择审批人', trigger: 'blur' }],
+        num: [{ required: true, message: '请输入物料数量', trigger: 'blur' }],
         custom_name: [{ required: true, message: '请输入客户名称', trigger: 'blur' }],
+        material_name: [{ required: true, message: '请输入申请物料名称', trigger: 'blur' }],
         custom_license: [{ required: true, message: '选择客户名称后返显', trigger: 'blur' }],
-        is_normal: [{ required: true, message: '未自动返显，重新输入盘检经纬度', trigger: 'blur' }],
-        check_longitude: [{ required: true, message: '请输入盘检经度', trigger: 'blur' }],
-        check_latitude: [{ required: true, message: '请输入盘检纬度', trigger: 'blur' }],
-        check_date: [{ required: true, message: '请输入盘检时间', trigger: 'blur' }],
-        material_message: [{ required: true, message: '请输入盘检信息', trigger: 'blur' }],
-        fileList: [{ required: true, message: '请上传附件', trigger: 'blur' }]
+        consumable: [{ required: true, message: '选择物料种类后返显', trigger: 'blur' }]
       }
     }
   },
   async created() {
+    this.busi_id = this.$route.query.busi_id
+    if (this.busi_id != undefined && this.busi_id != '') {
+      const responseDemand = await searchWzDelayApply({ busi_id: this.busi_id })
+      this.form.custom_name = responseDemand.data.data[0].custom_name
+      this.form.operator_name = responseDemand.data.data[0].operator_name
+      this.form.custom_license = responseDemand.data.data[0].custom_license
+      this.form.operator_telephone = responseDemand.data.data[0].operator_telephone
+      this.form.custom_address = responseDemand.data.data[0].custom_address
+      this.form.employee_name = responseDemand.data.data[0].employee_name
+      this.form.material_code = responseDemand.data.data[0].material_code
+      this.form.material_name = responseDemand.data.data[0].material_name
+      this.form.terminal_level = responseDemand.data.data[0].terminal_level
+      this.form.consumable = responseDemand.data.data[0].consumable
+      this.form.num = responseDemand.data.data[0].num
+    } else {
+      this.busi_id = ''
+    }
     const userStore = useUserStore()
     const loginInfo = userStore.getUserInfo
     this.userId = loginInfo.userId
     this.form.user_id = loginInfo.userId
-    this.busi_id = this.$route.query.busi_id
-    this.file_id = loginInfo.userId + Date.now()
-    if (this.busi_id != undefined && this.busi_id != '') {
-      const responseCheck = await searchInventoryCheckApply({ busi_id: this.busi_id })
-      this.form.custom_name = responseCheck.data.data[0].custom_name
-      this.file_id = responseCheck.data.data[0].file_id
-      const responseFile = await axios.get(
-        this.PATH_URL + `/uploads/list_files.php?name=${this.file_id}`
-      )
-      if (responseFile.data.files) {
-        this.filesArray = []
-        this.files = responseFile.data.files // 将返回的文件列表保存到 data 中
-        this.files.forEach((item) => {
-          this.filesArray.push({
-            name: item,
-            url: this.PATH_URL + '/uploads/' + this.file_id + '/' + item,
-            response: {
-              file: 'uploads/' + this.file_id + '/' + item
-            }
-          })
-        })
-        this.form.fileList = this.filesArray
-      } else {
-        console.error(responseFile.data.message || '无法获取文件列表')
-      }
-      this.form.longitude = responseCheck.data.data[0].longitude
-      this.form.is_normal = responseCheck.data.data[0].is_normal
-      this.form.check_longitude = responseCheck.data.data[0].check_longitude
-      this.form.check_date = responseCheck.data.data[0].check_date
-      this.form.material_message = responseCheck.data.data[0].material_message
-      this.form.custom_license = responseCheck.data.data[0].custom_license
-      this.form.latitude = responseCheck.data.data[0].latitude
-      this.form.check_latitude = responseCheck.data.data[0].check_latitude
-      this.form.material_code = responseCheck.data.data[0].material_code
-      this.materialCodeString = responseCheck.data.data[0].material_code_string
-      this.materialNameString = responseCheck.data.data[0].material_name_string
-      this.qrCodeString = responseCheck.data.data[0].qr_code_string
-      if (this.materialCodeString.indexOf(',') > -1) {
-        this.materialCodeArray = this.materialCodeString.split(',')
-      } else {
-        this.materialCodeArray.push(this.materialCodeString)
-      }
-      if (this.materialNameString.indexOf(',') > -1) {
-        this.materialNameArray = this.materialNameString.split(',')
-      } else {
-        this.materialNameArray.push(this.materialNameString)
-      }
-      if (this.qrCodeString.indexOf(',') > -1) {
-        this.qrCodeArray = this.qrCodeString.split(',')
-      } else {
-        this.qrCodeArray.push(this.qrCodeString)
-      }
-      this.form.loanData = []
-      this.materialCodeArray.forEach((item, index) => {
-        this.form.loanData.push({
-          material_name: this.materialNameArray[index],
-          material_code: this.materialCodeArray[index],
-          qr_code: this.qrCodeArray.length > index ? this.qrCodeArray[index] : ''
-        })
-      })
-    } else {
-      this.busi_id = ''
-    }
     const response = await userMessage({ userId: this.userId })
     this.form.user_name = response.data.data[0].employee_name
     this.form.inst_code = response.data.data[0].inst_code
     this.form.inst_name = response.data.data[0].inst_name
     this.form.telephone = response.data.data[0].telephone
     if (this.form.inst_code.substring(5, 6) === '1') {
-      this.flow_no = '7'
+      this.flow_no = '11'
     } else {
-      this.flow_no = '6'
-    }
-  },
-  unmounted() {
-    if (this.busi_id == undefined || this.busi_id == '') {
-      axios
-        .post(import.meta.env.VITE_API_BASE_PATH + '/uploads/deleteFile.php', {
-          fileId: this.file_id // 假设 file.url 是文件的完整路径
-        })
-        .then((response) => {})
-        .catch((error) => {
-          this.$message.error('网络错误：' + error.message)
-        })
+      this.flow_no = '10'
     }
   },
   methods: {
-    longChange() {
-      if (
-        this.form.check_latitude != '' &&
-        this.form.check_longitude != '' &&
-        this.form.latitude != '' &&
-        this.form.longitude != ''
-      ) {
-        const R = 6371000 // 地球平均半径（米）
-        const dLat = (this.form.check_latitude - this.form.latitude) * (Math.PI / 180)
-        const dLon = (this.form.check_longitude - this.form.longitude) * (Math.PI / 180)
-        const a =
-          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-          Math.cos(this.form.latitude * (Math.PI / 180)) *
-            Math.cos(this.form.check_latitude * (Math.PI / 180)) *
-            Math.sin(dLon / 2) *
-            Math.sin(dLon / 2)
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-        const distance = R * c
-        console.log(distance, '1111111111')
-        if (distance > 100) {
-          this.form.is_normal = '1'
-        } else {
-          this.form.is_normal = '0'
-        }
-      }
-    },
-    handleRemove(file, uploadFiles) {
-      console.log(file, 'foelsss')
-      axios
-        .post(import.meta.env.VITE_API_BASE_PATH + '/uploads/delete.php', {
-          filePath: file.response.file // 假设 file.url 是文件的完整路径,
-        })
-        .then((response) => {
-          if (response.data.success) {
-            this.$message.success('文件删除成功')
-          } else {
-            this.$message.error('文件删除失败：' + response.data.message)
-          }
-        })
-        .catch((error) => {
-          this.$message.error('网络错误：' + error.message)
-        })
-    },
     async querySearchAsync(queryString, cb) {
       const responseResult = await searchCustList({
         custom_name: queryString,
@@ -439,26 +280,70 @@ export default {
         this.customArray.push({
           value: item.custom_name,
           custom_name: item.custom_name,
-          longitude: item.longitude,
+          operator_name: item.operator_name,
           custom_license: item.custom_license,
-          latitude: item.latitude
+          operator_telephone: item.operator_telephone,
+          custom_address: item.custom_address,
+          employee_name: item.employee_name,
+          terminal_level: item.terminal_level
         })
       })
       cb(this.customArray)
     },
-    async handleSelect(item) {
+    handleSelect(item) {
+      console.log('999999999999988888888')
       this.form.custom_name = item.custom_name
-      this.form.longitude = item.longitude
+      this.form.operator_name = item.operator_name
       this.form.custom_license = item.custom_license
-      this.form.latitude = item.latitude
-      const qrResponse = await searchQrCode({ custom_license: item.custom_license })
-      this.form.loanData = qrResponse.data.data
+      this.form.operator_telephone = item.operator_telephone
+      this.form.custom_address = item.custom_address
+      this.form.employee_name = item.employee_name
+      this.form.terminal_level = item.terminal_level
       this.$forceUpdate()
     },
     inputName() {
-      this.form.longitude = ''
+      this.form.operator_name = ''
       this.form.custom_license = ''
-      this.form.latitude = ''
+      this.form.operator_telephone = ''
+      this.form.custom_address = ''
+      this.form.employee_name = ''
+      this.form.terminal_level = ''
+    },
+    inputName1() {
+      this.form.consumable = ''
+    },
+    handleInput() {
+      let value = this.form.num
+      if (value !== null && value !== '') {
+        // 使用正则表达式匹配，只保留数字部分
+        value = value.toString().replace(/\D/g, '')
+        this.form.num = value
+      } else {
+        this.form.num = null
+      }
+    },
+    async querySearchAsync1(queryString, cb) {
+      const responseResult = await searchDepartDelayWz({
+        material_name: queryString,
+        inst_code: this.form.inst_code
+      })
+      this.wzArray = []
+      responseResult.data.data.forEach((item) => {
+        this.wzArray.push({
+          value: item.material_name,
+          material_name: item.material_name,
+          material_code: item.material_code,
+          consumable: item.consumable
+        })
+      })
+      cb(this.wzArray)
+    },
+    handleSelect1(item) {
+      console.log('111111111111')
+      this.form.material_name = item.material_name
+      this.form.consumable = item.consumable
+      this.form.material_code = item.material_code
+      this.$forceUpdate()
     },
     nextApprovalIdChange() {
       this.approveOptions.forEach((item) => {
@@ -468,40 +353,16 @@ export default {
       })
     },
     async confirmApprovalClick() {
-      if (this.form.loanData == null || this.form.loanData.length == 0) {
-        this.materialCodeString = ''
-        this.materialNameString = ''
-        this.qrCodeString = ''
-      } else if (this.form.loanData.length == 1) {
-        this.materialCodeString = this.form.loanData[0].material_code
-        this.materialNameString = this.form.loanData[0].material_name
-        this.qrCodeString = this.form.loanData[0].qr_code
-      } else if (this.form.loanData.length > 1) {
-        this.materialCodeArray = []
-        this.materialNameArray = []
-        this.qrCodeArray = []
-        this.form.loanData.forEach((item) => {
-          this.materialCodeArray.push(item.material_code)
-          this.materialNameArray.push(item.material_name)
-          this.qrCodeArray.push(item.qr_code)
-        })
-        this.materialCodeString = this.materialCodeArray.join(',')
-        this.materialNameString = this.materialNameArray.join(',')
-        this.qrCodeString = this.qrCodeArray.join(',')
-      }
       try {
-        const responseResult = await submitInventoryCheckApply({
+        const responseResult = await submitWzDelayApply({
           busi_id: this.busi_id,
           flow_no: this.flow_no,
           flow_node: '1',
-          flow_title: this.form.custom_name + '的盘检申请',
+          flow_title: this.form.custom_name + '的' + this.form.material_name + '的物料延时申请',
           approval_content: '',
           flow_node_name: '客户经理发起',
           approval_name: this.form.user_name,
           user_id: this.userId,
-          material_code_string: this.materialCodeString,
-          material_name_string: this.materialNameString,
-          qr_code_string: this.qrCodeString,
           user_name: this.form.user_name,
           inst_code: this.form.inst_code,
           inst_name: this.form.inst_name,
@@ -509,19 +370,18 @@ export default {
           next_approval_id: this.form.next_approval_id,
           next_approval_name: this.form.next_approval_name,
           custom_name: this.form.custom_name,
-          longitude: this.form.longitude,
-          is_normal: this.form.is_normal,
-          check_date: this.form.check_date,
-          material_message: this.form.material_message,
-          file_id: this.file_id,
-          check_longitude: this.form.check_longitude,
+          operator_name: this.form.operator_name,
           custom_license: this.form.custom_license,
-          latitude: this.form.latitude,
-          check_latitude: this.form.check_latitude,
-          material_code: this.form.material_code
+          operator_telephone: this.form.operator_telephone,
+          custom_address: this.form.custom_address,
+          employee_name: this.form.employee_name,
+          material_code: this.form.material_code,
+          material_name: this.form.material_name,
+          terminal_level: this.form.terminal_level,
+          consumable: this.form.consumable,
+          num: this.form.num
         })
         this.dialogVisibleApproval = false
-        this.busi_id = responseResult.data.busi_id
         this.$message.success(responseResult.data.message)
         this.$router.push('/materialIssuance/todo')
       } catch (error) {
@@ -541,7 +401,7 @@ export default {
       setTimeout(async () => {
         if (validatestat) {
           if (this.form.inst_code.length != 7) {
-            this.$message.warning('只有市场部的客户经理能发起物料盘检申请')
+            this.$message.warning('只有市场部的客户经理能发起物料延时申请')
           } else {
             const responseResult = await searchNextApproval({
               inst_code: this.form.inst_code,
